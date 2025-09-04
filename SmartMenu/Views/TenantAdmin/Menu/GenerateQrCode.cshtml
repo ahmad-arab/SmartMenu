@@ -1,0 +1,68 @@
+@{
+    Layout = null; // this view is shown inside a modal via ModalManager
+    var menuId = (int)ViewBag.MenuId;
+}
+<div class="p-3">
+    <div class="mb-3">
+        <label for="qr-identifier" class="form-label">Identifier (e.g., table number)</label>
+        <input type="text" id="qr-identifier" class="form-control" placeholder="e.g. 12" />
+        <div class="form-text">This value will be sent as the 'identifier' query parameter.</div>
+    </div>
+
+    <div class="d-flex gap-2 mb-3">
+        <button id="btn-generate-qr" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 448 512"><path fill="currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>
+            Generate
+        </button>
+        <a id="btn-download-qr" class="btn btn-outline-secondary disabled" href="#" download>Download</a>
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+    </div>
+
+    <div class="mb-2">
+        <small class="text-muted">Target URL:</small>
+        <div id="qr-target-url" class="small text-break"></div>
+    </div>
+
+    <div id="qr-preview-wrapper" class="text-center" style="min-height:220px; background:#fafafa; border:1px dashed #ddd; border-radius:.5rem; display:flex; align-items:center; justify-content:center;">
+        <div id="qr-placeholder" class="text-muted">QR preview will appear here</div>
+        <img id="qr-image" src="" alt="QR Code" class="img-fluid d-none" style="max-height:360px;" />
+    </div>
+</div>
+
+<script>
+    (function(){
+        const menuId = @menuId;
+        const $idInput = $('#qr-identifier');
+        const $genBtn = $('#btn-generate-qr');
+        const $dlBtn = $('#btn-download-qr');
+        const $img = $('#qr-image');
+        const $ph = $('#qr-placeholder');
+        const $target = $('#qr-target-url');
+
+        function buildTargetUrl(identifier){
+            // Build the public URL (same as GenerateQrPng uses) but without scheme to show user
+            const base = window.location.origin;
+            const url = new URL(`/Menu/View`, base);
+            url.searchParams.set('menuId', menuId);
+            url.searchParams.set('identifier', identifier || '');
+            return url.toString();
+        }
+
+        $genBtn.on('click', function(){
+            const identifier = ($idInput.val() || '').toString().trim();
+            if(!identifier){
+                Swal.fire('Identifier required', 'Please enter an identifier (e.g., table number).', 'warning');
+                return;
+            }
+            const ts = Date.now();
+            const imgUrl = `/TenantAdmin/GenerateQrPng?menuId=${menuId}&identifier=${encodeURIComponent(identifier)}&t=${ts}`;
+            $img.attr('src', imgUrl);
+            $img.removeClass('d-none');
+            $ph.addClass('d-none');
+            $target.text(buildTargetUrl(identifier));
+            $dlBtn.attr('href', imgUrl);
+            $dlBtn.attr('download', `SmartMenu-Menu${menuId}-Identifier-${identifier}.png`);
+            $dlBtn.removeClass('disabled');
+        });
+    })();
+</script>

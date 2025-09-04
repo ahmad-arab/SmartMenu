@@ -1,0 +1,28 @@
+@using SmartMenu.Models.Theme.Lable
+@model SmartMenu.Models.MenuLable.MenuLableListItemViewModel
+@{
+    var text = Model.DefaultText;
+
+    LableTheme_Default themeObject;
+    if (!string.IsNullOrEmpty(Model.ThemeJson))
+    {
+        themeObject = System.Text.Json.JsonSerializer.Deserialize<LableTheme_Default>(Model.ThemeJson);
+    }
+    else
+    {
+        themeObject = new LableTheme_Default();
+    }
+
+    var borderRadiosStyle = $"border-radius:{themeObject.BorderRadius}rem;";
+    var borderStyle = $"border:{themeObject.BorderWidth}px solid {themeObject.BorderColor};";
+
+    var backgroundtStyle = $"background:linear-gradient({themeObject.BackgroundColorAngle}deg, {themeObject.BackgroundColorStart}, {themeObject.BackgroundColorEnd});";
+
+    var textColorStyle = $"color:{themeObject.TextColor};";
+    var textFontSizeStyle = $"font-size:{themeObject.TextFontSize}rem;";
+    var textFontStyle = string.IsNullOrEmpty(themeObject.TextFont) ? string.Empty : $"font-family:{themeObject.TextFont}";
+}
+<span class="badge" style="@borderRadiosStyle @borderStyle @backgroundtStyle @textColorStyle @textFontSizeStyle @textFontStyle">
+    @await Html.PartialAsync("~/Views/Shared/Icon/IconIdentifierView.cshtml", Model.Icon)
+    <span>@text</span>
+</span>

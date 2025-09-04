@@ -1,0 +1,175 @@
+@model SmartMenu.Models.TimeTable.BulkStaffTimeTableViewModel
+@{
+    ViewData["Title"] = "Bulk Staff Schedule";
+    Layout = null;
+    var daysOfWeek = Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().OrderBy(d => (int)d).ToList();
+}
+
+<style>
+    .day-grid {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        background: #f8f9fa;
+    }
+
+    .day-title {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .slot-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+        .slot-row input[type="time"] {
+            width: 110px;
+        }
+</style>
+
+<form asp-action="BulkEditStaffTimeTable" method="post" id="bulkStaffTimeTableForm">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.MenuId)
+
+    <div class="row mb-3">
+        <div class="col-12 form-group">
+            <label class="form-label" for="StaffIds">Apply To Staff</label>
+            <select asp-for="StaffIds"
+                    asp-items="Model.AvailableStaff"
+                    id="StaffIds"
+                    class="form-select"
+                    multiple
+                    aria-label="Apply To Staff">
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var day in daysOfWeek)
+        {
+            var slot = Model.TimeSlots.FirstOrDefault(s => s.Day == day) ?? new SmartMenu.Models.TimeTable.StaffTimeTableViewModel.DayTimeSlot { Day = day };
+            <div class="col-12 col-lg-6">
+                <div class="day-grid" data-day="@((int)day)">
+                    <input type="hidden" name="TimeSlots[@((int)day)].Day" value="@((int)day)" />
+                    <div class="day-title">@day</div>
+                    <div class="slot-list" id="slot-list-@((int)day)">
+                        @for (int i = 0; i < slot.Ranges.Count; i++)
+                        {
+                            <div class="slot-row" data-index="@i">
+                                <input type="text" class="form-control flatpickr-start" name="TimeSlots[@((int)day)].Ranges[@i].Start" value="@slot.Ranges[i].Start.ToString(@"hh\:mm")" required />
+                                <span>to</span>
+                                <input type="text" class="form-control flatpickr-end" name="TimeSlots[@((int)day)].Ranges[@i].End" value="@slot.Ranges[i].End.ToString(@"hh\:mm")" required />
+                                <button type="button" class="btn btn-danger btn-sm delete-slot" title="Delete">&times;</button>
+                            </div>
+                        }
+                    </div>
+                    <div class="slot-row">
+                        <input type="text" id="add-start-@((int)day)" name="AddTimeSlots[@((int)day)].Start" class="form-control flatpickr-add-start" placeholder="Start Time" required />
+                        <span>to</span>
+                        <input type="text" id="add-end-@((int)day)" name="AddTimeSlots[@((int)day)].End" class="form-control flatpickr-add-end" placeholder="End Time" required />
+                        <button type="button" class="btn btn-primary btn-sm add-slot" data-day="@((int)day)">Add</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn btn-success">Apply Schedule To Selected Staff</button>
+    </div>
+</form>
+
+<script>
+    function initFlatpickr($root) {
+        ($root || $(document)).find('.flatpickr-start, .flatpickr-end, .flatpickr-add-start, .flatpickr-add-end').each(function () {
+            flatpickr(this, {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "H:i",
+                time_24hr: true
+            });
+        });
+    }
+
+    function initSelects($root) {
+        var $staff = ($root || $(document)).find('#StaffIds');
+        if ($.fn.select2 && $staff.length) {
+            $staff.select2({
+                allowClear: true,
+                closeOnSelect: false,
+                width: '100%',
+                dropdownParent: $('#dynamicModal'), // important inside Bootstrap modal
+                minimumResultsForSearch: Infinity   // hide search if not needed
+            });
+        }
+    }
+
+    function initBulkStaffTimeTable($root) {
+        initSelects($root);
+        initFlatpickr($root);
+    }
+
+    // Init when page renders normally
+    $(function () { initBulkStaffTimeTable($(document)); });
+
+    // Init when loaded into the Bootstrap modal via ModalManager
+    $(document).on('modal:content-ready', function (e, $content) {
+        initBulkStaffTimeTable($content);
+    });
+
+    // existing handlers unchanged below...
+    $(document).on('click', '.add-slot', function () {
+        var $grid = $(this).closest('.day-grid');
+        var day = $grid.data('day');
+        var $start = $grid.find('.flatpickr-add-start');
+        var $end = $grid.find('.flatpickr-add-end');
+        var startVal = $start.val();
+        var endVal = $end.val();
+        if (!startVal || !endVal) { $start[0].reportValidity(); $end[0].reportValidity(); return; }
+        var $list = $grid.find('.slot-list');
+        var nextIndex = $list.children('.slot-row').length;
+        $list.append(`
+            <div class="slot-row" data-index="${nextIndex}">
+                <input type="text" class="form-control flatpickr-start" name="TimeSlots[${day}].Ranges[${nextIndex}].Start" value="${startVal}" required />
+                <span>to</span>
+                <input type="text" class="form-control flatpickr-end" name="TimeSlots[${day}].Ranges[${nextIndex}].End" value="${endVal}" required />
+                <button type="button" class="btn btn-danger btn-sm delete-slot" title="Delete">&times;</button>
+            </div>
+        `);
+        $start.val('');
+        $end.val('');
+        initFlatpickr($grid);
+        reorderSlots($list);
+    });
+
+    $(document).on('click', '.delete-slot', function () {
+        var $row = $(this).closest('.slot-row');
+        var $list = $row.closest('.slot-list');
+        $row.remove();
+        reorderSlots($list);
+    });
+
+    $(document).on('change', '.flatpickr-start', function () {
+        var $list = $(this).closest('.slot-list');
+        reorderSlots($list);
+    });
+
+    function reorderSlots($list) {
+        var $rows = $list.children('.slot-row').get();
+        $rows.sort(function (a, b) {
+            var aStart = $(a).find('.flatpickr-start').val();
+            var bStart = $(b).find('.flatpickr-start').val();
+            return aStart.localeCompare(bStart);
+        });
+        $.each($rows, function (i, row) {
+            $list.append(row);
+            $(row).find('.flatpickr-start').attr('name', $list.attr('id').replace('slot-list-', 'TimeSlots[') + '].Ranges[' + i + '].Start');
+            $(row).find('.flatpickr-end').attr('name', $list.attr('id').replace('slot-list-', 'TimeSlots[') + '].Ranges[' + i + '].End');
+        });
+    }
+</script>

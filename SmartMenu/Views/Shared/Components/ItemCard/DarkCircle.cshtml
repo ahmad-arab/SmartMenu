@@ -1,0 +1,106 @@
+@using SmartMenu.Models.Theme.Item
+@model SmartMenu.Models.View.PublicCategoryItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new ItemCardTheme_DarkCircle()
+        : System.Text.Json.JsonSerializer.Deserialize<ItemCardTheme_DarkCircle>(Model.ThemeJson) ?? new ItemCardTheme_DarkCircle();
+
+    var border = $"{theme.BorderWidth}px solid {theme.BorderColor}";
+    var thumbRing = $"{theme.AccentRingThicknessPx}px solid {theme.AccentRingColor}";
+}
+<style>
+    /* Scoped to this component to avoid collisions */
+    .sm-darkcircle-card {
+        text-align: center;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+
+        .sm-darkcircle-card .vincent_prod_list_image_cont {
+            display: flex;
+            justify-content: center;
+            margin: 0 0 14px 0;
+        }
+
+        .sm-darkcircle-card .vincent_prod_list_image_wrapper {
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+            .sm-darkcircle-card .vincent_prod_list_image_wrapper img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+        .sm-darkcircle-card .vincent_team_overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity .3s;
+            background: @theme.AccentRingColor;
+        }
+
+        .sm-darkcircle-card .vincent_prod_list_image_wrapper:hover .vincent_team_overlay {
+            opacity: .15;
+        }
+
+        .sm-darkcircle-card h5 {
+            margin: 0;
+        }
+
+        .sm-darkcircle-card .vincent_prod_list_text {
+            font-size: 14px;
+            line-height: 28px;
+            margin: 14px 0 18px 0;
+        }
+
+        .sm-darkcircle-card .vincent_prod_list_price {
+            font-size: calc( @(theme.PriceBadgeFontSize) rem);
+            line-height: 26px;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+</style>
+
+<div class="sm-darkcircle-card vincent_menu1_block_item w-100" style="@(theme.CardBackground is null ? "" : $"background:{theme.CardBackground};") border-radius:@(theme.BorderRadius)rem;">
+    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+    {
+        <div class="vincent_prod_list_image_cont">
+            <div class="vincent_prod_list_image_wrapper"
+                 style="
+                        width:@(theme.ThumbDiameterPx)px;
+                        height:@(theme.ThumbDiameterPx)px;
+                        border:@thumbRing;
+                        box-shadow:0 8px 20px rgba(0,0,0,.35);
+                     ">
+                <div class="vincent_team_overlay"></div>
+                <img src="@Model.ImageUrl" alt="@Model.DefaultTitle" />
+            </div>
+        </div>
+    }
+
+    <h5 style="color:@theme.TitleColor; font-size:@(theme.TitleFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont}")">
+        @Model.DefaultTitle
+    </h5>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <p class="vincent_prod_list_text"
+           style="color:@theme.DescribtionColor; font-size:@(theme.DescribtionFontSize)rem; @(string.IsNullOrWhiteSpace(theme.DescribtionFont) ? "" : $"font-family:{theme.DescribtionFont}")">
+            @Model.Description
+        </p>
+    }
+
+    <div class="vincent_prod_list_price"
+         style="
+            color:@theme.PriceBadgeFontColor;
+            @(string.IsNullOrWhiteSpace(theme.PriceBadgeFont) ? "" : $"font-family:{theme.PriceBadgeFont}");
+            font-weight:@theme.PriceBadgeFontWeight;">
+        @Model.Price.ToString("C")
+    </div>
+</div>

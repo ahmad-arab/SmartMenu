@@ -1,0 +1,49 @@
+﻿@model SmartMenu.Models.MenuLable.EditMenuLableViewModel
+@{
+    Layout = null;
+}
+
+<div class="container-fluid">
+    <form asp-action="EditMenuLable" asp-route-id="@Model.MenuLableId" method="post" id="editMenuLableForm">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.MenuLableId)
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Select Icon</label>
+            @await Component.InvokeAsync("IconSelector", new {
+                name = "Icon",
+                selected = Model.Icon,
+                isRequired = true
+            })
+        </div>
+
+        <hr />
+        <h5>Edit Label Texts</h5>
+        <div class="row">
+            @for (int i = 0; i < Model.Texts.Count; i++)
+            {
+                var lang = Model.AvailableLanguages?.FirstOrDefault(l => l.Id == Model.Texts[i].LanguageId);
+                <div class="col-md-6 col-lg-4 mb-3 mx-3 border rounded p-2">
+                    <div class="mb-2">
+                        <span class="fw-bold">@lang?.Name</span>
+                        @if (lang?.IsRtl == true)
+                        {
+                            <span class="badge bg-secondary">RTL</span>
+                        }
+                    </div>
+                    <div class="mb-2">
+                        <label asp-for="@Model.Texts[i].Text" class="form-label">Text</label>
+                        <input asp-for="@Model.Texts[i].Text" class="form-control" dir="@(lang?.IsRtl == true ? "rtl" : "ltr")" />
+                        <span asp-validation-for="@Model.Texts[i].Text" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" asp-for="@Model.Texts[i].LanguageId" />
+                </div>
+            }
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+<partial name="_ValidationScriptsPartial" />

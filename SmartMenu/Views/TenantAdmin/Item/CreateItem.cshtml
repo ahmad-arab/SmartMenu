@@ -1,0 +1,71 @@
+﻿@model SmartMenu.Models.Item.CreateItemViewModel
+@{
+    Layout = null;
+    var categoryId = Model.CategoryId;
+}
+
+<div class="container-fluid">
+    <form asp-action="CreateItem" asp-route-categoryId="@categoryId" enctype="multipart/form-data" method="post" id="createItemForm">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.CategoryId)
+        <!-- Image, Price, and IsAvailable side by side -->
+        <div class="row mb-3">
+            <!-- Image upload (left column) -->
+            <div class="col-md-5 d-flex flex-column align-items-center justify-content-center">
+                <img id="selectedImage" src="~/images/image-placeholder.jpg"
+                     alt="menu placeholder" style="width: 300px; height: 220px;" class="mb-3" />
+                <div class="btn btn-primary btn-rounded mb-2">
+                    <label asp-for="Image" class="form-label text-white m-1">Choose file</label>
+                    <input asp-for="Image" type="file" accept="image/*" class="form-control d-none" onchange="displaySelectedImage(event, 'selectedImage')" />
+                </div>
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <!-- Price and IsAvailable (right column) -->
+            <div class="col-md-7">
+                <div class="mb-3">
+                    <label asp-for="Price" class="form-label"></label>
+                    <input asp-for="Price" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="mb-3 form-check">
+                    <input asp-for="IsAvailable" class="form-check-input" type="checkbox" />
+                    <label asp-for="IsAvailable" class="form-check-label"></label>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <h5>Titles & Descriptions</h5>
+        <div class="row">
+            @for (int i = 0; i < Model.TitlesAndDescriptions.Count; i++)
+            {
+                var lang = Model.AvailableLanguages?.FirstOrDefault(l => l.Id == Model.TitlesAndDescriptions[i].LanguageId);
+                <div class="col-md-6 col-lg-4 mb-3 mx-3 border rounded p-2">
+                    <div class="mb-2">
+                        <span class="fw-bold">@lang?.Name</span>
+                        @if (lang?.IsRtl == true)
+                        {
+                            <span class="badge bg-secondary">RTL</span>
+                        }
+                    </div>
+                    <div class="mb-2">
+                        <label asp-for="@Model.TitlesAndDescriptions[i].Text" class="form-label">Title</label>
+                        <input asp-for="@Model.TitlesAndDescriptions[i].Text" class="form-control" />
+                        <span asp-validation-for="@Model.TitlesAndDescriptions[i].Text" class="text-danger"></span>
+                    </div>
+                    <div class="mb-2">
+                        <label asp-for="@Model.TitlesAndDescriptions[i].Description" class="form-label">Description</label>
+                        <textarea asp-for="@Model.TitlesAndDescriptions[i].Description" class="form-control"></textarea>
+                        <span asp-validation-for="@Model.TitlesAndDescriptions[i].Description" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" asp-for="@Model.TitlesAndDescriptions[i].LanguageId" />
+                </div>
+            }
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Create Item</button>
+        </div>
+    </form>
+</div>
+
+
+<partial name="_ValidationScriptsPartial" />

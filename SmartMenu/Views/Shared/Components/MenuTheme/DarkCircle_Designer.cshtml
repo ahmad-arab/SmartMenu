@@ -1,0 +1,43 @@
+@model SmartMenu.Models.Theme.Menu.MenuTheme_DarkCircle
+<div class="vstack gap-2">
+  <div>
+    <label class="form-label">Body Background</label>
+    <input class="form-control form-control-sm" name="BodyBackgroundColor" value="@Model.BodyBackgroundColor" type="color" />
+  </div>
+  <div>
+    <label class="form-label">Header Height (px)</label>
+    <input class="form-control form-control-sm" name="HeaderHeight" value="@Model.HeaderHeight" type="number" />
+  </div>
+  <div>
+    <label class="form-label">Content Background</label>
+    <input class="form-control form-control-sm" name="ContentBackgroundColor" value="@Model.ContentBackgroundColor" type="color" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Title Color</label>
+      <input class="form-control form-control-sm" name="TitleColor" value="@Model.TitleColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Title Font Size (rem)</label>
+      <input class="form-control form-control-sm" name="TitleFontSize" value="@Model.TitleFontSize" type="number" step="0.05" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Title Font</label>
+    <input class="form-control form-control-sm" name="TitleFont" value="@Model.TitleFont" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Searchbox Background</label>
+      <input class="form-control form-control-sm" name="SearchboxBackgroundColor" value="@Model.SearchboxBackgroundColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Input Placeholder</label>
+      <input class="form-control form-control-sm" name="InputPalceHolderColor" value="@Model.InputPalceHolderColor" type="color" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Accent Color</label>
+    <input class="form-control form-control-sm" name="AccentColor" value="@Model.AccentColor" type="color" />
+  </div>
+</div>

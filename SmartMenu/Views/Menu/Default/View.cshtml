@@ -1,0 +1,248 @@
+﻿@using SmartMenu.Models.Theme.Menu
+@model SmartMenu.Models.View.PublicMenuViewModel
+@{
+    Layout = "~/Views/Shared/_MenuLayout_Default.cshtml";
+    ViewData["Title"] = $"{Model.MenuDefaultTitle} Menu";
+
+    MenuTheme_Default themeObject;
+    if (!string.IsNullOrEmpty(Model.MenuThemeJson))
+    {
+        themeObject = System.Text.Json.JsonSerializer.Deserialize<MenuTheme_Default>(Model.MenuThemeJson);
+    }
+    else
+    {
+        themeObject = new MenuTheme_Default();
+    }
+
+    var titleColorStyle = $"color:{themeObject.TitleColor};";
+    var titleFontSizeStyle = $"font-size:{themeObject.TitleFontSize}rem;";
+    var titleFontStyle = string.IsNullOrEmpty(themeObject.TitleFont) ? string.Empty : $"font-family:{themeObject.TitleFont}";
+
+    var searchboxBackgroundColorStyle = $"background-color:{themeObject.SearchboxBackgroundColor};";
+    var inputPalceHolderColorStyle = $"input::placeholder {{color: {themeObject.InputPalceHolderColor};opacity: 1;}}";
+    var searchboxtextColorStyle = $"color:{themeObject.InputPalceHolderColor};";
+}
+@section LanguageSelector {
+    <form class="lang-select mx-2" method="get" action="/Menu/View">
+        <input type="hidden" name="menuId" value="@Model.MenuId" />
+        <input type="hidden" name="identifier" value="@Model.Identifier" />
+        @if (Model.IsThemePreview)
+        {
+            <input type="hidden" name="previewTheme" value="true" />
+        }
+        <select id="languageSelect" name="lang" onchange="this.form.submit()" class="form-select form-select-sm shadow-sm" style="min-width:110px;">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                var selected = lang.Code == Model.SelectedLanguage ? "selected" : "";
+                @Html.Raw($"<option value=\"{lang.Code}\" {selected}>{lang.Name}</option>")
+            }
+        </select>
+    </form>
+    <script>
+        $(document).ready(function () {
+            var isRtl = @Model.IsRtl.ToString().ToLower();
+            // Language dropdown
+            $('#languageSelect').select2({
+                minimumResultsForSearch: Infinity,
+                dir: isRtl ? 'rtl' : 'ltr'
+            });
+        });
+    </script>
+}
+@section CommandSelector {
+    <form class="command-select mx-2" style="float:right;">
+        <select id="menuCommandSelect" class="form-select form-select-sm shadow-sm" style="min-width:200px;">
+            <option value="">Select Command</option>
+            @foreach (var cmd in Model.MenuCommands)
+            {
+                <option value="@cmd.Id"
+                        data-message="@cmd.SystemMessage"
+                        data-text="@cmd.DefaultText"
+                        data-icon="@cmd.Icon"
+                        data-identifier="@Model.Identifier"
+                        data-hascustomermessage="@cmd.HasCustomerMessage.ToString().ToLower()">
+                    @cmd.DefaultText
+                </option>
+            }
+        </select>
+    </form>
+    <script>
+        $(document).ready(function () {
+            var isRtl = @Model.IsRtl.ToString().ToLower();
+
+            function formatCommand (state) {
+                if (!state.id) return state.text;
+                var icon = $(state.element).data('icon');
+                var text = state.text;
+                if (!icon) return text;
+                var svg = '';
+                if (window.iconCache && window.iconCache[icon]) {
+                    svg = window.iconCache[icon];
+                } else {
+                    svg = '<span class="spinner-border spinner-border-sm me-1"></span>';
+                    $.get('/Menu/RenderIcon?icon=' + encodeURIComponent(icon), function(data) {
+                        window.iconCache = window.iconCache || {};
+                        window.iconCache[icon] = data;
+                        $('#menuCommandSelect').select2('close');
+                        $('#menuCommandSelect').select2('open');
+                    });
+                }
+                var flexDir = 'row';
+                return $('<span style="display:flex;align-items:center;flex-direction:' + flexDir + ';gap:8px;">' + svg + '<span>' + text + '</span></span>');
+            }
+            $('#menuCommandSelect').select2({
+                templateResult: formatCommand,
+                templateSelection: formatCommand,
+                escapeMarkup: function (m) { return m; },
+                minimumResultsForSearch: Infinity,
+                dir: isRtl ? 'rtl' : 'ltr'
+            });
+
+            $('#menuCommandSelect').on('select2:select', function (e) {
+                var selected = e.params.data.element;
+                var cmdId = $(selected).val();
+                if (!cmdId) return;
+                var identifier = $(selected).data('identifier') || '';
+                var message = $(selected).data('message') || '';
+                var text = $(selected).data('text') || '';
+                var hasCustomerMessage = $(selected).data('hascustomermessage') === true || $(selected).data('hascustomermessage') === 'true';
+
+                function sendCommand(customerMessage) {
+                    const payload = {
+                        menuCommandId: parseInt(cmdId),
+                        identifier: identifier || null,
+                        customerMessage: customerMessage || null,
+                        firedAt: new Date().toISOString(),
+                        timezoneOffsetMinutes: new Date().getTimezoneOffset()
+                    };
+                    fetch('/Menu/SendCommand', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Sent!', 'Command sent successfully.', 'success');
+                        } else {
+                            Swal.fire('Error', data.message || 'Failed to send command.', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire('Error', 'Failed to send command.', 'error');
+                    });
+                }
+
+                if (window.Swal) {
+                    if (hasCustomerMessage) {
+                        Swal.fire({
+                            title: text,
+                            html: `<div>
+                                    <div style="margin-bottom:8px;">${message}</div>
+                                    <textarea id="customerMessageInput" class="form-control" rows="4" placeholder="Enter your message"></textarea>
+                                   </div>`,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Send',
+                            cancelButtonText: 'Cancel',
+                            preConfirm: () => {
+                                return document.getElementById('customerMessageInput').value;
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                sendCommand(result.value);
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: text,
+                            text: message,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Send',
+                            cancelButtonText: 'Cancel'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                sendCommand('');
+                            }
+                        });
+                    }
+                } else {
+                    var customerMessage = '';
+                    if (hasCustomerMessage) {
+                        customerMessage = prompt(message + "\n\nEnter your message:");
+                        if (customerMessage === null) return;
+                    } else {
+                        if (!confirm(message)) return;
+                    }
+                    sendCommand(customerMessage);
+                }
+                $('#menuCommandSelect').val('').trigger('change');
+            });
+        });
+    </script>
+}
+
+<style>
+    @inputPalceHolderColorStyle
+</style>
+
+<h1 class="place-title text-center mb-2" style="@titleColorStyle @titleFontSizeStyle @titleFontStyle">@Model.MenuDefaultTitle</h1>
+@if (Model.MenuLables != null && Model.MenuLables.Any())
+{
+    <div class="menu-labels mb-3">
+        @foreach (var label in Model.MenuLables)
+        {
+            @await Component.InvokeAsync("Lable", new {
+                themKey = Model.LableThemeKey,
+                model = label,
+                themeJson = Model.LableThemeJson
+            })
+        }
+    </div>
+}
+
+<!-- Search/filter -->
+<div class="category-search position-relative mb-3" style="@searchboxtextColorStyle">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.8"/>
+    </svg>
+    <input id="categoryFilter" type="search" class="form-control form-control-lg" style="@searchboxBackgroundColorStyle" placeholder="Search categories..." autocomplete="off" />
+</div>
+
+<div class="row g-3" id="categoryGrid">
+    @foreach (var cat in Model.Categories)
+    {
+        var title = cat.TitlesByLanguage.ContainsKey(Model.SelectedLanguage)
+        ? cat.TitlesByLanguage[Model.SelectedLanguage]
+        : cat.TitlesByLanguage.Values.FirstOrDefault();
+        var categoryUrl = Url.Action("Category", "Menu", new { categoryId = cat.Id, lang = Model.SelectedLanguage, identifier = Model.Identifier, previewTheme = Model.IsThemePreview });
+        <div class="col-6 col-md-4 col-lg-3" data-title="@title?.ToLowerInvariant()">
+            @await Component.InvokeAsync("CategoryCard", new {
+                themKey = Model.CategoryCardThemeKey,
+                model = cat,
+                themeJson = Model.CategoryCardThemeJson,
+                linkUrl = categoryUrl
+            })
+        </div>
+    }
+</div>
+
+<script>
+    (function() {
+        var input = document.getElementById('categoryFilter');
+        var grid = document.getElementById('categoryGrid');
+        if (!input || !grid) return;
+        input.addEventListener('input', function() {
+            var q = this.value.trim().toLowerCase();
+            grid.querySelectorAll('[data-title]').forEach(function(col){
+                var t = col.getAttribute('data-title') || '';
+                col.style.display = t.indexOf(q) !== -1 ? '' : 'none';
+            });
+        });
+    })();
+</script>

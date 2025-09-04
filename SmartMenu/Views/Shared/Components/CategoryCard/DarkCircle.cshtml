@@ -1,0 +1,30 @@
+@using SmartMenu.Models.Theme.Category
+@model SmartMenu.Models.Category.CategoryListItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new CategoryCardTheme_DarkCircle()
+        : System.Text.Json.JsonSerializer.Deserialize<CategoryCardTheme_DarkCircle>(Model.ThemeJson) ?? new CategoryCardTheme_DarkCircle();
+
+    var d = theme.DiameterPx;
+    var ring = $"{theme.RingThicknessPx}px solid {theme.RingColor}";
+    var boxShadow = $"0 10px 22px rgba(0,0,0,{theme.ShadowOpacity})";
+    var title = Model.DefaultTitle;
+    var url = string.IsNullOrWhiteSpace(Model.LinkUrl) ? "javascript:void(0)" : Model.LinkUrl;
+}
+<a href="@url" class="text-decoration-none d-flex flex-column align-items-center" style="gap:.6rem;">
+    <div style="
+        width:@d}px;height:@d}px;border-radius:50%;
+        background-image:url('@Model.ImageUrl');
+        background-size:cover;background-position:center;
+        position:relative; box-shadow:@boxShadow; border:@ring;">
+        <div style="
+            position:absolute; inset:0; border-radius:50%;
+            background: radial-gradient(transparent 60%, rgba(0,0,0,.45) 100%);">
+        </div>
+    </div>
+    <div style="text-align:center;">
+        <div style="color:@theme.TitleColor; font-size:@(theme.TitleFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont}")">
+            @title
+        </div>
+    </div>
+</a>

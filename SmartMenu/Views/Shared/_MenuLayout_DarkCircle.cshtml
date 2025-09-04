@@ -1,0 +1,44 @@
+@using SmartMenu.Models.Theme.Menu
+@model SmartMenu.Models.View.PublicMenuViewModel
+@{
+    var rtl = Model.IsRtl ? "rtl" : "ltr";
+
+    var theme = string.IsNullOrWhiteSpace(Model.MenuThemeJson)
+        ? new MenuTheme_DarkCircle()
+        : System.Text.Json.JsonSerializer.Deserialize<MenuTheme_DarkCircle>(Model.MenuThemeJson) ?? new MenuTheme_DarkCircle();
+}
+<!DOCTYPE html>
+<html lang="@Model.SelectedLanguage" dir="@rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link href="~/css/menu_darkcircle.css" rel="stylesheet" asp-append-version="true" />
+
+    <style>
+        @Html.Raw($":root {{--dc-accent: {theme.AccentColor};--dc-body-bg: {theme.BodyBackgroundColor};--dc-content-bg: {theme.ContentBackgroundColor};--dc-header-height: {theme.HeaderHeight}px;--dc-title-color: {theme.TitleColor};--dc-title-size: {theme.TitleFontSize}rem;}}")
+        body { background: var(--dc-body-bg); }
+        .dc-topbar { position: absolute; top: .5rem; left: 0; right: 0; z-index: 1000; }
+        @Html.Raw("@media (max-width: 576px){ .dc-topbar { top: .25rem; } }")
+    </style>
+</head>
+<body>
+    <!-- Floating controls (language and command) -->
+    <div class="dc-topbar">
+        <div class="d-flex justify-content-between align-items-center px-2">
+            @RenderSection("LanguageSelector", required: false)
+            @RenderSection("CommandSelector", required: false)
+        </div>
+    </div>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

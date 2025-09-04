@@ -1,0 +1,194 @@
+@using SmartMenu.Models.Theme.Menu
+@model SmartMenu.Models.View.PublicMenuViewModel
+@{
+    Layout = "~/Views/Shared/_MenuLayout_DarkCircle.cshtml";
+    ViewData["Title"] = $"{Model.MenuDefaultTitle} Menu";
+
+    var theme = string.IsNullOrWhiteSpace(Model.MenuThemeJson)
+        ? new MenuTheme_DarkCircle()
+        : System.Text.Json.JsonSerializer.Deserialize<MenuTheme_DarkCircle>(Model.MenuThemeJson) ?? new MenuTheme_DarkCircle();
+
+    var inputPalceHolderColorStyle = $"input::placeholder {{color: {theme.InputPalceHolderColor};opacity: 1;}}";
+    var searchboxtextColorStyle = $"color:{theme.InputPalceHolderColor};";
+}
+@section LanguageSelector {
+    <form class="lang-select mx-2" method="get" action="/Menu/View">
+        <input type="hidden" name="menuId" value="@Model.MenuId" />
+        <input type="hidden" name="identifier" value="@Model.Identifier" />
+        @if (Model.IsThemePreview)
+        {
+            <input type="hidden" name="previewTheme" value="true" />
+        }
+        <select id="languageSelect" name="lang" onchange="this.form.submit()" class="form-select form-select-sm darkcircle-control" style="min-width:120px;">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                var selected = lang.Code == Model.SelectedLanguage ? "selected" : "";
+                @Html.Raw($"<option value=\"{lang.Code}\" {selected}>{lang.Name}</option>")
+            }
+        </select>
+    </form>
+}
+@section CommandSelector {
+    <form class="command-select mx-2" style="float:right;">
+        <select id="menuCommandSelect" class="form-select form-select-sm darkcircle-control" style="min-width:220px;">
+            <option value="">Select Command</option>
+            @foreach (var cmd in Model.MenuCommands)
+            {
+                <option value="@cmd.Id"
+                        data-message="@cmd.SystemMessage"
+                        data-text="@cmd.DefaultText"
+                        data-icon="@cmd.Icon"
+                        data-identifier="@Model.Identifier"
+                        data-hascustomermessage="@cmd.HasCustomerMessage.ToString().ToLower()">
+                    @cmd.DefaultText
+                </option>
+            }
+        </select>
+    </form>
+}
+
+<style>
+    @Html.Raw(inputPalceHolderColorStyle)
+</style>
+
+<div class="dc-container">
+    <div class="dc-hero">
+        <div class="dc-hero-bg" style="background-image:url('@Model.MenuCoverUrl')"></div>
+        <div class="dc-hero-overlay"></div>
+        <div class="dc-hero-content">
+            <div class="dc-logo-ring">
+                <div class="dc-logo" style="background-image:url('@Model.MenuLogoUrl')"></div>
+            </div>
+            <h1 class="dc-title">@Model.MenuDefaultTitle</h1>
+            @if (Model.MenuLables != null && Model.MenuLables.Any())
+            {
+                <div class="dc-labels">
+                    @foreach (var label in Model.MenuLables)
+                    {
+                        @await Component.InvokeAsync("Lable", new {
+                            themKey = Model.LableThemeKey,
+                            model = label,
+                            themeJson = Model.LableThemeJson
+                        })
+                    }
+                </div>
+            }
+            <div class="dc-search" style="@searchboxtextColorStyle">
+                <input id="categoryFilter" type="search" class="form-control form-control-lg"
+                       placeholder="Search categories..." autocomplete="off" />
+            </div>
+        </div>
+    </div>
+
+    <div class="dc-section">
+        <h2 class="dc-section-title">Categories</h2>
+        <div class="dc-categories" id="categoryGrid">
+            @foreach (var cat in Model.Categories)
+            {
+                var title = cat.TitlesByLanguage.ContainsKey(Model.SelectedLanguage)
+                    ? cat.TitlesByLanguage[Model.SelectedLanguage]
+                    : cat.TitlesByLanguage.Values.FirstOrDefault();
+                var categoryUrl = Url.Action("Category", "Menu", new { categoryId = cat.Id, lang = Model.SelectedLanguage, identifier = Model.Identifier, previewTheme = Model.IsThemePreview });
+                <div class="dc-category-col" data-title="@title?.ToLowerInvariant()">
+                    @await Component.InvokeAsync("CategoryCard", new {
+                        themKey = Model.CategoryCardThemeKey,
+                        model = cat,
+                        themeJson = Model.CategoryCardThemeJson,
+                        linkUrl = categoryUrl
+                    })
+                </div>
+            }
+        </div>
+    </div>
+
+    @* Render items grouped by category for one-page themes *@
+    @if (Model.CategoriesWithItems?.Any() == true)
+    {
+        foreach (var cat in Model.CategoriesWithItems)
+        {
+            <div class="dc-section">
+                <h3 class="dc-section-title">@cat.CategoryTitle</h3>
+                <div class="row g-3 item-grid">
+                    @foreach (var item in cat.Items)
+                    {
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            @await Component.InvokeAsync("ItemCard", new {
+                                themKey = Model.ItemCardThemeKey,
+                                model = item,
+                                themeJson = Model.ItemCardThemeJson
+                            })
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+
+<script>
+    (function() {
+        var input = document.getElementById('categoryFilter');
+        var grid = document.getElementById('categoryGrid');
+        if (!input || !grid) return;
+        input.addEventListener('input', function() {
+            var q = this.value.trim().toLowerCase();
+            grid.querySelectorAll('[data-title]').forEach(function(col){
+                var t = col.getAttribute('data-title') || '';
+                col.style.display = t.indexOf(q) !== -1 ? '' : 'none';
+            });
+        });
+
+        // Command sending
+        function sendCommand(cmdId, identifier, message, hasCustomerMessage, text){
+            function post(customerMessage){
+                const payload = {
+                    menuCommandId: parseInt(cmdId),
+                    identifier: identifier || null,
+                    customerMessage: customerMessage || null,
+                    firedAt: new Date().toISOString(),
+                    timezoneOffsetMinutes: new Date().getTimezoneOffset()
+                };
+                fetch('/Menu/SendCommand', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    body: JSON.stringify(payload)
+                }).then(r => r.json()).then(res => {
+                    if(res?.success) Swal.fire('Sent!', 'Command sent successfully.', 'success');
+                    else Swal.fire('Error', res?.message || 'Failed to send.', 'error');
+                }).catch(() => Swal.fire('Error', 'Failed to send.', 'error'));
+            }
+
+            if (window.Swal){
+                if (hasCustomerMessage){
+                    Swal.fire({
+                        title: text,
+                        html: `<div><div style="margin-bottom:8px;">${message}</div><textarea id="cmsg" class="form-control" rows="4" placeholder="Enter your message"></textarea></div>`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Send',
+                        cancelButtonText: 'Cancel',
+                        preConfirm: () => document.getElementById('cmsg').value
+                    }).then(res => { if(res.isConfirmed) post(res.value); });
+                } else {
+                    Swal.fire({ title: text, text: message, icon: 'question', showCancelButton: true, confirmButtonText: 'Send' })
+                        .then(res => { if(res.isConfirmed) post(''); });
+                }
+            } else {
+                let cm=''; if (hasCustomerMessage) { cm = prompt(message + "\n\nEnter your message:"); if (cm===null) return; }
+                else { if(!confirm(message)) return; }
+                post(cm);
+            }
+        }
+
+        document.getElementById('menuCommandSelect')?.addEventListener('change', function(){
+            const opt = this.selectedOptions[0]; if (!opt || !opt.value) return;
+            sendCommand(opt.value, opt.dataset.identifier, opt.dataset.message, opt.dataset.hascustomermessage === 'true', opt.dataset.text);
+            this.value = '';
+        });
+    })();
+</script>
+@Html.AntiForgeryToken()

@@ -1,0 +1,45 @@
+@model SmartMenu.Models.Theme.Lable.LableTheme_Default
+<div class="vstack gap-2">
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Border Radius (px)</label>
+      <input class="form-control form-control-sm" name="BorderRadius" value="@Model.BorderRadius" type="number" />
+    </div>
+    <div class="col">
+      <label class="form-label">Border Width (px)</label>
+      <input class="form-control form-control-sm" name="BorderWidth" value="@Model.BorderWidth" type="number" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Border Color</label>
+    <input class="form-control form-control-sm" name="BorderColor" value="@Model.BorderColor" type="color" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Background Start</label>
+      <input class="form-control form-control-sm" name="BackgroundColorStart" value="@Model.BackgroundColorStart" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Background End</label>
+      <input class="form-control form-control-sm" name="BackgroundColorEnd" value="@Model.BackgroundColorEnd" type="color" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Background Angle</label>
+    <input class="form-control form-control-sm" name="BackgroundColorAngle" value="@Model.BackgroundColorAngle" type="number" />
+  </div>
+  <div>
+    <label class="form-label">Text Color</label>
+    <input class="form-control form-control-sm" name="TextColor" value="@Model.TextColor" type="color" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Text Font Size (rem)</label>
+      <input class="form-control form-control-sm" name="TextFontSize" value="@Model.TextFontSize" type="number" step="0.05" />
+    </div>
+    <div class="col">
+      <label class="form-label">Text Font</label>
+      <input class="form-control form-control-sm" name="TextFont" value="@Model.TextFont" />
+    </div>
+  </div>
+</div>

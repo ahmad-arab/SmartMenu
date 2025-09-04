@@ -1,0 +1,108 @@
+﻿@using SmartMenu.Models.Theme.Menu
+@{
+    var rtl = Model.IsRtl ? "rtl" : "ltr";
+
+    MenuTheme_Default themeObject;
+    if (!string.IsNullOrEmpty(Model.MenuThemeJson))
+    {
+        themeObject = System.Text.Json.JsonSerializer.Deserialize<MenuTheme_Default>(Model.MenuThemeJson);
+    }
+    else
+    {
+        themeObject = new MenuTheme_Default();
+    }
+
+    var bodyBackgroundColorStyle = $"background-color:{themeObject.BodyBackgroundColor};";
+    var contentBackgroundColorStyle = $"background-color:{themeObject.ContentBackgroundColor};";
+    var headerHeightStyle = $"height:{themeObject.HeaderHeight}px;";
+
+    var titleColorStyle = $"color:{themeObject.TitleColor};";
+    var titleFontSizeStyle = $"font-size:{themeObject.TitleFontSize}rem;";
+    var titleFontStyle = string.IsNullOrEmpty(themeObject.TitleFont) ? string.Empty : $"font-family:{themeObject.TitleFont}";
+}
+<!DOCTYPE html>
+<html lang="@Model.SelectedLanguage" dir="@rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="~/css/menu_default.css" rel="stylesheet" asp-append-version="true" />
+    <style>
+        /* Loader overlay styles */
+        #pageLoader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255,255,255,0.95);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s;
+        }
+
+            #pageLoader.fade-out {
+                opacity: 0;
+                pointer-events: none;
+            }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-title {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            color: #333;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body style="@bodyBackgroundColorStyle">
+    <!-- Loader Overlay -->
+    <div id="pageLoader">
+        <div class="loader-content">
+            <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status"></div>
+            <div class="loader-title">Loading menu...</div>
+        </div>
+    </div>
+    <div class="place-header" style="@headerHeightStyle">
+        <div class="place-header__bg" style="background-image:url('@Model.MenuCoverUrl');"></div>
+        <div class="d-flex justify-content-between align-items-center px-2">
+            @RenderSection("LanguageSelector", required: false)
+            @RenderSection("CommandSelector", required: false)
+        </div>
+    </div>
+    <main class="place-content shadow-sm" style="@contentBackgroundColorStyle">
+        <div class="wrapper px-2 px-md-4">
+            @RenderBody()
+        </div>
+        <footer class="footer">
+            &copy; 2025 @Model.MenuDefaultTitle. Powered by SmartMenu.
+            @if (Model.IsThemePreview)
+            {
+                <span class="badge text-bg-warning ms-2">Theme Preview</span>
+            }
+        </footer>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Hide loader when page is fully loaded
+        window.addEventListener('load', function () {
+            var loader = document.getElementById('pageLoader');
+            if (!loader) return;
+            loader.classList.add('fade-out');
+            setTimeout(function () {
+                loader.style.display = 'none';
+            }, 600); // Wait for fade-out transition
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+@using SmartMenu.Models.Theme.Category
+@model SmartMenu.Models.Category.CategoryListItemViewModel
+@{
+    CategoryCardTheme_Default themeObject;
+    if (!string.IsNullOrEmpty(Model.ThemeJson))
+    {
+        themeObject = System.Text.Json.JsonSerializer.Deserialize<CategoryCardTheme_Default>(Model.ThemeJson);
+    }
+    else
+    {
+        themeObject = new CategoryCardTheme_Default();
+    }
+
+    var borderRadiosStyle = $"border-radius:{themeObject.BorderRadius}rem;";
+    var borderStyle = $"border:{themeObject.BorderWidth}px solid {themeObject.BorderColor};";
+
+    var titleColorStyle = $"color:{themeObject.TitleColor};";
+    var titleFontSizeStyle = $"font-size:{themeObject.TitleFontSize}rem;";
+    var titleFontStyle = string.IsNullOrEmpty(themeObject.TitleFont) ? string.Empty : $"font-family:{themeObject.TitleFont}";
+
+    var href = string.IsNullOrWhiteSpace(Model.LinkUrl) ? Model.ImageUrl : Model.LinkUrl;
+}
+<a class="category-card text-decoration-none" style="@borderRadiosStyle @borderStyle" href="@href" aria-label="@Model.DefaultTitle">
+    <div class="ratio ratio-4x3">
+        <div class="category-card-img" style="background-image:url('@Model.ImageUrl');"></div>
+    </div>
+    <div class="category-card-overlay">
+        <h3 class="h5 mb-0" style="@titleColorStyle @titleFontSizeStyle @titleFontStyle">@Model.DefaultTitle</h3>
+    </div>
+</a>

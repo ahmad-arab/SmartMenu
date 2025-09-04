@@ -1,0 +1,49 @@
+﻿@model (List<SmartMenu.Data.Enums.IconIdentifier> Icons, SmartMenu.Data.Enums.IconIdentifier? Selected)
+@{
+    var fieldName = (string)ViewData["FieldName"];
+    var isRequired = (bool)ViewData["IsRequired"];
+    var fieldId = fieldName.Replace(".", "_").Replace("[", "_").Replace("]", "_");
+}
+<div class="icon-selector-scrollbox" style="overflow-x: auto; white-space: nowrap; border: 1px solid #ccc; border-radius: 8px; padding: 8px;color:rgb(150,150,150);">
+    @foreach (var icon in Model.Icons)
+    {
+        var isChecked = Model.Selected.HasValue && Model.Selected.Value == icon;
+        <label class="icon-selector-label" style="display: inline-block; margin: 0 8px; cursor: pointer;">
+            <input type="radio"
+                   name="@fieldName"
+                   id="@($"{fieldId}_{icon}")"
+                   value="@icon"
+                   @(isChecked ? "checked" : "")
+                   @(isRequired ? "required" : "")
+                   style="display:none;" />
+            <div onclick="IconSelectorIconClicked(this)" class="icon-selector-svg @(isChecked ? "selected" : "")" style="border: 2px solid @(isChecked ? "#007bff" : "transparent"); border-radius: 6px; padding: 4px; display: inline-block;">
+                @await Html.PartialAsync("Icon/IconIdentifierView", icon)
+            </div>
+        </label>
+    }
+</div>
+<span asp-validation-for="@fieldName" class="text-danger"></span>
+
+<script>
+    function IconSelectorIconClicked(el) {
+        var label = el.closest('label');
+        var input = label.querySelector('input[type="radio"]');
+        if (input) {
+            input.checked = true;
+            // Remove "selected" from all icons in this group
+            document.querySelectorAll('input[name="' + input.name + '"]').forEach(function (radio) {
+                var svgDiv = radio.parentElement.querySelector('.icon-selector-svg');
+                if (svgDiv) {
+                    svgDiv.classList.remove('selected');
+                    // Optionally update border color as well
+                    svgDiv.style.borderColor = "transparent";
+                }
+            });
+            // Add "selected" to the clicked one
+            el.classList.add('selected');
+            el.style.borderColor = "#007bff";
+            // Trigger change event for validation, etc.
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+</script>

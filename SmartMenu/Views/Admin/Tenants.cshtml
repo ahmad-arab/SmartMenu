@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Tenants";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h2>Tenants</h2>
+            <button id="createTenantBtn" class="btn btn-primary mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><path fill="currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z" /></svg>
+                Create Tenant
+            </button>
+
+            <table id="tenantsTable" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th style="width:130px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#tenantsTable').DataTable({
+                ajax: {
+                    url: '@Url.Action("GetTenants", "Admin")',
+                    dataSrc: ''
+                },
+                columns: [
+                    { data: 'name' },
+                    {
+                        data: 'id',
+                        orderable: false,
+                        render: function (data, type, row) {
+                            return `
+                                <button class="btn btn-sm btn-outline-primary edit-tenant" data-id="${data}" title="Edit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="20" width="17.5"><path fill="currentColor" d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/></svg>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger ms-1 delete-tenant" data-id="${data}" title="Delete">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="20" width="17.5"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info ms-1 show-users" data-id="${data}" title="Users">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" height="20" width="17.5"><path fill="currentColor" d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z"/></svg>
+                                </button>
+                            `;
+                        }
+                    }
+                ],
+                autoWidth: false
+            });
+
+            // Create Tenant
+            $('#createTenantBtn').on('click', function () {
+                modalManager.show('/Admin/CreateTenant', 'modal-mg', 'Create Tenant', true, function(result) {
+                    // callback on success, e.g. reload table
+                });
+            });
+
+            // Edit Tenant
+            $('#tenantsTable').on('click', '.edit-tenant', function () {
+                const id = $(this).data('id');
+                modalManager.show('@Url.Action("EditTenant", "Admin")' + '?id=' + id, 'modal-m', 'Edit Tenant');
+            });
+
+            // Show Users
+            $('#tenantsTable').on('click', '.show-users', function () {
+                const tenantId = $(this).data('id');
+                modalManager.show('/Admin/TenantUsers?tenantId=' + tenantId, 'modal-lg', 'Tenant Users');
+            });
+
+            // Delete Tenant
+            $('#tenantsTable').on('click', '.delete-tenant', function () {
+                const id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This will permanently delete the tenant.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("DeleteTenant", "Admin")',
+                            type: 'POST',
+                            data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                            success: function () {
+                                table.ajax.reload();
+                                Swal.fire('Deleted!', 'Tenant has been deleted.', 'success');
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'Failed to delete tenant.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Reload table when modal closes (after create/edit)
+            $('#dynamicModal').on('hidden.bs.modal', function () {
+                table.ajax.reload();
+            });
+        });
+    </script>
+    @Html.AntiForgeryToken()
+}

@@ -1,0 +1,324 @@
+@using SmartMenu.Data.Enums
+@model SmartMenu.Models.Theme.ThemeDesignerViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Theme Designer";
+}
+<div class="container-fluid py-3">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 class="mb-0">Theme Designer</h3>
+        <div class="d-flex gap-2">
+            <button id="btnPopulateDefaultValues" class="btn btn-outline-secondary">Populatet default values</button>
+            <button id="btnRefresh" class="btn btn-outline-secondary">Refresh preview</button>
+            <button id="btnSave" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-lg-5">
+            <div class="card mb-3">
+                <div class="card-header">Menu Theme</div>
+                <div class="card-body">
+                    <select id="menuThemeKey" class="form-select form-select-sm mb-2">
+                        @foreach (MenuThemeKey key in Enum.GetValues(typeof(MenuThemeKey)))
+                        {
+                            <option value="@key" selected="@(key == Model.MenuThemeKey ? "selected" : null)">@key</option>
+                        }
+                    </select>
+                    <div id="menuThemeDesigner" data-key="@Model.MenuThemeKey"></div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header">Category Card Theme</div>
+                <div class="card-body">
+                    <select id="categoryCardThemeKey" class="form-select form-select-sm mb-2">
+                        @foreach (CategoryCardThemeKey key in Enum.GetValues(typeof(CategoryCardThemeKey)))
+                        {
+                            <option value="@key" selected="@(key == Model.CategoryCardThemeKey ? "selected" : null)">@key</option>
+                        }
+                    </select>
+                    <div id="categoryCardThemeDesigner" data-key="@Model.CategoryCardThemeKey"></div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header">Item Card Theme</div>
+                <div class="card-body">
+                    <select id="itemCardThemeKey" class="form-select form-select-sm mb-2">
+                        @foreach (ItemCardThemeKey key in Enum.GetValues(typeof(ItemCardThemeKey)))
+                        {
+                            <option value="@key" selected="@(key == Model.ItemCardThemeKey ? "selected" : null)">@key</option>
+                        }
+                    </select>
+                    <div id="itemCardThemeDesigner" data-key="@Model.ItemCardThemeKey"></div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-header">Label Theme</div>
+                <div class="card-body">
+                    <select id="lableThemeKey" class="form-select form-select-sm mb-2">
+                        @foreach (LableThemeKey key in Enum.GetValues(typeof(LableThemeKey)))
+                        {
+                            <option value="@key" selected="@(key == Model.LableThemeKey ? "selected" : null)">@key</option>
+                        }
+                    </select>
+                    <div id="lableThemeDesigner" data-key="@Model.LableThemeKey"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-7">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="text-muted small">Preview</div>
+            </div>
+            <div class="ratio ratio-9x16 border rounded overflow-hidden" style="height:100%;">
+                <iframe id="previewFrame" name="previewFrame" src="@Model.PreviewUrl" style="width:100%;height:100%;border:0;"></iframe>
+            </div>
+            <small class="text-muted">Live preview (preview mode)</small>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const menuId = @Model.MenuId;
+
+    // Track iframe URL and avoid infinite refresh loops
+    let lastPreviewUrl = '';
+    let suppressNextPreviewRefresh = false;
+
+    function getIframeUrl(frame){
+        if (!frame) return '';
+        let url = '';
+        try {
+            url = frame.contentWindow?.location?.href || '';
+        } catch {
+            // cross-origin or not yet loaded; ignore and fallback
+        }
+        if (!url) {
+            url = frame.getAttribute('src') || frame.src || '';
+        }
+        return url;
+    }
+
+    function wireIframeNavigationHook(){
+        const frame = document.getElementById('previewFrame');
+        if (!frame) return;
+
+        // Initialize last known URL
+        lastPreviewUrl = getIframeUrl(frame);
+
+        // On any navigation that causes a load, re-apply the preview
+        frame.addEventListener('load', () => {
+            const current = getIframeUrl(frame);
+
+            // If this load was triggered by our own refresh, skip and clear flag
+            if (suppressNextPreviewRefresh) {
+                suppressNextPreviewRefresh = false;
+                lastPreviewUrl = current;
+                return;
+            }
+
+            // Only refresh when URL actually changed
+            if (current && current !== lastPreviewUrl) {
+                lastPreviewUrl = current;
+                // Defer to allow the new document to be fully ready
+                setTimeout(refreshPreview, 0);
+            }
+        });
+
+        // Best-effort: detect client-side routing changes (same-origin only)
+        try {
+            frame.addEventListener('load', () => {
+                const w = frame.contentWindow;
+                if (!w) return;
+
+                const reapply = () => {
+                    const u = getIframeUrl(frame);
+                    if (u && u !== lastPreviewUrl) {
+                        lastPreviewUrl = u;
+                        refreshPreview();
+                    }
+                };
+
+                w.addEventListener('hashchange', reapply);
+                w.addEventListener('popstate', reapply);
+            });
+        } catch {
+            // Ignore if cross-origin
+        }
+    }
+
+    function loadDesigner(targetId, url){
+        const el = document.getElementById(targetId);
+        return fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }})
+            .then(r => r.text())
+            .then(html => { el.innerHTML = html; });
+    }
+
+    function initDesigners(getDefaultValues = false){
+        var menuThemeKey = '';
+        var categoryCardThemeKey = '';
+        var itemCardThemeKey = '';
+        var lableThemeKey = '';
+
+        if(getDefaultValues && getDefaultValues === true){
+            const model = buildPreviewModel();
+
+            menuThemeKey = model.MenuThemeKey;
+            categoryCardThemeKey = model.CategoryCardThemeKey;
+            itemCardThemeKey = model.ItemCardThemeKey;
+            lableThemeKey = model.LableThemeKey;
+        }else{
+            menuThemeKey = document.getElementById('menuThemeKey').value;
+            categoryCardThemeKey = document.getElementById('categoryCardThemeKey').value;
+            itemCardThemeKey = document.getElementById('itemCardThemeKey').value;
+            lableThemeKey = document.getElementById('lableThemeKey').value;
+        }
+
+        return Promise.all([
+            loadDesigner('menuThemeDesigner', `/TenantAdmin/LoadMenuThemeDesigner?menuId=${menuId}&key=${menuThemeKey}&getDefaultValues=${getDefaultValues}`),
+            loadDesigner('categoryCardThemeDesigner', `/TenantAdmin/LoadCategoryCardThemeDesigner?menuId=${menuId}&key=${categoryCardThemeKey}&getDefaultValues=${getDefaultValues}`),
+            loadDesigner('itemCardThemeDesigner', `/TenantAdmin/LoadItemCardThemeDesigner?menuId=${menuId}&key=${itemCardThemeKey}&getDefaultValues=${getDefaultValues}`),
+            loadDesigner('lableThemeDesigner', `/TenantAdmin/LoadLableThemeDesigner?menuId=${menuId}&key=${lableThemeKey}&getDefaultValues=${getDefaultValues}`)
+        ]);
+    }
+
+    function collectDesignerData(container){
+        const data = {};
+        container.querySelectorAll('[name]').forEach(inp => {
+            const type = (inp.type || '').toLowerCase();
+            if (type === 'checkbox') {
+                data[inp.name] = inp.checked;
+            } else if (type === 'number') {
+                const raw = (inp.value ?? '').toString().trim();
+                if (raw === '') {
+                    // skip empty numeric fields to keep server-side defaults
+                    return;
+                }
+                const num = Number(raw);
+                if (!Number.isNaN(num)) {
+                    data[inp.name] = num; // ensure JSON number, not string
+                }
+            } else {
+                data[inp.name] = inp.value;
+            }
+        });
+        return data;
+    }
+
+    function buildPreviewModel(){
+        return {
+            MenuThemeKey: document.getElementById('menuThemeKey').value,
+            MenuThemeJson: JSON.stringify(collectDesignerData(document.getElementById('menuThemeDesigner'))),
+            CategoryCardThemeKey: document.getElementById('categoryCardThemeKey').value,
+            CategoryCardThemeJson: JSON.stringify(collectDesignerData(document.getElementById('categoryCardThemeDesigner'))),
+            ItemCardThemeKey: document.getElementById('itemCardThemeKey').value,
+            ItemCardThemeJson: JSON.stringify(collectDesignerData(document.getElementById('itemCardThemeDesigner'))),
+            LableThemeKey: document.getElementById('lableThemeKey').value,
+            LableThemeJson: JSON.stringify(collectDesignerData(document.getElementById('lableThemeDesigner')))
+        };
+    }
+
+    async function populateDefaultValues(){
+        await initDesigners(true);
+        refreshPreview();
+    }
+
+    // Do NOT save. Post preview model to iframe target.
+    function refreshPreview(){
+        const frame = document.getElementById('previewFrame');
+        if (!frame) return;
+
+        // Take current URL from iframe (prefers navigated URL, falls back to src)
+        let previewUrl = '';
+        try {
+            previewUrl = frame.contentWindow?.location?.href || '';
+        } catch {
+            // cross-origin or not yet loaded; ignore and fallback
+        }
+        if (!previewUrl) {
+            previewUrl = frame.getAttribute('src') || frame.src || '';
+        }
+        if (!previewUrl) return;
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.target = 'previewFrame'; // requires iframe name="previewFrame"
+        form.action = previewUrl;
+
+        const model = buildPreviewModel();
+        for (const [k, v] of Object.entries(model)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = k;
+            input.value = v;
+            form.appendChild(input);
+        }
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]');
+        if (token) {
+            const t = document.createElement('input');
+            t.type = 'hidden';
+            t.name = '__RequestVerificationToken';
+            t.value = token.value;
+            form.appendChild(t);
+        }
+
+        // Mark that the next iframe load comes from our refresh
+        suppressNextPreviewRefresh = true;
+
+        document.body.appendChild(form);
+        form.submit();
+        form.remove();
+    }
+
+    function saveThemes(){
+        const model = buildPreviewModel();
+        const fd = new FormData();
+        fd.append('MenuId', menuId);
+        fd.append('MenuThemeKey', model.MenuThemeKey);
+        fd.append('MenuThemeJson', model.MenuThemeJson);
+        fd.append('CategoryCardThemeKey', model.CategoryCardThemeKey);
+        fd.append('CategoryCardThemeJson', model.CategoryCardThemeJson);
+        fd.append('ItemCardThemeKey', model.ItemCardThemeKey);
+        fd.append('ItemCardThemeJson', model.ItemCardThemeJson);
+        fd.append('LableThemeKey', model.LableThemeKey);
+        fd.append('LableThemeJson', model.LableThemeJson);
+
+        return fetch('/TenantAdmin/SaveTheme', {
+            method: 'POST',
+            headers: { 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value },
+            body: fd
+        }).then(r => r.json());
+    }
+
+    document.getElementById('menuThemeKey').addEventListener('change', function(){
+        loadDesigner('menuThemeDesigner', `/TenantAdmin/LoadMenuThemeDesigner?menuId=${menuId}&key=${this.value}`);
+    });
+    document.getElementById('categoryCardThemeKey').addEventListener('change', function(){
+        loadDesigner('categoryCardThemeDesigner', `/TenantAdmin/LoadCategoryCardThemeDesigner?menuId=${menuId}&key=${this.value}`);
+    });
+    document.getElementById('itemCardThemeKey').addEventListener('change', function(){
+        loadDesigner('itemCardThemeDesigner', `/TenantAdmin/LoadItemCardThemeDesigner?menuId=${menuId}&key=${this.value}`);
+    });
+    document.getElementById('lableThemeKey').addEventListener('change', function(){
+        loadDesigner('lableThemeDesigner', `/TenantAdmin/LoadLableThemeDesigner?menuId=${menuId}&key=${this.value}`);
+    });
+
+    document.getElementById('btnPopulateDefaultValues').addEventListener('click', populateDefaultValues);
+    document.getElementById('btnRefresh').addEventListener('click', refreshPreview);
+    document.getElementById('btnSave').addEventListener('click', function(){
+        saveThemes().then(res => {
+            if (res?.success) {
+                Swal.fire('Saved', 'Theme saved.', 'success');
+            } else {
+                Swal.fire('Error', res?.message || 'Failed to save.', 'error');
+            }
+        });
+    });
+
+    // Hook iframe navigation changes and then initialize designers
+    wireIframeNavigationHook();
+    initDesigners();
+</script>
+@Html.AntiForgeryToken()
+

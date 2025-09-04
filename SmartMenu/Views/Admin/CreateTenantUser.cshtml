@@ -1,0 +1,34 @@
+﻿@model SmartMenu.Models.User.CreateUserViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <form id="createTenantUserForm" asp-action="CreateTenantUser" method="post" autocomplete="off">
+                @* Hidden TenantId *@
+                <input asp-for="TenantId" type="hidden" />
+
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control" maxlength="50" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

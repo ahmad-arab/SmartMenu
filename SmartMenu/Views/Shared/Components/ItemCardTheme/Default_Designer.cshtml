@@ -1,0 +1,73 @@
+@model SmartMenu.Models.Theme.Item.ItemCardTheme_Default
+<div class="vstack gap-2">
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Border Radius (rem)</label>
+      <input class="form-control form-control-sm" name="BorderRadius" value="@Model.BorderRadius" type="number" />
+    </div>
+    <div class="col">
+      <label class="form-label">Border Width (px)</label>
+      <input class="form-control form-control-sm" name="BorderWidth" value="@Model.BorderWidth" type="number" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Border Color</label>
+    <input class="form-control form-control-sm" name="BorderColor" value="@Model.BorderColor" type="color" />
+  </div>
+  <div>
+    <label class="form-label">Background Color</label>
+    <input class="form-control form-control-sm" name="BackgroundColor" value="@Model.BackgroundColor" type="color" />
+  </div>
+  <div>
+    <label class="form-label">Title Color</label>
+    <input class="form-control form-control-sm" name="TitleColor" value="@Model.TitleColor" type="color" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Title Font Size (rem)</label>
+      <input class="form-control form-control-sm" name="TitleFontSize" value="@Model.TitleFontSize" type="number" step="0.05" />
+    </div>
+    <div class="col">
+      <label class="form-label">Title Font</label>
+      <input class="form-control form-control-sm" name="TitleFont" value="@Model.TitleFont" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Description Color</label>
+    <input class="form-control form-control-sm" name="DescribtionColor" value="@Model.DescribtionColor" type="color" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Description Font Size (rem)</label>
+      <input class="form-control form-control-sm" name="DescribtionFontSize" value="@Model.DescribtionFontSize" type="number" step="0.05" />
+    </div>
+    <div class="col">
+      <label class="form-label">Description Font</label>
+      <input class="form-control form-control-sm" name="DescribtionFont" value="@Model.DescribtionFont" />
+    </div>
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Price Badge BG</label>
+      <input class="form-control form-control-sm" name="PriceBadgeBackgroundColor" value="@Model.PriceBadgeBackgroundColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Price Badge Text</label>
+      <input class="form-control form-control-sm" name="PriceBadgeFontColor" value="@Model.PriceBadgeFontColor" type="color" />
+    </div>
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Price Badge Font Size (rem)</label>
+      <input class="form-control form-control-sm" name="PriceBadgeFontSize" value="@Model.PriceBadgeFontSize" type="number" step="0.05" />
+    </div>
+    <div class="col">
+      <label class="form-label">Price Badge Font</label>
+      <input class="form-control form-control-sm" name="PriceBadgeFont" value="@Model.PriceBadgeFont" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Price Badge Font Weight</label>
+    <input class="form-control form-control-sm" name="PriceBadgeFontWeight" value="@Model.PriceBadgeFontWeight" type="number" />
+  </div>
+</div>

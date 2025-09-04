@@ -1,0 +1,23 @@
+@using SmartMenu.Models.Theme.Lable
+@using SmartMenu.Data.Enums
+@model SmartMenu.Models.MenuLable.MenuLableListItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new LableTheme_DarkCircle()
+        : System.Text.Json.JsonSerializer.Deserialize<LableTheme_DarkCircle>(Model.ThemeJson) ?? new LableTheme_DarkCircle();
+
+    string Gradient() => $"linear-gradient({theme.BackgroundColorAngle}deg, {theme.BackgroundColorStart}, {theme.BackgroundColorEnd})";
+}
+<span class="badge"
+      style="
+        display:inline-flex; align-items:center; gap:.5rem;
+        padding:.55rem .9rem; border-radius:@(theme.BorderRadius)rem;
+        border:@(theme.BorderWidth)px solid @theme.BorderColor;
+        background:@Gradient(); color:@theme.TextColor;
+        font-size:@(theme.TextFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TextFont) ? "" : $"font-family:{theme.TextFont}");
+      ">
+    <span class="icon" style="display:inline-flex; align-items:center;">
+        @await Html.PartialAsync("~/Views/Shared/Icon/IconIdentifierView.cshtml", Model.Icon)
+    </span>
+    <span>@Model.DefaultText</span>
+</span>

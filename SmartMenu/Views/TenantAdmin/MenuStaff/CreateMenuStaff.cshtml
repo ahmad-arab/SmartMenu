@@ -1,0 +1,30 @@
+﻿@model SmartMenu.Models.MenuStaff.CreateMenuStaffViewModel
+@{
+    Layout = null;
+    var menuId = Model.MenuId;
+}
+
+<div class="container-fluid">
+    <form asp-action="CreateMenuStaff" asp-route-menuId="@menuId" method="post" id="createMenuStaffForm">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.MenuId)
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Create Staff</button>
+        </div>
+    </form>
+</div>
+
+<partial name="_ValidationScriptsPartial" />
