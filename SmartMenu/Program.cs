@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartMenu.Data;
 using SmartMenu.Data.Entities;
 using SmartMenu.Middlewares;
+using SmartMenu.Services.FileUpload;
 using SmartMenu.Services.Whatsapp;
 using SmartMenu.Services.Qr;
 using SmartMenu.Services.Theme;
@@ -11,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register file upload service
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 // Register TwilioWhatsappService for IWhatsappService
 builder.Services.AddTransient<IWhatsappService, TwilioWhatsappService>();

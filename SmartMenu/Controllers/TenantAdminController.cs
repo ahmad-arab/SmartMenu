@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +13,10 @@ using SmartMenu.Models.MenuCommand;
 using SmartMenu.Models.MenuLable;
 using SmartMenu.Models.MenuStaff;
 using SmartMenu.Models.TimeTable;
+using SmartMenu.Services.FileUpload;
 using SmartMenu.Services.Whatsapp;
 using System.Security.Claims;
-using SmartMenu.Services.Qr; // added
+using SmartMenu.Services.Qr;
 using SmartMenu.Services.Theme;
 using SmartMenu.Models.Theme;
 using System.Text.Json;
@@ -26,17 +27,17 @@ namespace SmartMenu.Controllers
     public class TenantAdminController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IWebHostEnvironment _env;
+        private readonly IFileUploadService _fileUploadService;
         private readonly IWhatsappService _whatsappService;
-        private readonly IQrCodeService _qrCodeService; // added
+        private readonly IQrCodeService _qrCodeService;
         private readonly IThemeService _themeService;
 
-        public TenantAdminController(ApplicationDbContext context, IWebHostEnvironment env, IWhatsappService whatsappService, IQrCodeService qrCodeService, IThemeService themeService) // updated
+        public TenantAdminController(ApplicationDbContext context, IFileUploadService fileUploadService, IWhatsappService whatsappService, IQrCodeService qrCodeService, IThemeService themeService)
         {
             _context = context;
-            _env = env;
+            _fileUploadService = fileUploadService;
             _whatsappService = whatsappService;
-            _qrCodeService = qrCodeService; // added
+            _qrCodeService = qrCodeService;
             _themeService = themeService;
         }
 
@@ -67,10 +68,10 @@ namespace SmartMenu.Controllers
                     // If not found, fallback to the first available title
                     ?? m.MenuTitles.FirstOrDefault()?.Text
                     // If still not found, fallback to "(No title)"
-                    ?? "(No title)",
+                    ?? FallbackText.NoTitle,
                 TitlesByLanguage = languages.ToDictionary(
                     lang => lang.Name,
-                    lang => m.MenuTitles.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No title)"
+                    lang => m.MenuTitles.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoTitle
                 )
             }).ToList();
 
@@ -120,26 +121,10 @@ namespace SmartMenu.Controllers
             int tenantId = GetTenantId();
 
             string imageUrl = null;
-            if (model.Image != null && model.Image.Length > 0)
-            {
-                var ext = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                if (!allowed.Contains(ext))
-                {
-                    return Json(new { success = false, message = "Only image files are allowed." });
-                }
+            if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
+                return Json(new { success = false, message = "Only image files are allowed." });
 
-                var uploads = Path.Combine(_env.WebRootPath, "uploads", "menu-images");
-                Directory.CreateDirectory(uploads);
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Image.CopyToAsync(stream);
-                }
-                imageUrl = $"/uploads/menu-images/{fileName}";
-            }
+            imageUrl = await _fileUploadService.UploadImageAsync(model.Image, "menu-images");
 
             var menu = new Menu
             {
@@ -229,26 +214,11 @@ namespace SmartMenu.Controllers
             if (menu == null)
                 return Json(new { success = false, message = "Menu not found." });
 
+            if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
+                return Json(new { success = false, message = "Only image files are allowed." });
+
             if (model.Image != null && model.Image.Length > 0)
-            {
-                var ext = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                if (!allowed.Contains(ext))
-                {
-                    return Json(new { success = false, message = "Only image files are allowed." });
-                }
-
-                var uploads = Path.Combine(_env.WebRootPath, "uploads", "menu-images");
-                Directory.CreateDirectory(uploads);
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Image.CopyToAsync(stream);
-                }
-                menu.ImageUrl = $"/uploads/menu-images/{fileName}";
-            }
+                menu.ImageUrl = await _fileUploadService.UploadImageAsync(model.Image, "menu-images");
 
             // Update or add titles for each language
             foreach (var td in model.Titles)
@@ -309,10 +279,10 @@ namespace SmartMenu.Controllers
                     // If not found, fallback to the first available title
                     ?? cat.CategoryTitles.FirstOrDefault()?.Text
                     // If still not found, fallback to "(No title)"
-                    ?? "(No title)",
+                    ?? FallbackText.NoTitle,
                 TitlesByLanguage = languages.ToDictionary(
                     lang => lang.Name,
-                    lang => cat.CategoryTitles.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No title)"
+                    lang => cat.CategoryTitles.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoTitle
                 )
             }).ToList();
 
@@ -324,7 +294,7 @@ namespace SmartMenu.Controllers
                     // If not found, fallback to the first available title
                     ?? menu.MenuTitles.FirstOrDefault()?.Text
                     // If still not found, fallback to "(No title)"
-                    ?? "(No title)",
+                    ?? FallbackText.NoTitle,
                 ImageUrl = menu.ImageUrl,
                 Categories = categoryViewModels
             };
@@ -376,7 +346,7 @@ namespace SmartMenu.Controllers
             }
 
             // Delete menu image
-            DeleteImageFile(menu.ImageUrl);
+            _fileUploadService.DeleteImage(menu.ImageUrl);
 
             // Delete menu itself
             _context.Menus.Remove(menu);
@@ -540,26 +510,10 @@ namespace SmartMenu.Controllers
             }
 
             string imageUrl = null;
-            if (model.Image != null && model.Image.Length > 0)
-            {
-                var ext = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                if (!allowed.Contains(ext))
-                {
-                    return Json(new { success = false, message = "Only image files are allowed." });
-                }
+            if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
+                return Json(new { success = false, message = "Only image files are allowed." });
 
-                var uploads = Path.Combine(_env.WebRootPath, "uploads", "category-images");
-                Directory.CreateDirectory(uploads);
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Image.CopyToAsync(stream);
-                }
-                imageUrl = $"/uploads/category-images/{fileName}";
-            }
+            imageUrl = await _fileUploadService.UploadImageAsync(model.Image, "category-images");
 
             var category = new Category
             {
@@ -674,26 +628,11 @@ namespace SmartMenu.Controllers
                 return Json(new { success = false, message = "Category not found." });
 
             // Handle image update
+            if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
+                return Json(new { success = false, message = "Only image files are allowed." });
+
             if (model.Image != null && model.Image.Length > 0)
-            {
-                var ext = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                if (!allowed.Contains(ext))
-                {
-                    return Json(new { success = false, message = "Only image files are allowed." });
-                }
-
-                var uploads = Path.Combine(_env.WebRootPath, "uploads", "category-images");
-                Directory.CreateDirectory(uploads);
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Image.CopyToAsync(stream);
-                }
-                category.ImageUrl = $"/uploads/category-images/{fileName}";
-            }
+                category.ImageUrl = await _fileUploadService.UploadImageAsync(model.Image, "category-images");
 
             // Update or add titles/descriptions for each language
             foreach (var td in model.TitlesAndDescriptions)
@@ -772,10 +711,10 @@ namespace SmartMenu.Controllers
                     // If not found, fallback to the first available title
                     ?? item.ItemTitles.FirstOrDefault()?.Text
                     // If still not found, fallback to "(No title)"
-                    ?? "(No title)",
+                    ?? FallbackText.NoTitle,
                 TitlesByLanguage = languages.ToDictionary(
                     lang => lang.Name,
-                    lang => item.ItemTitles.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No title)"
+                    lang => item.ItemTitles.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoTitle
                 )
             }).ToList();
 
@@ -789,10 +728,10 @@ namespace SmartMenu.Controllers
                     // If not found, fallback to the first available title
                     ?? category.CategoryTitles.FirstOrDefault()?.Text
                     // If still not found, fallback to "(No title)"
-                    ?? "(No title)",
+                    ?? FallbackText.NoTitle,
                 Title = string.Join(" / ", languages.ToDictionary(
                     lang => lang.Name,
-                    lang => category.CategoryTitles.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No title)"
+                    lang => category.CategoryTitles.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoTitle
                 ).Select(p => $"{p.Key}: {p.Value}")),
                 ImageUrl = category.ImageUrl,
                 Items = itemViewModels
@@ -830,7 +769,7 @@ namespace SmartMenu.Controllers
             _context.CategoryDescriptions.RemoveRange(category.CategoryDescriptions);
 
             // Delete category image
-            DeleteImageFile(category.ImageUrl);
+            _fileUploadService.DeleteImage(category.ImageUrl);
 
             // Delete category itself
             _context.Categories.Remove(category);
@@ -891,26 +830,10 @@ namespace SmartMenu.Controllers
             }
 
             string imageUrl = null;
-            if (model.Image != null && model.Image.Length > 0)
-            {
-                var ext = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                if (!allowed.Contains(ext))
-                {
-                    return Json(new { success = false, message = "Only image files are allowed." });
-                }
+            if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
+                return Json(new { success = false, message = "Only image files are allowed." });
 
-                var uploads = Path.Combine(_env.WebRootPath, "uploads", "item-images");
-                Directory.CreateDirectory(uploads);
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Image.CopyToAsync(stream);
-                }
-                imageUrl = $"/uploads/item-images/{fileName}";
-            }
+            imageUrl = await _fileUploadService.UploadImageAsync(model.Image, "item-images");
 
             var item = new Item
             {
@@ -1029,26 +952,11 @@ namespace SmartMenu.Controllers
                 return Json(new { success = false, message = "Item not found." });
 
             // Handle image update
+            if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
+                return Json(new { success = false, message = "Only image files are allowed." });
+
             if (model.Image != null && model.Image.Length > 0)
-            {
-                var ext = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                if (!allowed.Contains(ext))
-                {
-                    return Json(new { success = false, message = "Only image files are allowed." });
-                }
-
-                var uploads = Path.Combine(_env.WebRootPath, "uploads", "item-images");
-                Directory.CreateDirectory(uploads);
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Image.CopyToAsync(stream);
-                }
-                item.ImageUrl = $"/uploads/item-images/{fileName}";
-            }
+                item.ImageUrl = await _fileUploadService.UploadImageAsync(model.Image, "item-images");
 
             item.Price = model.Price;
             item.IsAvailable = model.IsAvailable;
@@ -1117,7 +1025,7 @@ namespace SmartMenu.Controllers
             _context.ItemDescriptions.RemoveRange(item.ItemDescriptions);
 
             // Delete item image
-            DeleteImageFile(item.ImageUrl);
+            _fileUploadService.DeleteImage(item.ImageUrl);
 
             _context.Items.Remove(item);
             await _context.SaveChangesAsync();
@@ -1148,11 +1056,9 @@ namespace SmartMenu.Controllers
                 var defaultText =
                     l.MenuLableTexts.FirstOrDefault(t => t.LanguageId == languages.FirstOrDefault(lang => lang.IsDefault)?.Id)?.Text
                     ?? l.MenuLableTexts.FirstOrDefault()?.Text
-                    ?? "(No text)";
+                    ?? FallbackText.NoText;
 
-                string summarizedDefaultText = defaultText.Length > 100
-                    ? defaultText.Substring(0, 100) + "..."
-                    : defaultText;
+                string summarizedDefaultText = FallbackText.Summarize(defaultText);
 
                 return new MenuLableListItemViewModel
                 {
@@ -1162,7 +1068,7 @@ namespace SmartMenu.Controllers
                     SummarizedDefaultText = summarizedDefaultText,
                     TextsByLanguage = languages.ToDictionary(
                         lang => lang.Name,
-                        lang => l.MenuLableTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No text)")
+                        lang => l.MenuLableTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoText)
                 };
             }).ToList();
 
@@ -1381,7 +1287,7 @@ namespace SmartMenu.Controllers
                 var defaultText =
                     l.MenuCommandTexts.FirstOrDefault(t => t.LanguageId == languages.FirstOrDefault(lang => lang.IsDefault)?.Id)?.Text
                     ?? l.MenuCommandTexts.FirstOrDefault()?.Text
-                    ?? "(No text)";
+                    ?? FallbackText.NoText;
 
                 return new MenuCommandListItemViewModel
                 {
@@ -1393,7 +1299,7 @@ namespace SmartMenu.Controllers
 
                     TextsByLanguage = languages.ToDictionary(
                         lang => lang.Name,
-                        lang => l.MenuCommandTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No text)"),
+                        lang => l.MenuCommandTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoText),
                 };
             }).ToList();
 
@@ -1820,7 +1726,7 @@ namespace SmartMenu.Controllers
                     // If not found, fallback to the first available title
                     ?? menuStaff.Menu.MenuTitles.FirstOrDefault()?.Text
                     // If still not found, fallback to "(No title)"
-                    ?? "(No title)";
+                    ?? FallbackText.NoTitle;
 
             try
             {
@@ -1988,9 +1894,8 @@ namespace SmartMenu.Controllers
 
         #region Languages
         [HttpGet]
-        public async Task<IActionResult> Languages()
+        public IActionResult Languages()
         {
-            await Task.Delay(0);
             return View("Language/Languages");
         }
 
@@ -2127,18 +2032,6 @@ namespace SmartMenu.Controllers
                 throw new UnauthorizedAccessException("TenantId claim is missing or invalid.");
             }
             return tenantId;
-        }
-
-        private void DeleteImageFile(string imageUrl)
-        {
-            if (string.IsNullOrWhiteSpace(imageUrl)) return;
-            // Remove leading slash if present
-            var relativePath = imageUrl.StartsWith("/") ? imageUrl.Substring(1) : imageUrl;
-            var fullPath = Path.Combine(_env.WebRootPath, relativePath.Replace('/', Path.DirectorySeparatorChar));
-            if (System.IO.File.Exists(fullPath))
-            {
-                System.IO.File.Delete(fullPath);
-            }
         }
 
         #endregion
