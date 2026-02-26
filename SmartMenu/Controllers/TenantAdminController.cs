@@ -120,11 +120,10 @@ namespace SmartMenu.Controllers
 
             int tenantId = GetTenantId();
 
-            string imageUrl = null;
             if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
                 return Json(new { success = false, message = "Only image files are allowed." });
 
-            imageUrl = await _fileUploadService.UploadImageAsync(model.Image, "menu-images");
+            var imageUrl = await _fileUploadService.UploadImageAsync(model.Image, "menu-images");
 
             var menu = new Menu
             {
@@ -217,7 +216,7 @@ namespace SmartMenu.Controllers
             if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
                 return Json(new { success = false, message = "Only image files are allowed." });
 
-            if (model.Image != null && model.Image.Length > 0)
+            if (model.Image?.Length > 0)
                 menu.ImageUrl = await _fileUploadService.UploadImageAsync(model.Image, "menu-images");
 
             // Update or add titles for each language
@@ -509,11 +508,10 @@ namespace SmartMenu.Controllers
                 return View("Category/CreateCategory", model);
             }
 
-            string imageUrl = null;
             if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
                 return Json(new { success = false, message = "Only image files are allowed." });
 
-            imageUrl = await _fileUploadService.UploadImageAsync(model.Image, "category-images");
+            var imageUrl = await _fileUploadService.UploadImageAsync(model.Image, "category-images");
 
             var category = new Category
             {
@@ -631,7 +629,7 @@ namespace SmartMenu.Controllers
             if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
                 return Json(new { success = false, message = "Only image files are allowed." });
 
-            if (model.Image != null && model.Image.Length > 0)
+            if (model.Image?.Length > 0)
                 category.ImageUrl = await _fileUploadService.UploadImageAsync(model.Image, "category-images");
 
             // Update or add titles/descriptions for each language
@@ -829,11 +827,10 @@ namespace SmartMenu.Controllers
                 return View("Itam/CreateItem", model);
             }
 
-            string imageUrl = null;
             if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
                 return Json(new { success = false, message = "Only image files are allowed." });
 
-            imageUrl = await _fileUploadService.UploadImageAsync(model.Image, "item-images");
+            var imageUrl = await _fileUploadService.UploadImageAsync(model.Image, "item-images");
 
             var item = new Item
             {
@@ -955,7 +952,7 @@ namespace SmartMenu.Controllers
             if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
                 return Json(new { success = false, message = "Only image files are allowed." });
 
-            if (model.Image != null && model.Image.Length > 0)
+            if (model.Image?.Length > 0)
                 item.ImageUrl = await _fileUploadService.UploadImageAsync(model.Image, "item-images");
 
             item.Price = model.Price;

@@ -18,6 +18,9 @@ namespace SmartMenu.Services.FileUpload
             if (file == null || file.Length == 0)
                 return null;
 
+            if (!IsSubfolderSafe(subfolder))
+                throw new ArgumentException("Invalid subfolder name.", nameof(subfolder));
+
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
             if (!AllowedImageExtensions.Contains(ext))
                 throw new InvalidOperationException("Only image files are allowed.");
@@ -54,5 +57,12 @@ namespace SmartMenu.Services.FileUpload
             if (File.Exists(fullPath))
                 File.Delete(fullPath);
         }
+
+        private static bool IsSubfolderSafe(string subfolder) =>
+            !string.IsNullOrWhiteSpace(subfolder) &&
+            subfolder.IndexOfAny(Path.GetInvalidFileNameChars()) < 0 &&
+            !subfolder.Contains("..") &&
+            !subfolder.Contains('/') &&
+            !subfolder.Contains('\\');
     }
 }
