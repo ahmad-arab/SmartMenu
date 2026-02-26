@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartMenu.Data;
 using SmartMenu.Data.Entities;
@@ -84,7 +84,7 @@ namespace SmartMenu.Controllers
                     var defaultText =
                     c.CategoryTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? c.CategoryTitles.FirstOrDefault()?.Text
-                    ?? "(No text)";
+                    ?? FallbackText.NoText;
 
                     return new CategoryListItemViewModel
                     {
@@ -128,11 +128,9 @@ namespace SmartMenu.Controllers
                 var defaultText =
                     l.MenuLableTexts.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? l.MenuLableTexts.FirstOrDefault()?.Text
-                    ?? "(No text)";
+                    ?? FallbackText.NoText;
 
-                string summarizedDefaultText = defaultText.Length > 100
-                    ? defaultText.Substring(0, 100) + "..."
-                    : defaultText;
+                string summarizedDefaultText = FallbackText.Summarize(defaultText);
 
                 return new MenuLableListItemViewModel
                 {
@@ -142,7 +140,7 @@ namespace SmartMenu.Controllers
                     SummarizedDefaultText = summarizedDefaultText,
                     TextsByLanguage = languages.ToDictionary(
                         lang => lang.Name,
-                        lang => l.MenuLableTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No text)")
+                        lang => l.MenuLableTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoText)
                 };
             }).ToList();
 
@@ -151,7 +149,7 @@ namespace SmartMenu.Controllers
                 var defaultText =
                     l.MenuCommandTexts.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? l.MenuCommandTexts.FirstOrDefault()?.Text
-                    ?? "(No text)";
+                    ?? FallbackText.NoText;
 
                 return new MenuCommandListItemViewModel
                 {
@@ -162,7 +160,7 @@ namespace SmartMenu.Controllers
                     SystemMessage = l.SystemMessage,
                     TextsByLanguage = languages.ToDictionary(
                         lang => lang.Name,
-                        lang => l.MenuCommandTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No text)")
+                        lang => l.MenuCommandTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoText)
                 };
             }).ToList();
 
@@ -172,7 +170,7 @@ namespace SmartMenu.Controllers
                 Identifier = identifier,
                 MenuDefaultTitle = menu.MenuTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? menu.MenuTitles.FirstOrDefault()?.Text
-                    ?? "(No text)",
+                    ?? FallbackText.NoText,
                 MenuLogoUrl = menu.ImageUrl,
                 MenuCoverUrl = menu.ImageUrl,
                 Categories = categories,
@@ -216,12 +214,12 @@ namespace SmartMenu.Controllers
                         ImageUrl = i.ImageUrl,
                         DefaultTitle = i.ItemTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                             ?? i.ItemTitles.FirstOrDefault()?.Text
-                            ?? "(No text)",
+                            ?? FallbackText.NoText,
                         TitlesByLanguage = i.ItemTitles.ToDictionary(it => it.Language.Name, it => it.Text),
                         Price = i.Price,
                         Description = i.ItemDescriptions.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                             ?? i.ItemDescriptions.FirstOrDefault()?.Text
-                            ?? "(No text)"
+                            ?? FallbackText.NoText
                     }).ToList();
 
                     model.CategoriesWithItems.Add(new MenuCategoryWithItemsViewModel
@@ -294,7 +292,7 @@ namespace SmartMenu.Controllers
 
             var title = category.CategoryTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                         ?? category.CategoryTitles.FirstOrDefault()?.Text
-                        ?? "(No text)";
+                        ?? FallbackText.NoText;
 
             // Only available items, include titles and descriptions
             var items = await _context.Items
@@ -314,12 +312,12 @@ namespace SmartMenu.Controllers
                     ImageUrl = i.ImageUrl,
                     DefaultTitle = i.ItemTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                         ?? i.ItemTitles.FirstOrDefault()?.Text
-                        ?? "(No text)",
+                        ?? FallbackText.NoText,
                     TitlesByLanguage = itemTitles,
                     Price = i.Price,
                     Description = i.ItemDescriptions.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                         ?? i.ItemDescriptions.FirstOrDefault()?.Text
-                        ?? "(No text)"
+                        ?? FallbackText.NoText
                 };
             }).ToList();
 
@@ -344,11 +342,9 @@ namespace SmartMenu.Controllers
                 var defaultText =
                     l.MenuLableTexts.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? l.MenuLableTexts.FirstOrDefault()?.Text
-                    ?? "(No text)";
+                    ?? FallbackText.NoText;
 
-                string summarizedDefaultText = defaultText.Length > 100
-                    ? defaultText.Substring(0, 100) + "..."
-                    : defaultText;
+                string summarizedDefaultText = FallbackText.Summarize(defaultText);
 
                 return new MenuLableListItemViewModel
                 {
@@ -358,7 +354,7 @@ namespace SmartMenu.Controllers
                     SummarizedDefaultText = summarizedDefaultText,
                     TextsByLanguage = languages.ToDictionary(
                         lang => lang.Name,
-                        lang => l.MenuLableTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No text)")
+                        lang => l.MenuLableTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoText)
                 };
             }).ToList();
 
@@ -367,7 +363,7 @@ namespace SmartMenu.Controllers
                 var defaultText =
                     l.MenuCommandTexts.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? l.MenuCommandTexts.FirstOrDefault()?.Text
-                    ?? "(No text)";
+                    ?? FallbackText.NoText;
 
                 return new MenuCommandListItemViewModel
                 {
@@ -378,7 +374,7 @@ namespace SmartMenu.Controllers
                     SystemMessage = l.SystemMessage,
                     TextsByLanguage = languages.ToDictionary(
                         lang => lang.Name,
-                        lang => l.MenuCommandTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? "(No text)")
+                        lang => l.MenuCommandTexts.FirstOrDefault(t => t.LanguageId == lang.Id)?.Text ?? FallbackText.NoText)
                 };
             }).ToList();
 
@@ -388,7 +384,7 @@ namespace SmartMenu.Controllers
                 Identifier = identifier,
                 MenuDefaultTitle = menu.MenuTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? menu.MenuTitles.FirstOrDefault()?.Text
-                    ?? "(No text)",
+                    ?? FallbackText.NoText,
                 MenuLogoUrl = menu.ImageUrl,
                 MenuCoverUrl = menu.ImageUrl,
                 CategoryId = category.Id,

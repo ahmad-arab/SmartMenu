@@ -6,6 +6,7 @@ using SmartMenu.Data;
 using SmartMenu.Data.Entities;
 using SmartMenu.Models.Tenant;
 using SmartMenu.Models.User;
+using SmartMenu.Services.FileUpload;
 
 namespace SmartMenu.Controllers
 {
@@ -14,29 +15,28 @@ namespace SmartMenu.Controllers
     {
         private readonly ILogger<AdminController> _logger;
         private readonly ApplicationDbContext _context;
-        private readonly IWebHostEnvironment _env;
+        private readonly IFileUploadService _fileUploadService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
 
         public AdminController(
-            ILogger<AdminController> logger, 
-            ApplicationDbContext context, 
-            IWebHostEnvironment env,
+            ILogger<AdminController> logger,
+            ApplicationDbContext context,
+            IFileUploadService fileUploadService,
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager)
         {
             _logger = logger;
             _context = context;
-            _env = env;
+            _fileUploadService = fileUploadService;
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
         #region Tenants
         [HttpGet]
-        public async Task<IActionResult> Tenants()
+        public IActionResult Tenants()
         {
-            await Task.Delay(0);
             return View();
         }
 
@@ -68,28 +68,13 @@ namespace SmartMenu.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            string logoUrl = null;
-            if (model.Logo != null && model.Logo.Length > 0)
+            if (model.Logo != null && !_fileUploadService.IsAllowedImageExtension(model.Logo.FileName))
             {
-                var ext = Path.GetExtension(model.Logo.FileName).ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                if (!allowed.Contains(ext))
-                {
-                    ModelState.AddModelError("Logo", "Only image files are allowed.");
-                    return View(model);
-                }
-
-                var uploads = Path.Combine(_env.WebRootPath, "uploads", "tenant-logos");
-                Directory.CreateDirectory(uploads);
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Logo.CopyToAsync(stream);
-                }
-                logoUrl = $"/uploads/tenant-logos/{fileName}";
+                ModelState.AddModelError("Logo", "Only image files are allowed.");
+                return View(model);
             }
+
+            var logoUrl = await _fileUploadService.UploadImageAsync(model.Logo, "tenant-logos");
 
             var tenant = new Tenant
             {
@@ -134,25 +119,14 @@ namespace SmartMenu.Controllers
 
             if (model.Logo != null && model.Logo.Length > 0)
             {
-                var ext = Path.GetExtension(model.Logo.FileName).ToLowerInvariant();
-                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-                if (!allowed.Contains(ext))
+                if (!_fileUploadService.IsAllowedImageExtension(model.Logo.FileName))
                 {
                     ModelState.AddModelError("Logo", "Only image files are allowed.");
                     model.LogoUrl = tenant.LogoUrl; // preserve current logo in view
                     return View(model);
                 }
 
-                var uploads = Path.Combine(_env.WebRootPath, "uploads", "tenant-logos");
-                Directory.CreateDirectory(uploads);
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var filePath = Path.Combine(uploads, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await model.Logo.CopyToAsync(stream);
-                }
-                tenant.LogoUrl = $"/uploads/tenant-logos/{fileName}";
+                tenant.LogoUrl = await _fileUploadService.UploadImageAsync(model.Logo, "tenant-logos");
             }
 
             await _context.SaveChangesAsync();
@@ -175,9 +149,8 @@ namespace SmartMenu.Controllers
 
         #region Users
         [HttpGet]
-        public async Task<IActionResult> TenantUsers(int tenantId)
+        public IActionResult TenantUsers(int tenantId)
         {
-            await Task.Delay(0);
             return View(tenantId);
         }
 
@@ -197,9 +170,8 @@ namespace SmartMenu.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> CreateTenantUser(int tenantId)
+        public IActionResult CreateTenantUser(int tenantId)
         {
-            await Task.Delay(0);
             var model = new CreateUserViewModel
             {
                 TenantId = tenantId
@@ -228,9 +200,9 @@ namespace SmartMenu.Controllers
             {
                 Id = Guid.NewGuid().ToString(),
                 UserName = user.Username,
-                Email = "a@a.gmail.com", // Assuming username is email, adjust as needed
+                Email = user.Username,
                 EmailConfirmed = true,
-                TenantId = tenantId 
+                TenantId = tenantId
             };
 
             var result = await _userManager.CreateAsync(appUser, user.Password);
@@ -240,7 +212,7 @@ namespace SmartMenu.Controllers
             }
 
             var tenantAdminRole = await _roleManager.FindByNameAsync("TenantAdmin");
-            if(tenantAdminRole == null)
+            if (tenantAdminRole == null)
             {
                 return Json(new { success = false, message = "Role 'TenantAdmin' not found" });
             }
@@ -257,9 +229,8 @@ namespace SmartMenu.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ChangeUserPassword(string userId)
+        public IActionResult ChangeUserPassword(string userId)
         {
-            await Task.Delay(0);
             var model = new ChangeUserPasswordViewModel
             {
                 UserId = userId
@@ -277,8 +248,7 @@ namespace SmartMenu.Controllers
             if (user == null)
                 return Json(new { success = false, message = "User not found." });
 
-            // Remove the old password and set the new one
-            // Since we don't have the old password, use RemovePasswordAsync (for external logins) or ResetPasswordAsync with a token
+            // Reset the password via a generated token (old password is not available here)
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
 
