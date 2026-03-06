@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SmartMenu.Data;
-using SmartMenu.Data.Entities;
 using SmartMenu.Models.Tenant;
 using SmartMenu.Models.User;
 using SmartMenu.Services.FileUpload;
+using SmartMenu.Services.Tenant;
+using SmartMenu.Services.User;
 
 namespace SmartMenu.Controllers
 {
@@ -14,23 +12,20 @@ namespace SmartMenu.Controllers
     public class AdminController : Controller
     {
         private readonly ILogger<AdminController> _logger;
-        private readonly ApplicationDbContext _context;
+        private readonly ITenantService _tenantService;
+        private readonly IUserService _userService;
         private readonly IFileUploadService _fileUploadService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
 
         public AdminController(
             ILogger<AdminController> logger,
-            ApplicationDbContext context,
-            IFileUploadService fileUploadService,
-            UserManager<ApplicationUser> userManager,
-            RoleManager<ApplicationRole> roleManager)
+            ITenantService tenantService,
+            IUserService userService,
+            IFileUploadService fileUploadService)
         {
             _logger = logger;
-            _context = context;
+            _tenantService = tenantService;
+            _userService = userService;
             _fileUploadService = fileUploadService;
-            _userManager = userManager;
-            _roleManager = roleManager;
         }
 
         #region Tenants
@@ -43,22 +38,14 @@ namespace SmartMenu.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTenants()
         {
-            var tenants = await _context.Tenants
-                .Select(t => new TenantListViewModel
-                {
-                    Id = t.Id,
-                    Name = t.Name
-                })
-                .ToListAsync();
-
+            var tenants = await _tenantService.GetAllTenantsAsync();
             return Json(tenants);
         }
 
         [HttpGet]
         public IActionResult CreateTenant()
         {
-            var model = new CreateTenantViewModel();
-            return View(model);
+            return View(new CreateTenantViewModel());
         }
 
         [HttpPost]
@@ -74,33 +61,16 @@ namespace SmartMenu.Controllers
                 return View(model);
             }
 
-            var logoUrl = await _fileUploadService.UploadImageAsync(model.Logo, "tenant-logos");
-
-            var tenant = new Tenant
-            {
-                Name = model.Name,
-                LogoUrl = logoUrl
-            };
-
-            _context.Tenants.Add(tenant);
-            await _context.SaveChangesAsync();
-
+            await _tenantService.CreateTenantAsync(model);
             return Json(new { success = true, message = "Tenant created successfully." });
         }
 
         [HttpGet]
         public async Task<IActionResult> EditTenant(int id)
         {
-            var tenant = await _context.Tenants.FindAsync(id);
-            if (tenant == null)
+            var model = await _tenantService.GetTenantForEditAsync(id);
+            if (model == null)
                 return NotFound();
-
-            var model = new EditTenantViewModel
-            {
-                Id = tenant.Id,
-                Name = tenant.Name,
-                LogoUrl = tenant.LogoUrl
-            };
             return View(model);
         }
 
@@ -111,25 +81,18 @@ namespace SmartMenu.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var tenant = await _context.Tenants.FindAsync(id);
-            if (tenant == null)
-                return NotFound();
-
-            tenant.Name = model.Name;
-
-            if (model.Logo != null && model.Logo.Length > 0)
+            if (model.Logo != null && model.Logo.Length > 0 && !_fileUploadService.IsAllowedImageExtension(model.Logo.FileName))
             {
-                if (!_fileUploadService.IsAllowedImageExtension(model.Logo.FileName))
-                {
-                    ModelState.AddModelError("Logo", "Only image files are allowed.");
-                    model.LogoUrl = tenant.LogoUrl; // preserve current logo in view
-                    return View(model);
-                }
-
-                tenant.LogoUrl = await _fileUploadService.UploadImageAsync(model.Logo, "tenant-logos");
+                ModelState.AddModelError("Logo", "Only image files are allowed.");
+                var existing = await _tenantService.GetTenantForEditAsync(id);
+                model.LogoUrl = existing?.LogoUrl;
+                return View(model);
             }
 
-            await _context.SaveChangesAsync();
+            var success = await _tenantService.UpdateTenantAsync(id, model);
+            if (!success)
+                return NotFound();
+
             return Json(new { success = true, message = "Tenant updated successfully." });
         }
 
@@ -137,12 +100,9 @@ namespace SmartMenu.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteTenant(int id)
         {
-            var tenant = await _context.Tenants.FindAsync(id);
-            if (tenant == null)
+            var success = await _tenantService.DeleteTenantAsync(id);
+            if (!success)
                 return NotFound();
-
-            _context.Tenants.Remove(tenant);
-            await _context.SaveChangesAsync();
             return Json(new { success = true, message = "Tenant deleted successfully." });
         }
         #endregion
@@ -157,26 +117,14 @@ namespace SmartMenu.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTenantUsers(int tenantId)
         {
-            var users = await _context.ApplicationUsers
-                .Where(x => x.TenantId == tenantId)
-                .Select(t => new UserListViewModel
-                {
-                    Id = t.Id,
-                    Username = t.UserName
-                })
-                .ToListAsync();
-
+            var users = await _userService.GetUsersByTenantAsync(tenantId);
             return Json(users);
         }
 
         [HttpGet]
         public IActionResult CreateTenantUser(int tenantId)
         {
-            var model = new CreateUserViewModel
-            {
-                TenantId = tenantId
-            };
-            return View(model);
+            return View(new CreateUserViewModel { TenantId = tenantId });
         }
 
         [HttpPost]
@@ -185,57 +133,14 @@ namespace SmartMenu.Controllers
             if (!ModelState.IsValid)
                 return View(user);
 
-            int tenantId = user.TenantId;
-
-            // Check if username already exists
-            var existingUser = await _context.ApplicationUsers
-                .FirstOrDefaultAsync(u => u.UserName == user.Username);
-            if (existingUser != null)
-            {
-                return Json(new { success = false, message = "Username already exists." });
-            }
-
-            // Create user
-            var appUser = new ApplicationUser
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = user.Username,
-                Email = user.Username,
-                EmailConfirmed = true,
-                TenantId = tenantId
-            };
-
-            var result = await _userManager.CreateAsync(appUser, user.Password);
-            if (!result.Succeeded)
-            {
-                return Json(new { success = false, message = string.Join("; ", result.Errors.Select(e => e.Description)) });
-            }
-
-            var tenantAdminRole = await _roleManager.FindByNameAsync("TenantAdmin");
-            if (tenantAdminRole == null)
-            {
-                return Json(new { success = false, message = "Role 'TenantAdmin' not found" });
-            }
-
-            var userRole = new ApplicationUserRole
-            {
-                UserId = appUser.Id,
-                RoleId = tenantAdminRole.Id
-            };
-            _context.UserRoles.Add(userRole);
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, message = "User created and added to TenantAdmin role." });
+            var (success, message) = await _userService.CreateTenantUserAsync(user);
+            return Json(new { success, message });
         }
 
         [HttpGet]
         public IActionResult ChangeUserPassword(string userId)
         {
-            var model = new ChangeUserPasswordViewModel
-            {
-                UserId = userId
-            };
-            return View(model);
+            return View(new ChangeUserPasswordViewModel { UserId = userId });
         }
 
         [HttpPost]
@@ -244,34 +149,16 @@ namespace SmartMenu.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user == null)
-                return Json(new { success = false, message = "User not found." });
-
-            // Reset the password via a generated token (old password is not available here)
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
-
-            if (!result.Succeeded)
-            {
-                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
-                return Json(new { success = false, message = errors });
-            }
-
-            return Json(new { success = true, message = "Password changed successfully." });
+            var (success, message) = await _userService.ChangePasswordAsync(model);
+            return Json(new { success, message });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _context.ApplicationUsers.FindAsync(id);
-            if (user == null)
-            {
-                return Json(new { success = false, message = "User not found." });
-            }
-            await _userManager.DeleteAsync(user);
-            return Json(new { success = true, message = "User deleted successfully." });
+            var (success, message) = await _userService.DeleteUserAsync(id);
+            return Json(new { success, message });
         }
         #endregion
     }

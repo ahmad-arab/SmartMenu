@@ -3,10 +3,29 @@ using Microsoft.EntityFrameworkCore;
 using SmartMenu.Data;
 using SmartMenu.Data.Entities;
 using SmartMenu.Middlewares;
+using SmartMenu.Repositories.Category;
+using SmartMenu.Repositories.Item;
+using SmartMenu.Repositories.Language;
+using SmartMenu.Repositories.Menu;
+using SmartMenu.Repositories.MenuCommand;
+using SmartMenu.Repositories.MenuLable;
+using SmartMenu.Repositories.MenuStaff;
+using SmartMenu.Repositories.Tenant;
+using SmartMenu.Repositories.User;
+using SmartMenu.Services.Category;
 using SmartMenu.Services.FileUpload;
-using SmartMenu.Services.Whatsapp;
+using SmartMenu.Services.Item;
+using SmartMenu.Services.Language;
+using SmartMenu.Services.Menu;
+using SmartMenu.Services.MenuCommand;
+using SmartMenu.Services.MenuLable;
+using SmartMenu.Services.MenuStaff;
+using SmartMenu.Services.PublicMenu;
 using SmartMenu.Services.Qr;
+using SmartMenu.Services.Tenant;
 using SmartMenu.Services.Theme;
+using SmartMenu.Services.User;
+using SmartMenu.Services.Whatsapp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +71,29 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     options.SlidingExpiration = true;
 });
+
+// Register Repositories
+builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<IMenuLableRepository, MenuLableRepository>();
+builder.Services.AddScoped<IMenuCommandRepository, MenuCommandRepository>();
+builder.Services.AddScoped<IMenuStaffRepository, MenuStaffRepository>();
+builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
+
+// Register Domain Services
+builder.Services.AddScoped<ITenantService, TenantService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IMenuLableService, MenuLableService>();
+builder.Services.AddScoped<IMenuCommandService, MenuCommandService>();
+builder.Services.AddScoped<IMenuStaffService, MenuStaffService>();
+builder.Services.AddScoped<ILanguageService, LanguageService>();
+builder.Services.AddScoped<IPublicMenuService, PublicMenuService>();
 
 builder.Services.AddTransient<DbSeeder>();
 
