@@ -376,5 +376,6 @@ FodyWeavers.xsd
 bin/
 obj/
 
-# Test Uploads
-wwwroot/uploads
+# Ignore uploaded files but keep the directory structure
+wwwroot/uploads/*
+!wwwroot/uploads/.gitkeep
