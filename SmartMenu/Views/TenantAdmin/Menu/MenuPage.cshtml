@@ -82,31 +82,34 @@
             </div>
         </div>
     </div>
-    <div class="row mb-4">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col">
-                    <h2>Commands</h2>
-                    <button id="createMenuCommandBtn" class="btn btn-primary mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><path fill="currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z" /></svg>
-                        Add Command
-                    </button>
+    @if(Model.TenantIsUsingCommands)
+    {
+        <div class="row mb-4">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <h2>Commands</h2>
+                        <button id="createMenuCommandBtn" class="btn btn-primary mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><path fill="currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z" /></svg>
+                            Add Command
+                        </button>
 
-                    <table id="menuCommandsTable" class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Icon</th>
-                                <th>Text</th>
-                                <th style="width:160px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                        <table id="menuCommandsTable" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Icon</th>
+                                    <th>Text</th>
+                                    <th style="width:160px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
     <div class="row mb-2">
         <div class="col">
             <h4>Categories</h4>
@@ -167,39 +170,42 @@
             </div>
         </div>
     </div>
-    <div class="row mb-4">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h2>Staffs</h2>
-                        <div>
-                            <button id="bulkEditStaffTimeTableBtn" class="btn btn-outline-secondary me-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 448 512"><path fill="currentColor" d="M152 64c-13.3 0-24 10.7-24 24V96H80c-26.5 0-48 21.5-48 48v32H416V144c0-26.5-21.5-48-48-48H320V88c0-13.3-10.7-24-24-24s-24 10.7-24 24v8H176V88c0-13.3-10.7-24-24-24zM368 224H80V416c0 26.5 21.5 48 48 48H320c26.5 0 48-21.5 48-48V224z"/></svg>
-                                Bulk schedule
-                            </button>
-                            <button id="createMenuStaffBtn" class="btn btn-primary">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><path fill="currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z" /></svg>
-                                Add Staff
-                            </button>
+    @if(Model.TenantIsUsingCommands)
+    {
+        <div class="row mb-4">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h2>Staffs</h2>
+                            <div>
+                                <button id="bulkEditStaffTimeTableBtn" class="btn btn-outline-secondary me-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 448 512"><path fill="currentColor" d="M152 64c-13.3 0-24 10.7-24 24V96H80c-26.5 0-48 21.5-48 48v32H416V144c0-26.5-21.5-48-48-48H320V88c0-13.3-10.7-24-24-24s-24 10.7-24 24v8H176V88c0-13.3-10.7-24-24-24zM368 224H80V416c0 26.5 21.5 48 48 48H320c26.5 0 48-21.5 48-48V224z" /></svg>
+                                    Bulk schedule
+                                </button>
+                                <button id="createMenuStaffBtn" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="20" width="17.5" viewBox="0 0 448 512"><path fill="currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z" /></svg>
+                                    Add Staff
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    <table id="menuStaffsTable" class="table table-striped table-bordered mt-3">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th style="width:300px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                        <table id="menuStaffsTable" class="table table-striped table-bordered mt-3">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th style="width:300px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 </div>
 
 @section Scripts {
@@ -298,231 +304,232 @@
                 menuLableTable.ajax.reload();
             });
 
-
-            var menuCommandTable = $('#menuCommandsTable').DataTable({
-                ajax: {
-                    url: '@Url.Action("GetMenuCommands", "TenantAdmin")'+ '?menuId=' + '@Model.Id',
-                    dataSrc: ''
-                },
-                columns: [
-                    {
-                        data: 'icon',
-                        width: '50px', // Set the width here
-                        render: function(icon) {
-                            return `<span class="icon-cell" data-icon="${icon}"></span>`;
-                        }
-                    },
-                    { data: 'defaultText' },
-                    {
-                        data: 'id',
-                        orderable: false,
-                        render: function (data, type, row) {
-                            return `
-                                <button class="btn btn-sm btn-outline-primary edit-menu-command" data-id="${data}" title="Edit">
-                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="20" width="17.5"><path fill="currentColor" d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/></svg>
-                                </button>
-                                <button class="btn btn-sm btn-outline-info ms-1 send-message-to-staff" data-id="${data}" title="Send test">
-                                   <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 640 640"><path fill="currentColor" d="M112 128C85.5 128 64 149.5 64 176C64 191.1 71.1 205.3 83.2 214.4L291.2 370.4C308.3 383.2 331.7 383.2 348.8 370.4L556.8 214.4C568.9 205.3 576 191.1 576 176C576 149.5 554.5 128 528 128L112 128zM64 260L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 260L377.6 408.8C343.5 434.4 296.5 434.4 262.4 408.8L64 260z"/></svg>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger ms-1 delete-menu-command" data-id="${data}" title="Delete">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="20" width="17.5"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
-                                </button>
-                            `;
-                        }
-                    }
-                ],
-                autoWidth: false
-            });
-
-            $('#menuCommandsTable').on('draw.dt', function() {
-                $('.icon-cell').each(function() {
-                    var $cell = $(this);
-                    var icon = $cell.data('icon');
-                    $.get('/TenantAdmin/RenderIcon?icon=' + encodeURIComponent(icon), function(svg) {
-                        $cell.html(svg);
-                    });
-                });
-            });
-
-            // Add MenuCommand
-            $('#createMenuCommandBtn').on('click', function () {
-                modalManager.show('@Url.Action("CreateMenuCommand", "TenantAdmin")'+ '?menuId=' + '@Model.Id', 'modal-xl', 'Add Command', true, function(result) {
-                    // callback on success, e.g. reload table
-                });
-            });
-
-            // Edit MenuCommand
-            $('#menuCommandsTable').on('click', '.edit-menu-command', function () {
-                const id = $(this).data('id');
-                modalManager.show('@Url.Action("EditMenuCommand", "TenantAdmin")' + '?id=' + id, 'modal-xl', 'Edit Command');
-            });
-
-            // Delete MenuCommand
-            $('#menuCommandsTable').on('click', '.delete-menu-command', function () {
-                const id = $(this).data('id');
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will permanently delete the command.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '@Url.Action("DeleteMenuCommand", "TenantAdmin")',
-                            type: 'POST',
-                            data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                            success: function () {
-                                menuCommandTable.ajax.reload();
-                                Swal.fire('Deleted!', 'Command has been deleted.', 'success');
-                            },
-                            error: function () {
-                                Swal.fire('Error', 'Failed to delete command.', 'error');
-                            }
-                        });
-                    }
-                });
-            });
-
-            // Send test message to the first selected staff for that command
-            $('#menuCommandsTable').on('click', '.send-message-to-staff', function () {
-                const id = $(this).data('id');
-                const payload = { menuCommandId: id, identifier: 'TEST', customerMessage: 'Test', firedAt: new Date().toISOString() };
-                fetch('/Menu/SendCommand', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                }).then(r => r.json()).then(res => {
-                    if (res.success) Swal.fire('Sent', 'Message sent to available staff.', 'success');
-                    else Swal.fire('Failed', res.message || 'Could not send.', 'error');
-                });
-            });
-
-            // Reload table when modal closes (after create/edit)
-            $('#dynamicModal').on('hidden.bs.modal', function () {
-                menuCommandTable.ajax.reload();
-            });
-
-            var menuStaffTable = $('#menuStaffsTable').DataTable({
-                ajax: {
-                    url: '@Url.Action("GetMenuStaffs", "TenantAdmin")'+ '?menuId=' + '@Model.Id',
-                    dataSrc: ''
-                },
-                columns: [
-                    { data: 'name' },
-                    { data: 'phoneNumber' },
-                    {
-                        data: 'id',
-                        orderable: false,
-                        render: function (data, type, row) {
-                            return `
-                                <button class="btn btn-sm btn-outline-primary edit-menu-staff" data-id="${data}" title="Edit">
-                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="20" width="20"><path fill="currentColor" d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/></svg>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger ms-1 delete-menu-staff" data-id="${data}" title="Delete">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="20" width="20"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
-                                </button>
-                                <button class="btn btn-sm btn-outline-info ms-1 register-menu-staff" data-id="${data}" title="Register">
-                                   <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 640 640"><path fill="currentColor" d="M112 128C85.5 128 64 149.5 64 176C64 191.1 71.1 205.3 83.2 214.4L291.2 370.4C308.3 383.2 331.7 383.2 348.8 370.4L556.8 214.4C568.9 205.3 576 191.1 576 176C576 149.5 554.5 128 528 128L112 128zM64 260L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 260L377.6 408.8C343.5 434.4 296.5 434.4 262.4 408.8L64 260z"/></svg>
-                                </button>
-                                <button class="btn btn-sm btn-outline-info ms-1 edit-time-slots" data-id="${data}" title="Edit Schedule">
-                                   <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 640 640"><path fill="currentColor" d="M216 64C229.3 64 240 74.7 240 88L240 128L400 128L400 88C400 74.7 410.7 64 424 64C437.3 64 448 74.7 448 88L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 88C192 74.7 202.7 64 216 64zM480 496C488.8 496 496 488.8 496 480L496 416L408 416L408 496L480 496zM496 368L496 288L408 288L408 368L496 368zM360 368L360 288L280 288L280 368L360 368zM232 368L232 288L144 288L144 368L232 368zM144 416L144 480C144 488.8 151.2 496 160 496L232 496L232 416L144 416zM280 416L280 496L360 496L360 416L280 416zM216 176L160 176C151.2 176 144 183.2 144 192L144 240L496 240L496 192C496 183.2 488.8 176 480 176L216 176z"/></svg>
-                                </button>
-                            `;
-                        }
-                    }
-                ],
-                autoWidth: false
-            });
-
-            // Add MenuStaff
-            $('#createMenuStaffBtn').on('click', function () {
-                modalManager.show('@Url.Action("CreateMenuStaff", "TenantAdmin")'+ '?menuId=' + '@Model.Id', 'modal-xl', 'Add Staff', true, function(result) {
-                    // callback on success, e.g. reload table
-                });
-            });
-
-            // Bulk Edit staff schedules
-            $('#bulkEditStaffTimeTableBtn').on('click', function () {
-                modalManager.show('@Url.Action("BulkEditStaffTimeTable", "TenantAdmin")'+ '?menuId=' + '@Model.Id', 'modal-xl', 'Bulk Staff Schedule');
-            });
-
-            // Edit MenuStaff
-            $('#menuStaffsTable').on('click', '.edit-menu-staff', function () {
-                const id = $(this).data('id');
-                modalManager.show('@Url.Action("EditMenuStaff", "TenantAdmin")' + '?id=' + id, 'modal-xl', 'Edit Staff');
-            });
-
-            // Edit MenuStaffTimeSlots
-            $('#menuStaffsTable').on('click', '.edit-time-slots', function () {
-                const id = $(this).data('id');
-                modalManager.show('@Url.Action("EditStaffTimeTable", "TenantAdmin")' + '?id=' + id, 'modal-xl', 'Edit Staff Schedule');
-            });
-
-            // Delete MenuStaff
-            $('#menuStaffsTable').on('click', '.delete-menu-staff', function () {
-                const id = $(this).data('id');
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will permanently delete the staff.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '@Url.Action("DeleteMenuStaff", "TenantAdmin")',
-                            type: 'POST',
-                            data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                            success: function () {
-                                menuStaffTable.ajax.reload();
-                                Swal.fire('Deleted!', 'Staff has been deleted.', 'success');
-                            },
-                            error: function () {
-                                Swal.fire('Error', 'Failed to delete staff.', 'error');
-                            }
-                        });
-                    }
-                });
-            });
-
-            // Register MenuStaff
-            $('#menuStaffsTable').on('click', '.register-menu-staff', function () {
-                const id = $(this).data('id');
-                Swal.fire({
-                    title: 'Staff Registration',
-                    text: "A registration message will be sent to the staff phone number, The registration will be completed when the staff replys to the message.",
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#0d6efd',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Send'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: '@Url.Action("RegisterMenuStaff", "TenantAdmin")',
-                            type: 'POST',
-                            data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
-                            success: function () {
-                                menuStaffTable.ajax.reload();
-                                Swal.fire('Sent!', 'A registration message has been sent', 'success');
-                            },
-                            error: function () {
-                                Swal.fire('Error', 'Failed to send registeration message to the staff.', 'error');
-                            }
-                        });
-                    }
-                });
-            });
-
-            // Reload table when modal closes (after create/edit)
-            $('#dynamicModal').on('hidden.bs.modal', function () {
-                menuStaffTable.ajax.reload();
-            });
+            @if(Model.TenantIsUsingCommands)
+            {
+                @:var menuCommandTable = $('#menuCommandsTable').DataTable({
+                @:    ajax: {
+                @:        url: '@Url.Action("GetMenuCommands", "TenantAdmin")'+ '?menuId=' + '@Model.Id',
+                @:        dataSrc: ''
+                @:    },
+                @:    columns: [
+                @:        {
+                @:            data: 'icon',
+                @:            width: '50px', // Set the width here
+                @:            render: function(icon) {
+                @:                return `<span class="icon-cell" data-icon="${icon}"></span>`;
+                @:            }
+                @:        },
+                @:        { data: 'defaultText' },
+                @:        {
+                @:            data: 'id',
+                @:            orderable: false,
+                @:            render: function (data, type, row) {
+                @:                return `
+                @:                    <button class="btn btn-sm btn-outline-primary edit-menu-command" data-id="${data}" title="Edit">
+                @:                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="20" width="17.5"><path fill="currentColor" d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/></svg>
+                @:                    </button>
+                @:                    <button class="btn btn-sm btn-outline-info ms-1 send-message-to-staff" data-id="${data}" title="Send test">
+                @:                       <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 640 640"><path fill="currentColor" d="M112 128C85.5 128 64 149.5 64 176C64 191.1 71.1 205.3 83.2 214.4L291.2 370.4C308.3 383.2 331.7 383.2 348.8 370.4L556.8 214.4C568.9 205.3 576 191.1 576 176C576 149.5 554.5 128 528 128L112 128zM64 260L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 260L377.6 408.8C343.5 434.4 296.5 434.4 262.4 408.8L64 260z"/></svg>
+                @:                    </button>
+                @:                    <button class="btn btn-sm btn-outline-danger ms-1 delete-menu-command" data-id="${data}" title="Delete">
+                @:                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="20" width="17.5"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                @:                    </button>
+                @:                `;
+                @:            }
+                @:        }
+                @:    ],
+                @:    autoWidth: false
+                @:});
+                @:$('#menuCommandsTable').on('draw.dt', function() {
+                @:    $('.icon-cell').each(function() {
+                @:        var $cell = $(this);
+                @:        var icon = $cell.data('icon');
+                @:        $.get('/TenantAdmin/RenderIcon?icon=' + encodeURIComponent(icon), function(svg) {
+                @:            $cell.html(svg);
+                @:        });
+                @:    });
+                @:});
+                @:
+                @:// Add MenuCommand
+                @:$('#createMenuCommandBtn').on('click', function () {
+                @:    modalManager.show('@Url.Action("CreateMenuCommand", "TenantAdmin")'+ '?menuId=' + '@Model.Id', 'modal-xl', 'Add Command', true, function(result) {
+                @:        // callback on success, e.g. reload table
+                @:    });
+                @:});
+                @:
+                @:// Edit MenuCommand
+                @:$('#menuCommandsTable').on('click', '.edit-menu-command', function () {
+                @:    const id = $(this).data('id');
+                @:    modalManager.show('@Url.Action("EditMenuCommand", "TenantAdmin")' + '?id=' + id, 'modal-xl', 'Edit Command');
+                @:});
+                @:
+                @:// Delete MenuCommand
+                @:$('#menuCommandsTable').on('click', '.delete-menu-command', function () {
+                @:    const id = $(this).data('id');
+                @:    Swal.fire({
+                @:        title: 'Are you sure?',
+                @:        text: "This will permanently delete the command.",
+                @:        icon: 'warning',
+                @:        showCancelButton: true,
+                @:        confirmButtonColor: '#d33',
+                @:        cancelButtonColor: '#3085d6',
+                @:        confirmButtonText: 'Yes, delete it!'
+                @:    }).then((result) => {
+                @:        if (result.isConfirmed) {
+                @:            $.ajax({
+                @:                url: '@Url.Action("DeleteMenuCommand", "TenantAdmin")',
+                @:                type: 'POST',
+                @:                data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                @:                success: function () {
+                @:                    menuCommandTable.ajax.reload();
+                @:                    Swal.fire('Deleted!', 'Command has been deleted.', 'success');
+                @:                },
+                @:                error: function () {
+                @:                    Swal.fire('Error', 'Failed to delete command.', 'error');
+                @:                }
+                @:            });
+                @:        }
+                @:    });
+                @:});
+                @:
+                @:// Send test message to the first selected staff for that command
+                @:$('#menuCommandsTable').on('click', '.send-message-to-staff', function () {
+                @:    const id = $(this).data('id');
+                @:    const payload = { menuCommandId: id, identifier: 'TEST', customerMessage: 'Test', firedAt: new Date().toISOString() };
+                @:    fetch('/Menu/SendCommand', {
+                @:        method: 'POST',
+                @:        headers: { 'Content-Type': 'application/json' },
+                @:        body: JSON.stringify(payload)
+                @:    }).then(r => r.json()).then(res => {
+                @:        if (res.success) Swal.fire('Sent', 'Message sent to available staff.', 'success');
+                @:        else Swal.fire('Failed', res.message || 'Could not send.', 'error');
+                @:    });
+                @:});
+                @:
+                @:// Reload table when modal closes (after create/edit)
+                @:$('#dynamicModal').on('hidden.bs.modal', function () {
+                @:    menuCommandTable.ajax.reload();
+                @:});
+                @:
+                @:var menuStaffTable = $('#menuStaffsTable').DataTable({
+                @:    ajax: {
+                @:        url: '@Url.Action("GetMenuStaffs", "TenantAdmin")'+ '?menuId=' + '@Model.Id',
+                @:        dataSrc: ''
+                @:    },
+                @:    columns: [
+                @:        { data: 'name' },
+                @:        { data: 'phoneNumber' },
+                @:        {
+                @:            data: 'id',
+                @:            orderable: false,
+                @:            render: function (data, type, row) {
+                @:                return `
+                @:                    <button class="btn btn-sm btn-outline-primary edit-menu-staff" data-id="${data}" title="Edit">
+                @:                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="20" width="20"><path fill="currentColor" d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/></svg>
+                @:                    </button>
+                @:                    <button class="btn btn-sm btn-outline-danger ms-1 delete-menu-staff" data-id="${data}" title="Delete">
+                @:                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="20" width="20"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 296.3 0 284.2 0L163.8 0c-12.1 0-23.2 6.8-28.6 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                @:                    </button>
+                @:                    <button class="btn btn-sm btn-outline-info ms-1 register-menu-staff" data-id="${data}" title="Register">
+                @:                       <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 640 640"><path fill="currentColor" d="M112 128C85.5 128 64 149.5 64 176C64 191.1 71.1 205.3 83.2 214.4L291.2 370.4C308.3 383.2 331.7 383.2 348.8 370.4L556.8 214.4C568.9 205.3 576 191.1 576 176C576 149.5 554.5 128 528 128L112 128zM64 260L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 260L377.6 408.8C343.5 434.4 296.5 434.4 262.4 408.8L64 260z"/></svg>
+                @:                    </button>
+                @:                    <button class="btn btn-sm btn-outline-info ms-1 edit-time-slots" data-id="${data}" title="Edit Schedule">
+                @:                       <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 640 640"><path fill="currentColor" d="M216 64C229.3 64 240 74.7 240 88L240 128L400 128L400 88C400 74.7 410.7 64 424 64C437.3 64 448 74.7 448 88L448 128L480 128C515.3 128 544 156.7 544 192L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 192C96 156.7 124.7 128 160 128L192 128L192 88C192 74.7 202.7 64 216 64zM480 496C488.8 496 496 488.8 496 480L496 416L408 416L408 496L480 496zM496 368L496 288L408 288L408 368L496 368zM360 368L360 288L280 288L280 368L360 368zM232 368L232 288L144 288L144 368L232 368zM144 416L144 480C144 488.8 151.2 496 160 496L232 496L232 416L144 416zM280 416L280 496L360 496L360 416L280 416zM216 176L160 176C151.2 176 144 183.2 144 192L144 240L496 240L496 192C496 183.2 488.8 176 480 176L216 176z"/></svg>
+                @:                    </button>
+                @:                `;
+                @:            }
+                @:        }
+                @:    ],
+                @:    autoWidth: false
+                @:});
+                @:
+                @:// Add MenuStaff
+                @:$('#createMenuStaffBtn').on('click', function () {
+                @:    modalManager.show('@Url.Action("CreateMenuStaff", "TenantAdmin")'+ '?menuId=' + '@Model.Id', 'modal-xl', 'Add Staff', true, function(result) {
+                @:        // callback on success, e.g. reload table
+                @:    });
+                @:});
+                @:
+                @:// Bulk Edit staff schedules
+                @:$('#bulkEditStaffTimeTableBtn').on('click', function () {
+                @:    modalManager.show('@Url.Action("BulkEditStaffTimeTable", "TenantAdmin")'+ '?menuId=' + '@Model.Id', 'modal-xl', 'Bulk Staff Schedule');
+                @:});
+                @:
+                @:// Edit MenuStaff
+                @:$('#menuStaffsTable').on('click', '.edit-menu-staff', function () {
+                @:    const id = $(this).data('id');
+                @:    modalManager.show('@Url.Action("EditMenuStaff", "TenantAdmin")' + '?id=' + id, 'modal-xl', 'Edit Staff');
+                @:});
+                @:
+                @:// Edit MenuStaffTimeSlots
+                @:$('#menuStaffsTable').on('click', '.edit-time-slots', function () {
+                @:    const id = $(this).data('id');
+                @:    modalManager.show('@Url.Action("EditStaffTimeTable", "TenantAdmin")' + '?id=' + id, 'modal-xl', 'Edit Staff Schedule');
+                @:});
+                @:
+                @:// Delete MenuStaff
+                @:$('#menuStaffsTable').on('click', '.delete-menu-staff', function () {
+                @:    const id = $(this).data('id');
+                @:    Swal.fire({
+                @:        title: 'Are you sure?',
+                @:        text: "This will permanently delete the staff.",
+                @:        icon: 'warning',
+                @:        showCancelButton: true,
+                @:        confirmButtonColor: '#d33',
+                @:        cancelButtonColor: '#3085d6',
+                @:        confirmButtonText: 'Yes, delete it!'
+                @:    }).then((result) => {
+                @:        if (result.isConfirmed) {
+                @:            $.ajax({
+                @:                url: '@Url.Action("DeleteMenuStaff", "TenantAdmin")',
+                @:                type: 'POST',
+                @:                data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                @:                success: function () {
+                @:                    menuStaffTable.ajax.reload();
+                @:                    Swal.fire('Deleted!', 'Staff has been deleted.', 'success');
+                @:                },
+                @:                error: function () {
+                @:                    Swal.fire('Error', 'Failed to delete staff.', 'error');
+                @:                }
+                @:            });
+                @:        }
+                @:    });
+                @:});
+                @:
+                @:// Register MenuStaff
+                @:$('#menuStaffsTable').on('click', '.register-menu-staff', function () {
+                @:    const id = $(this).data('id');
+                @:    Swal.fire({
+                @:        title: 'Staff Registration',
+                @:        text: "A registration message will be sent to the staff phone number, The registration will be completed when the staff replys to the message.",
+                @:        icon: 'info',
+                @:        showCancelButton: true,
+                @:        confirmButtonColor: '#0d6efd',
+                @:        cancelButtonColor: '#3085d6',
+                @:        confirmButtonText: 'Send'
+                @:    }).then((result) => {
+                @:        if (result.isConfirmed) {
+                @:            $.ajax({
+                @:                url: '@Url.Action("RegisterMenuStaff", "TenantAdmin")',
+                @:                type: 'POST',
+                @:                data: { id: id, __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                @:                success: function () {
+                @:                    menuStaffTable.ajax.reload();
+                @:                    Swal.fire('Sent!', 'A registration message has been sent', 'success');
+                @:                },
+                @:                error: function () {
+                @:                    Swal.fire('Error', 'Failed to send registeration message to the staff.', 'error');
+                @:                }
+                @:            });
+                @:        }
+                @:    });
+                @:});
+                @:
+                @:// Reload table when modal closes (after create/edit)
+                @:$('#dynamicModal').on('hidden.bs.modal', function () {
+                @:    menuStaffTable.ajax.reload();
+                @:});
+            }
         });
 
         // Show/hide category actions on hover

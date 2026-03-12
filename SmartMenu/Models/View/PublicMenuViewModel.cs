@@ -4,6 +4,7 @@ namespace SmartMenu.Models.View
 {
     public class PublicMenuViewModel : PublicMenuBaseModel
     {
+        public bool TenantIsUsingCommands { get; set; }
         public List<CategoryListItemViewModel> Categories { get; set; }
         public string ThemeJson { get; set; }
 

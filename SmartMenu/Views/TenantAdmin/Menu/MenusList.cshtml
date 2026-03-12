@@ -43,19 +43,23 @@
             </div>
         }
         <!-- Add new menu card -->
-        <div class="col">
-            <div class="card h-100 shadow-sm border-0 text-center add-menu-card" style="cursor:pointer; transition: box-shadow .2s;">
-                <div class="d-flex align-items-center justify-content-center" style="height:180px; background:#f8f9fa;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="var(--primary)" viewBox="0 0 24 24">
-                        <rect x="11" y="4" width="2" height="16" rx="1" />
-                        <rect x="4" y="11" width="16" height="2" rx="1" />
-                    </svg>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title text-primary">Add new menu</h5>
+        @if(Model.IsAllowedToAddNewMenus)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 text-center add-menu-card" style="cursor:pointer; transition: box-shadow .2s;">
+                    <div class="d-flex align-items-center justify-content-center" style="height:180px; background:#f8f9fa;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="var(--primary)" viewBox="0 0 24 24">
+                            <rect x="11" y="4" width="2" height="16" rx="1" />
+                            <rect x="4" y="11" width="16" height="2" rx="1" />
+                        </svg>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Add new menu</h5>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+        
     </div>
 </div>
 

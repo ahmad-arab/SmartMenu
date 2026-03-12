@@ -21,6 +21,13 @@ namespace SmartMenu.Repositories.Menu
                 .ToListAsync();
         }
 
+        public async Task<int> GetCountByTenantIdAsync(int tenantId)
+        {
+            return await _context.Menus
+                .Where(m => m.TenantId == tenantId)
+                .CountAsync();
+        }
+
         public async Task<Data.Entities.Menu?> GetByIdAsync(int id)
         {
             return await _context.Menus.FindAsync(id);

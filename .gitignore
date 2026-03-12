@@ -375,3 +375,6 @@ FodyWeavers.xsd
 .vs/
 bin/
 obj/
+
+# Test Uploads
+wwwroot/uploads

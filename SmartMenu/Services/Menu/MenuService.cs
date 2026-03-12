@@ -61,6 +61,11 @@ namespace SmartMenu.Services.Menu
             return new MenuListViewModel { Menus = menusViewModel };
         }
 
+        public async Task<int> GetMenusCountAsync(int tenantId)
+        {
+            return await _menuRepository.GetCountByTenantIdAsync(tenantId);
+        }
+
         public async Task<CreateMenuViewModel> GetCreateMenuModelAsync(int tenantId)
         {
             var languages = await _languageRepository.GetByTenantIdAsync(tenantId);
@@ -86,6 +91,7 @@ namespace SmartMenu.Services.Menu
             {
                 ImageUrl = imageUrl,
                 TenantId = tenantId,
+                CreateDate = DateTime.Now,
             };
             await _menuRepository.AddAsync(menu);
 

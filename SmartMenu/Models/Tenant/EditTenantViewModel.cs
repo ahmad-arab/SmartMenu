@@ -13,6 +13,14 @@ namespace SmartMenu.Models.Tenant
         [Display(Name = "Tenant Name")]
         public string Name { get; set; }
 
+        [Required]
+        [Display(Name = "Allowed Menus Count")]
+        public int AllowedMenusCount { get; set; }
+
+        [Required]
+        [Display(Name = "Use Commands")]
+        public bool UseCommands { get; set; }
+
         [Display(Name = "Current Logo")]
         public string? LogoUrl { get; set; }
 

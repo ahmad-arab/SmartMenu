@@ -6,6 +6,7 @@ namespace SmartMenu.Services.Tenant
     {
         Task<IEnumerable<TenantListViewModel>> GetAllTenantsAsync();
         Task<EditTenantViewModel?> GetTenantForEditAsync(int id);
+        Task<TenantModel?> GetTenantAsync(int id);
         Task CreateTenantAsync(CreateTenantViewModel model);
         Task<bool> UpdateTenantAsync(int id, EditTenantViewModel model);
         Task<bool> DeleteTenantAsync(int id);

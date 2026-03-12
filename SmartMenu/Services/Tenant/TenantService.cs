@@ -36,7 +36,25 @@ namespace SmartMenu.Services.Tenant
             {
                 Id = tenant.Id,
                 Name = tenant.Name,
-                LogoUrl = tenant.LogoUrl
+                LogoUrl = tenant.LogoUrl,
+                AllowedMenusCount = tenant.AllowedMenusCount,
+                UseCommands = tenant.UseCommands
+            };
+        }
+
+        public async Task<TenantModel?> GetTenantAsync(int id)
+        {
+            var tenant = await _tenantRepository.GetByIdNoTrackingAsync(id);
+            if (tenant == null)
+                return null;
+
+            return new TenantModel
+            {
+                Id = tenant.Id,
+                Name = tenant.Name,
+                LogoUrl = tenant.LogoUrl,
+                AllowedMenusCount = tenant.AllowedMenusCount,
+                UseCommands = tenant.UseCommands
             };
         }
 
@@ -47,7 +65,9 @@ namespace SmartMenu.Services.Tenant
             var tenant = new Data.Entities.Tenant
             {
                 Name = model.Name,
-                LogoUrl = logoUrl
+                LogoUrl = logoUrl,
+                AllowedMenusCount= model.AllowedMenusCount,
+                UseCommands = model.UseCommands
             };
 
             await _tenantRepository.AddAsync(tenant);
@@ -60,6 +80,8 @@ namespace SmartMenu.Services.Tenant
                 return false;
 
             tenant.Name = model.Name;
+            tenant.AllowedMenusCount = model.AllowedMenusCount;
+            tenant.UseCommands = model.UseCommands;
 
             if (model.Logo != null && model.Logo.Length > 0)
             {

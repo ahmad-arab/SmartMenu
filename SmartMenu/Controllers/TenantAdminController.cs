@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartMenu.Data.Entities;
 using SmartMenu.Data.Enums;
 using SmartMenu.Models.MenuCommand;
 using SmartMenu.Models.MenuLable;
@@ -14,6 +15,7 @@ using SmartMenu.Services.MenuCommand;
 using SmartMenu.Services.MenuLable;
 using SmartMenu.Services.MenuStaff;
 using SmartMenu.Services.Qr;
+using SmartMenu.Services.Tenant;
 using SmartMenu.Services.Theme;
 using System.Security.Claims;
 
@@ -32,6 +34,7 @@ namespace SmartMenu.Controllers
         private readonly IThemeService _themeService;
         private readonly IQrCodeService _qrCodeService;
         private readonly IFileUploadService _fileUploadService;
+        private readonly ITenantService _tenantService;
 
         public TenantAdminController(
             IMenuService menuService,
@@ -43,7 +46,8 @@ namespace SmartMenu.Controllers
             ILanguageService languageService,
             IThemeService themeService,
             IQrCodeService qrCodeService,
-            IFileUploadService fileUploadService)
+            IFileUploadService fileUploadService,
+            ITenantService tenantService)
         {
             _menuService = menuService;
             _categoryService = categoryService;
@@ -55,6 +59,7 @@ namespace SmartMenu.Controllers
             _themeService = themeService;
             _qrCodeService = qrCodeService;
             _fileUploadService = fileUploadService;
+            _tenantService = tenantService;
         }
 
         #region Menus
@@ -64,6 +69,12 @@ namespace SmartMenu.Controllers
         {
             int tenantId = GetTenantId();
             var model = await _menuService.GetMenuListAsync(tenantId);
+
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            model.TenantAllowedMenusCount = tenant?.AllowedMenusCount ?? 0;
+            model.TenantActualMenusCount = model.Menus.Count;
+            model.IsAllowedToAddNewMenus = model.TenantActualMenusCount < model.TenantAllowedMenusCount;
+
             return View("Menu/MenusList", model);
         }
 
@@ -83,6 +94,13 @@ namespace SmartMenu.Controllers
                 return View("Menu/CreateMenu", model);
 
             int tenantId = GetTenantId();
+
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantAllowedMenusCount = tenant?.AllowedMenusCount ?? 0;
+            var tenantActualMenusCount = await _menuService.GetMenusCountAsync(tenantId);
+            var isAllowedToAddNewMenus = tenantActualMenusCount < tenantAllowedMenusCount;
+            if(!isAllowedToAddNewMenus)
+                return Json(new { success = false, message = $"Menu limit reached. Allowed: {tenantAllowedMenusCount}, Current: {tenantActualMenusCount}." });
 
             if (model.Image != null && !_fileUploadService.IsAllowedImageExtension(model.Image.FileName))
                 return Json(new { success = false, message = "Only image files are allowed." });
@@ -127,6 +145,10 @@ namespace SmartMenu.Controllers
             var model = await _menuService.GetMenuPageModelAsync(tenantId, id);
             if (model == null)
                 return Json(new { success = false, message = "Menu not found." });
+
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            model.TenantIsUsingCommands = tenant?.UseCommands ?? false;
+
             return View("Menu/MenuPage", model);
         }
 
@@ -458,6 +480,12 @@ namespace SmartMenu.Controllers
         public async Task<IActionResult> GetMenuCommands(int menuId)
         {
             int tenantId = GetTenantId();
+
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if(!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var result = await _menuCommandService.GetMenuCommandsAsync(tenantId, menuId);
             return Json(result);
         }
@@ -466,6 +494,12 @@ namespace SmartMenu.Controllers
         public async Task<IActionResult> CreateMenuCommand(int menuId)
         {
             int tenantId = GetTenantId();
+
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var model = await _menuCommandService.GetCreateMenuCommandModelAsync(tenantId, menuId);
             return View("MenuCommand/CreateMenuCommand", model);
         }
@@ -474,14 +508,19 @@ namespace SmartMenu.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateMenuCommand(CreateMenuCommandViewModel model)
         {
+            int tenantId = GetTenantId();
             if (!ModelState.IsValid)
             {
-                int tenantId = GetTenantId();
                 var refreshed = await _menuCommandService.GetCreateMenuCommandModelAsync(tenantId, model.MenuId);
                 model.AvailableLanguages = refreshed.AvailableLanguages;
                 model.AvailableStaff = refreshed.AvailableStaff;
                 return View("MenuCommand/CreateMenuCommand", model);
             }
+
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
 
             await _menuCommandService.CreateMenuCommandAsync(model);
             return Json(new { success = true, message = "Menu command created successfully." });
@@ -491,6 +530,12 @@ namespace SmartMenu.Controllers
         public async Task<IActionResult> EditMenuCommand(int id)
         {
             int tenantId = GetTenantId();
+
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var model = await _menuCommandService.GetEditMenuCommandModelAsync(tenantId, id);
             if (model == null)
                 return Json(new { success = false, message = "Menu command not found." });
@@ -501,14 +546,19 @@ namespace SmartMenu.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditMenuCommand(int id, EditMenuCommandViewModel model)
         {
+            int tenantId = GetTenantId();
             if (!ModelState.IsValid)
             {
-                int tenantId = GetTenantId();
                 var refreshed = await _menuCommandService.GetEditMenuCommandModelAsync(tenantId, id);
                 model.AvailableLanguages = refreshed?.AvailableLanguages ?? new();
                 model.AvailableStaff = refreshed?.AvailableStaff ?? new();
                 return View("MenuCommand/EditMenuCommand", model);
             }
+
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
 
             var success = await _menuCommandService.EditMenuCommandAsync(id, model);
             if (!success)
@@ -521,6 +571,12 @@ namespace SmartMenu.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteMenuCommand(int id)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var success = await _menuCommandService.DeleteMenuCommandAsync(id);
             if (!success)
                 return Json(new { success = false, message = "Menu command not found." });
@@ -532,6 +588,12 @@ namespace SmartMenu.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMenuStaffs(int menuId)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var result = await _menuStaffService.GetMenuStaffsAsync(menuId);
             return Json(result);
         }
@@ -539,6 +601,12 @@ namespace SmartMenu.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateMenuStaff(int menuId)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var model = await _menuStaffService.GetCreateMenuStaffModelAsync(menuId);
             return View("MenuStaff/CreateMenuStaff", model);
         }
@@ -547,6 +615,12 @@ namespace SmartMenu.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateMenuStaff(Models.MenuStaff.CreateMenuStaffViewModel model)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             if (!ModelState.IsValid)
                 return View("MenuStaff/CreateMenuStaff", model);
 
@@ -557,6 +631,12 @@ namespace SmartMenu.Controllers
         [HttpGet]
         public async Task<IActionResult> EditMenuStaff(int id)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var model = await _menuStaffService.GetEditMenuStaffModelAsync(id);
             if (model == null)
                 return Json(new { success = false, message = "Menu staff not found." });
@@ -567,6 +647,12 @@ namespace SmartMenu.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditMenuStaff(int id, Models.MenuStaff.EditMenuStaffViewModel model)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             if (!ModelState.IsValid)
                 return View("MenuStaff/EditMenuStaff", model);
 
@@ -581,6 +667,12 @@ namespace SmartMenu.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteMenuStaff(int id)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var success = await _menuStaffService.DeleteMenuStaffAsync(id);
             if (!success)
                 return Json(new { success = false, message = "Menu staff not found." });
@@ -591,6 +683,11 @@ namespace SmartMenu.Controllers
         public async Task<IActionResult> RegisterMenuStaff(int id)
         {
             int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var (success, message) = await _menuStaffService.RegisterMenuStaffAsync(id, tenantId);
             return Json(new { success, message });
         }
@@ -600,6 +697,12 @@ namespace SmartMenu.Controllers
         [HttpGet]
         public async Task<IActionResult> EditStaffTimeTable(int id)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var model = await _menuStaffService.GetStaffTimeTableModelAsync(id);
             if (model == null)
                 return Json(new { success = false, message = "Menu staff not found." });
@@ -610,6 +713,12 @@ namespace SmartMenu.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditStaffTimeTable(StaffTimeTableViewModel model)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             if (!ModelState.IsValid)
                 return View("TimeTable/EditStaffTimeTable", model);
 
@@ -623,6 +732,12 @@ namespace SmartMenu.Controllers
         [HttpGet]
         public async Task<IActionResult> BulkEditStaffTimeTable(int menuId)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             var model = await _menuStaffService.GetBulkEditModelAsync(menuId);
             return View("TimeTable/BulkEditStaffTimeTable", model);
         }
@@ -631,6 +746,12 @@ namespace SmartMenu.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> BulkEditStaffTimeTable(BulkStaffTimeTableViewModel model)
         {
+            int tenantId = GetTenantId();
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            var tenantIsUsingCommands = tenant?.UseCommands ?? false;
+            if (!tenantIsUsingCommands)
+                return Json(new { success = false, message = "Commands feature is not enabled for this tenant." });
+
             if (model.StaffIds == null || !model.StaffIds.Any())
                 return Json(new { success = false, message = "Please select at least one staff member." });
 

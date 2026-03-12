@@ -1,4 +1,5 @@
 ﻿@using SmartMenu.Models.Theme.Menu
+@inject SmartMenu.Services.Tenant.ITenantService _tenantService;
 @{
     var rtl = Model.IsRtl ? "rtl" : "ltr";
 
@@ -19,6 +20,10 @@
     var titleColorStyle = $"color:{themeObject.TitleColor};";
     var titleFontSizeStyle = $"font-size:{themeObject.TitleFontSize}rem;";
     var titleFontStyle = string.IsNullOrEmpty(themeObject.TitleFont) ? string.Empty : $"font-family:{themeObject.TitleFont}";
+
+    int tenantId = Model.TenantId;
+    var tenant = await _tenantService.GetTenantAsync(tenantId);
+    var tenantIsUsingCommands = tenant?.UseCommands ?? false;
 }
 <!DOCTYPE html>
 <html lang="@Model.SelectedLanguage" dir="@rtl">
@@ -76,7 +81,15 @@
         <div class="place-header__bg" style="background-image:url('@Model.MenuCoverUrl');"></div>
         <div class="d-flex justify-content-between align-items-center px-2">
             @RenderSection("LanguageSelector", required: false)
-            @RenderSection("CommandSelector", required: false)
+            @if (tenantIsUsingCommands)
+            {
+                @RenderSection("CommandSelector", required: false)
+            }
+            else
+            {
+                { IgnoreSection("CommandSelector"); }
+            }
+
         </div>
     </div>
     <main class="place-content shadow-sm" style="@contentBackgroundColorStyle">

@@ -24,6 +24,8 @@ namespace SmartMenu.Data.Entities
         public LableThemeKey? LableThemeKey { get; set; }
         public string? LableThemeJson { get; set; }
 
+        public DateTime CreateDate { get; set; } = new DateTime(630822816000000000); // for 1-Jan-2000 at midnight
+
         public ICollection<MenuTitle> MenuTitles { get; set; } = new List<MenuTitle>();
         public ICollection<Category> Categorys { get; set; } = new List<Category>();
         public ICollection<MenuLable> MenuLables { get; set; } = new List<MenuLable>();

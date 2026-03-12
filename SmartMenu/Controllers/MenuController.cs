@@ -3,16 +3,19 @@ using SmartMenu.Data.Enums;
 using SmartMenu.Models.MenuCommand;
 using SmartMenu.Models.Theme;
 using SmartMenu.Services.PublicMenu;
+using SmartMenu.Services.Tenant;
 
 namespace SmartMenu.Controllers
 {
     public class MenuController : Controller
     {
         private readonly IPublicMenuService _publicMenuService;
+        private readonly ITenantService _tenantService;
 
-        public MenuController(IPublicMenuService publicMenuService)
+        public MenuController(IPublicMenuService publicMenuService, ITenantService tenantService)
         {
             _publicMenuService = publicMenuService;
+            _tenantService = tenantService;
         }
 
         [AcceptVerbs("GET", "POST")]
@@ -21,6 +24,10 @@ namespace SmartMenu.Controllers
             var model = await _publicMenuService.GetPublicMenuViewModelAsync(menuId, lang, identifier, previewTheme, previewModel);
             if (model == null)
                 return NotFound();
+
+            int tenantId = model.TenantId;
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            model.TenantIsUsingCommands = tenant?.UseCommands ?? false;
 
             var explicitViewName = ResolveThemeViewName("View", model.MenuThemeKey.Value);
             return View(explicitViewName, model);
@@ -32,6 +39,10 @@ namespace SmartMenu.Controllers
             var model = await _publicMenuService.GetPublicCategoryViewModelAsync(categoryId, lang, identifier, previewTheme, previewModel);
             if (model == null)
                 return NotFound();
+
+            int tenantId = model.TenantId;
+            var tenant = await _tenantService.GetTenantAsync(tenantId);
+            model.TenantIsUsingCommands = tenant?.UseCommands ?? false;
 
             var explicitViewName = ResolveThemeViewName("Category", model.MenuThemeKey.Value);
             return View(explicitViewName, model);

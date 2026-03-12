@@ -7,6 +7,7 @@ namespace SmartMenu.Models.View
     public class PublicMenuBaseModel
     {
         public int MenuId { get; set; }
+        public int TenantId { get; set; }
         public string? Identifier { get; set; }
         public string MenuDefaultTitle { get; set; }
         public string MenuLogoUrl { get; set; }

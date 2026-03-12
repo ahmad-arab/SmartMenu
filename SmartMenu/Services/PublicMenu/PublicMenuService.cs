@@ -92,6 +92,7 @@ namespace SmartMenu.Services.PublicMenu
             var model = new PublicMenuViewModel
             {
                 MenuId = menuId,
+                TenantId = menu.TenantId,
                 Identifier = identifier,
                 MenuDefaultTitle = menu.MenuTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? menu.MenuTitles.FirstOrDefault()?.Text
@@ -199,6 +200,7 @@ namespace SmartMenu.Services.PublicMenu
             return new PublicCategoryViewModel
             {
                 MenuId = menu.Id,
+                TenantId = menu.TenantId,
                 Identifier = identifier,
                 MenuDefaultTitle = menu.MenuTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? menu.MenuTitles.FirstOrDefault()?.Text

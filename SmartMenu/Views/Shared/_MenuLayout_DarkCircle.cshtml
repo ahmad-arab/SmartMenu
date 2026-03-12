@@ -30,7 +30,14 @@
     <div class="dc-topbar">
         <div class="d-flex justify-content-between align-items-center px-2">
             @RenderSection("LanguageSelector", required: false)
-            @RenderSection("CommandSelector", required: false)
+            @if (Model.TenantIsUsingCommands)
+            {
+                @RenderSection("CommandSelector", required: false)
+            }
+            else
+            {
+                { IgnoreSection("CommandSelector"); }
+            }
         </div>
     </div>
 

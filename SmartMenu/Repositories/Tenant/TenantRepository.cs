@@ -22,6 +22,11 @@ namespace SmartMenu.Repositories.Tenant
             return await _context.Tenants.FindAsync(id);
         }
 
+        public async Task<Data.Entities.Tenant?> GetByIdNoTrackingAsync(int id)
+        {
+            return await _context.Tenants.AsNoTracking().FirstOrDefaultAsync(tenant => tenant.Id == id);
+        }
+
         public async Task AddAsync(Data.Entities.Tenant tenant)
         {
             _context.Tenants.Add(tenant);

@@ -7,6 +7,7 @@ namespace SmartMenu.Services.Menu
     public interface IMenuService
     {
         Task<MenuListViewModel> GetMenuListAsync(int tenantId);
+        Task<int> GetMenusCountAsync(int tenantId);
         Task<CreateMenuViewModel> GetCreateMenuModelAsync(int tenantId);
         Task CreateMenuAsync(int tenantId, CreateMenuViewModel model);
         Task<EditMenuViewModel?> GetEditMenuModelAsync(int tenantId, int id);

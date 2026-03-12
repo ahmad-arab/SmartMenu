@@ -3,6 +3,8 @@
     public class PublicCategoryViewModel : PublicMenuBaseModel
     {
         public int CategoryId { get; set; }
+        public int TenantId { get; set; }
+        public bool TenantIsUsingCommands { get; set; }
         public string CategoryTitle { get; set; }
         public string CategoryImageUrl { get; set; }
         public string ThemeJson { get; set; }
