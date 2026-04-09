@@ -11,6 +11,7 @@ using SmartMenu.Repositories.Menu;
 using SmartMenu.Repositories.MenuCommand;
 using SmartMenu.Repositories.MenuLable;
 using SmartMenu.Repositories.MenuStaff;
+using SmartMenu.Repositories.Tenant;
 using SmartMenu.Services.Theme;
 using SmartMenu.Services.Whatsapp;
 
@@ -27,6 +28,7 @@ namespace SmartMenu.Services.PublicMenu
         private readonly ILanguageRepository _languageRepository;
         private readonly IThemeService _themeService;
         private readonly IWhatsappService _whatsappService;
+        private readonly ITenantRepository _tenantRepository;
 
         public PublicMenuService(
             IMenuRepository menuRepository,
@@ -37,7 +39,8 @@ namespace SmartMenu.Services.PublicMenu
             IMenuStaffRepository menuStaffRepository,
             ILanguageRepository languageRepository,
             IThemeService themeService,
-            IWhatsappService whatsappService)
+            IWhatsappService whatsappService,
+            ITenantRepository tenantRepository)
         {
             _menuRepository = menuRepository;
             _categoryRepository = categoryRepository;
@@ -48,6 +51,7 @@ namespace SmartMenu.Services.PublicMenu
             _languageRepository = languageRepository;
             _themeService = themeService;
             _whatsappService = whatsappService;
+            _tenantRepository = tenantRepository;
         }
 
         public async Task<PublicMenuViewModel?> GetPublicMenuViewModelAsync(
@@ -56,6 +60,8 @@ namespace SmartMenu.Services.PublicMenu
             var menu = await _menuRepository.GetByIdForPublicViewAsync(menuId);
             if (menu == null)
                 return null;
+
+            var tenant = await _tenantRepository.GetByIdAsync(menu.TenantId);
 
             ApplyPreviewTheme(menu, previewTheme, previewModel);
 
@@ -97,7 +103,7 @@ namespace SmartMenu.Services.PublicMenu
                 MenuDefaultTitle = menu.MenuTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? menu.MenuTitles.FirstOrDefault()?.Text
                     ?? FallbackText.NoText,
-                MenuLogoUrl = menu.ImageUrl,
+                MenuLogoUrl = tenant?.LogoUrl ?? menu.ImageUrl,
                 MenuCoverUrl = menu.ImageUrl,
                 Categories = categories,
                 AvailableLanguages = availableLanguages,
@@ -162,6 +168,7 @@ namespace SmartMenu.Services.PublicMenu
                 return null;
 
             var menu = category.Menu;
+            var tenant = await _tenantRepository.GetByIdAsync(menu.TenantId);
             ApplyPreviewTheme(menu, previewTheme, previewModel);
 
             var languages = (await _languageRepository.GetByTenantIdAsync(menu.TenantId)).ToList();
@@ -205,7 +212,7 @@ namespace SmartMenu.Services.PublicMenu
                 MenuDefaultTitle = menu.MenuTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? menu.MenuTitles.FirstOrDefault()?.Text
                     ?? FallbackText.NoText,
-                MenuLogoUrl = menu.ImageUrl,
+                MenuLogoUrl = tenant?.LogoUrl?? menu.ImageUrl,
                 MenuCoverUrl = menu.ImageUrl,
                 CategoryId = category.Id,
                 CategoryTitle = title,
