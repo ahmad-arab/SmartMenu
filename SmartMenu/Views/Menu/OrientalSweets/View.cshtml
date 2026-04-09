@@ -1,0 +1,240 @@
+@using SmartMenu.Models.Theme.Menu
+@model SmartMenu.Models.View.PublicMenuViewModel
+@{
+    Layout = "~/Views/Shared/_MenuLayout_OrientalSweets.cshtml";
+    ViewData["Title"] = $"{Model.MenuDefaultTitle} Menu";
+
+    var theme = string.IsNullOrWhiteSpace(Model.MenuThemeJson)
+        ? new MenuTheme_OrientalSweets()
+        : System.Text.Json.JsonSerializer.Deserialize<MenuTheme_OrientalSweets>(Model.MenuThemeJson) ?? new MenuTheme_OrientalSweets();
+}
+@section LanguageSelector {
+    <form class="os-lang-select mx-2" method="get" action="/Menu/View">
+        <input type="hidden" name="menuId" value="@Model.MenuId" />
+        <input type="hidden" name="identifier" value="@Model.Identifier" />
+        @if (Model.IsThemePreview)
+        {
+            <input type="hidden" name="previewTheme" value="true" />
+        }
+        <select id="languageSelect" name="lang" onchange="this.form.submit()" class="form-select form-select-sm os-control" style="min-width:120px;">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                var selected = lang.Code == Model.SelectedLanguage ? "selected" : "";
+                @Html.Raw($"<option value=\"{lang.Code}\" {selected}>{lang.Name}</option>")
+            }
+        </select>
+    </form>
+}
+@section CommandSelector {
+    <form class="os-command-select mx-2">
+        <select id="menuCommandSelect" class="form-select form-select-sm os-control" style="min-width:220px;">
+            <option value="">Select Command</option>
+            @foreach (var cmd in Model.MenuCommands)
+            {
+                <option value="@cmd.Id"
+                        data-message="@cmd.SystemMessage"
+                        data-text="@cmd.DefaultText"
+                        data-icon="@cmd.Icon"
+                        data-identifier="@Model.Identifier"
+                        data-hascustomermessage="@cmd.HasCustomerMessage.ToString().ToLower()">
+                    @cmd.DefaultText
+                </option>
+            }
+        </select>
+    </form>
+}
+
+<div class="os-page">
+    <section class="os-hero">
+        <div class="os-hero-backdrop" style="background-image:url('@Model.MenuCoverUrl')"></div>
+        <div class="os-hero-gradient"></div>
+        <div class="os-pattern"></div>
+
+        <div class="container os-hero-content">
+            <div class="os-logo-wrap">
+                <div class="os-logo" style="background-image:url('@Model.MenuLogoUrl')"></div>
+            </div>
+            <h1 class="os-title">@Model.MenuDefaultTitle</h1>
+
+            @if (Model.MenuLables != null && Model.MenuLables.Any())
+            {
+                <div class="os-labels">
+                    @foreach (var label in Model.MenuLables)
+                    {
+                        @await Component.InvokeAsync("Lable", new {
+                            themKey = Model.LableThemeKey,
+                            model = label,
+                            themeJson = Model.LableThemeJson
+                        })
+                    }
+                </div>
+            }
+
+            <div class="os-search-wrap">
+                <input id="globalFilter" type="search" class="form-control os-search"
+                       placeholder="Search sweets or categories..." autocomplete="off" />
+            </div>
+        </div>
+    </section>
+
+    <section class="container os-categories-section">
+        <h2 class="os-section-title">Sweet Collections</h2>
+        <div class="os-ribbon" id="categoryRibbon">
+            @foreach (var cat in Model.CategoriesWithItems)
+            {
+                var categoryTitle = cat.CategoryTitle ?? string.Empty;
+                <a href="#cat-@cat.CategoryId"
+                   class="os-ribbon-link"
+                   data-title="@categoryTitle.ToLowerInvariant()"
+                   data-category-id="@cat.CategoryId">
+                    <span>@categoryTitle</span>
+                </a>
+            }
+        </div>
+    </section>
+
+    @if (Model.CategoriesWithItems?.Any() == true)
+    {
+        <section class="container os-items-section" id="itemSections">
+            @foreach (var cat in Model.CategoriesWithItems)
+            {
+                var normalizedCategoryTitle = (cat.CategoryTitle ?? string.Empty).ToLowerInvariant();
+                <div class="os-item-category" data-category="@normalizedCategoryTitle" id="cat-@cat.CategoryId">
+                    <h3 class="os-section-title os-item-title">@cat.CategoryTitle</h3>
+                    <div class="row g-4 os-item-grid">
+                        @foreach (var item in cat.Items)
+                        {
+                            var title = (item.DefaultTitle ?? string.Empty).ToLowerInvariant();
+                            var description = (item.Description ?? string.Empty).ToLowerInvariant();
+                            <div class="col-12 col-sm-6 col-lg-4 os-item" data-title="@title" data-description="@description">
+                                @await Component.InvokeAsync("ItemCard", new {
+                                    themKey = Model.ItemCardThemeKey,
+                                    model = item,
+                                    themeJson = Model.ItemCardThemeJson
+                                })
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </section>
+    }
+</div>
+
+<script>
+    (function() {
+        var input = document.getElementById('globalFilter');
+        var categoryRibbon = document.getElementById('categoryRibbon');
+        var itemSections = document.getElementById('itemSections');
+
+        function applyFilter() {
+            if (!input) {
+                return;
+            }
+
+            var q = input.value.trim().toLowerCase();
+
+            if (categoryRibbon) {
+                categoryRibbon.querySelectorAll('[data-title]').forEach(function (el) {
+                    var t = el.getAttribute('data-title') || '';
+                    el.style.display = t.indexOf(q) !== -1 || q.length === 0 ? 'inline-flex' : 'none';
+                });
+            }
+
+            if (itemSections) {
+                itemSections.querySelectorAll('.os-item-category').forEach(function(section) {
+                    var catMatch = (section.getAttribute('data-category') || '').indexOf(q) !== -1;
+                    var visibleCount = 0;
+
+                    section.querySelectorAll('.os-item').forEach(function(card) {
+                        var title = card.getAttribute('data-title') || '';
+                        var desc = card.getAttribute('data-description') || '';
+                        var visible = q.length === 0 || catMatch || title.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+                        card.style.display = visible ? '' : 'none';
+                        if (visible) {
+                            visibleCount += 1;
+                        }
+                    });
+
+                    section.style.display = visibleCount > 0 ? '' : 'none';
+                });
+            }
+        }
+
+        input?.addEventListener('input', applyFilter);
+
+        if (categoryRibbon) {
+            categoryRibbon.querySelectorAll('.os-ribbon-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    categoryRibbon.querySelectorAll('.os-ribbon-link').forEach(function(other) {
+                        other.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+
+            var firstLink = categoryRibbon.querySelector('.os-ribbon-link');
+            if (firstLink) {
+                firstLink.classList.add('active');
+            }
+        }
+
+        function sendCommand(cmdId, identifier, message, hasCustomerMessage, text) {
+            function post(customerMessage) {
+                const payload = {
+                    menuCommandId: parseInt(cmdId),
+                    identifier: identifier || null,
+                    customerMessage: customerMessage || null,
+                    firedAt: new Date().toISOString(),
+                    timezoneOffsetMinutes: new Date().getTimezoneOffset()
+                };
+
+                fetch('/Menu/SendCommand', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    body: JSON.stringify(payload)
+                }).then(r => r.json()).then(res => {
+                    if (res?.success) Swal.fire('Sent!', 'Command sent successfully.', 'success');
+                    else Swal.fire('Error', res?.message || 'Failed to send.', 'error');
+                }).catch(() => Swal.fire('Error', 'Failed to send.', 'error'));
+            }
+
+            if (window.Swal) {
+                if (hasCustomerMessage) {
+                    Swal.fire({
+                        title: text,
+                        html: `<div><div style="margin-bottom:8px;">${message}</div><textarea id="cmsg" class="form-control" rows="4" placeholder="Enter your message"></textarea></div>`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Send',
+                        cancelButtonText: 'Cancel',
+                        preConfirm: () => document.getElementById('cmsg').value
+                    }).then(res => { if (res.isConfirmed) post(res.value); });
+                } else {
+                    Swal.fire({ title: text, text: message, icon: 'question', showCancelButton: true, confirmButtonText: 'Send' })
+                        .then(res => { if (res.isConfirmed) post(''); });
+                }
+            } else {
+                let cm = '';
+                if (hasCustomerMessage) {
+                    cm = prompt(message + "\n\nEnter your message:");
+                    if (cm === null) return;
+                } else {
+                    if (!confirm(message)) return;
+                }
+                post(cm);
+            }
+        }
+
+        document.getElementById('menuCommandSelect')?.addEventListener('change', function() {
+            const opt = this.selectedOptions[0];
+            if (!opt || !opt.value) return;
+            sendCommand(opt.value, opt.dataset.identifier, opt.dataset.message, opt.dataset.hascustomermessage === 'true', opt.dataset.text);
+            this.value = '';
+        });
+    })();
+</script>
+@Html.AntiForgeryToken()

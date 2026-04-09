@@ -1,0 +1,55 @@
+@model SmartMenu.Models.Theme.Menu.MenuTheme_OrientalSweets
+<div class="vstack gap-2">
+  <div>
+    <label class="form-label">Body Background</label>
+    <input class="form-control form-control-sm" name="BodyBackgroundColor" value="@Model.BodyBackgroundColor" type="color" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Header Start</label>
+      <input class="form-control form-control-sm" name="HeaderGradientStart" value="@Model.HeaderGradientStart" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Header End</label>
+      <input class="form-control form-control-sm" name="HeaderGradientEnd" value="@Model.HeaderGradientEnd" type="color" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Surface Color</label>
+    <input class="form-control form-control-sm" name="SurfaceColor" value="@Model.SurfaceColor" type="color" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Title Color</label>
+      <input class="form-control form-control-sm" name="TitleColor" value="@Model.TitleColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Title Size (rem)</label>
+      <input class="form-control form-control-sm" name="TitleFontSize" value="@Model.TitleFontSize" type="number" step="0.05" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Title Font</label>
+    <input class="form-control form-control-sm" name="TitleFont" value="@Model.TitleFont" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Search BG</label>
+      <input class="form-control form-control-sm" name="SearchBackgroundColor" value="@Model.SearchBackgroundColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Search Placeholder</label>
+      <input class="form-control form-control-sm" name="SearchPlaceholderColor" value="@Model.SearchPlaceholderColor" type="color" />
+    </div>
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Accent Color</label>
+      <input class="form-control form-control-sm" name="AccentColor" value="@Model.AccentColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Section Title</label>
+      <input class="form-control form-control-sm" name="SectionTitleColor" value="@Model.SectionTitleColor" type="color" />
+    </div>
+  </div>
+</div>

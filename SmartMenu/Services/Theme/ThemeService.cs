@@ -16,6 +16,8 @@ namespace SmartMenu.Services.Theme
         {
             switch (key)
             {
+                case MenuThemeKey.OrientalSweets:
+                    return DeserializeOrDefault(json, new MenuTheme_OrientalSweets(), getDefaultValues);
                 case MenuThemeKey.DarkCircle:
                     return DeserializeOrDefault(json, new MenuTheme_DarkCircle(), getDefaultValues);
                 case MenuThemeKey.Default:
@@ -28,6 +30,8 @@ namespace SmartMenu.Services.Theme
         {
             switch (key)
             {
+                case CategoryCardThemeKey.OrientalSweets:
+                    return DeserializeOrDefault(json, new CategoryCardTheme_OrientalSweets(), getDefaultValues);
                 case CategoryCardThemeKey.DarkCircle:
                     return DeserializeOrDefault(json, new CategoryCardTheme_DarkCircle(), getDefaultValues);
                 case CategoryCardThemeKey.Default:
@@ -40,6 +44,8 @@ namespace SmartMenu.Services.Theme
         {
             switch (key)
             {
+                case ItemCardThemeKey.OrientalSweets:
+                    return DeserializeOrDefault(json, new ItemCardTheme_OrientalSweets(), getDefaultValues);
                 case ItemCardThemeKey.DarkCircle:
                     return DeserializeOrDefault(json, new ItemCardTheme_DarkCircle(), getDefaultValues);
                 case ItemCardThemeKey.Default:
@@ -52,6 +58,8 @@ namespace SmartMenu.Services.Theme
         {
             switch (key)
             {
+                case LableThemeKey.OrientalSweets:
+                    return DeserializeOrDefault(json, new LableTheme_OrientalSweets(), getDefaultValues);
                 case LableThemeKey.DarkCircle:
                     return DeserializeOrDefault(json, new LableTheme_DarkCircle(), getDefaultValues);
                 case LableThemeKey.Default:

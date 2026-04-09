@@ -1,0 +1,87 @@
+@model SmartMenu.Models.Theme.Item.ItemCardTheme_OrientalSweets
+<div class="vstack gap-2">
+  <div>
+    <label class="form-label">Card Background</label>
+    <input class="form-control form-control-sm" name="CardBackground" value="@Model.CardBackground" type="color" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Border Color</label>
+      <input class="form-control form-control-sm" name="BorderColor" value="@Model.BorderColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Border Width (px)</label>
+      <input class="form-control form-control-sm" name="BorderWidth" value="@Model.BorderWidth" type="number" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Border Radius (px)</label>
+    <input class="form-control form-control-sm" name="BorderRadius" value="@Model.BorderRadius" type="number" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Title Color</label>
+      <input class="form-control form-control-sm" name="TitleColor" value="@Model.TitleColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Title Size (rem)</label>
+      <input class="form-control form-control-sm" name="TitleFontSize" value="@Model.TitleFontSize" type="number" step="0.05" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Title Font</label>
+    <input class="form-control form-control-sm" name="TitleFont" value="@Model.TitleFont" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Description Color</label>
+      <input class="form-control form-control-sm" name="DescribtionColor" value="@Model.DescribtionColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Description Size (rem)</label>
+      <input class="form-control form-control-sm" name="DescribtionFontSize" value="@Model.DescribtionFontSize" type="number" step="0.05" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Description Font</label>
+    <input class="form-control form-control-sm" name="DescribtionFont" value="@Model.DescribtionFont" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Price BG</label>
+      <input class="form-control form-control-sm" name="PriceBadgeBackgroundColor" value="@Model.PriceBadgeBackgroundColor" type="color" />
+    </div>
+    <div class="col">
+      <label class="form-label">Price Text</label>
+      <input class="form-control form-control-sm" name="PriceBadgeFontColor" value="@Model.PriceBadgeFontColor" type="color" />
+    </div>
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Price Size (rem)</label>
+      <input class="form-control form-control-sm" name="PriceBadgeFontSize" value="@Model.PriceBadgeFontSize" type="number" step="0.05" />
+    </div>
+    <div class="col">
+      <label class="form-label">Price Font Weight</label>
+      <input class="form-control form-control-sm" name="PriceBadgeFontWeight" value="@Model.PriceBadgeFontWeight" type="number" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Price Font</label>
+    <input class="form-control form-control-sm" name="PriceBadgeFont" value="@Model.PriceBadgeFont" />
+  </div>
+  <div class="row g-2">
+    <div class="col">
+      <label class="form-label">Image Height (px)</label>
+      <input class="form-control form-control-sm" name="ImageHeightPx" value="@Model.ImageHeightPx" type="number" />
+    </div>
+    <div class="col">
+      <label class="form-label">Image Overlay</label>
+      <input class="form-control form-control-sm" name="ImageOverlayColor" value="@Model.ImageOverlayColor" type="color" />
+    </div>
+  </div>
+  <div>
+    <label class="form-label">Image Overlay Opacity (0-1)</label>
+    <input class="form-control form-control-sm" name="ImageOverlayOpacity" value="@Model.ImageOverlayOpacity" type="number" step="0.05" min="0" max="1" />
+  </div>
+</div>

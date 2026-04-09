@@ -1,0 +1,54 @@
+@using SmartMenu.Models.Theme.Item
+@model SmartMenu.Models.View.PublicCategoryItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new ItemCardTheme_OrientalSweets()
+        : System.Text.Json.JsonSerializer.Deserialize<ItemCardTheme_OrientalSweets>(Model.ThemeJson) ?? new ItemCardTheme_OrientalSweets();
+
+    var overlay = $"rgba(0, 0, 0, {theme.ImageOverlayOpacity})";
+    var priceText = Model.Price.ToString("0.##");
+}
+<article class="os-item-card"
+         style="
+            background:@theme.CardBackground;
+            border:@(theme.BorderWidth)px solid @theme.BorderColor;
+            border-radius:@(theme.BorderRadius)px;
+            min-height:@(theme.ImageHeightPx)px;
+         ">
+    <div class="os-item-bg-wrap">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.DefaultTitle" class="os-item-img" />
+        }
+        <span class="os-item-overlay" style="background:@overlay;"></span>
+        <span class="os-item-overlay-top"></span>
+        <span class="os-item-overlay-bottom"></span>
+    </div>
+
+    <div class="os-item-body">
+        <div class="os-item-topline"></div>
+        <div class="os-item-flourish" aria-hidden="true">
+            <span></span>
+            <i></i>
+            <span></span>
+        </div>
+
+        <div class="os-item-title-badge"
+             style="@(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont};")">
+            <h5 class="os-item-name" style="font-size:@(theme.TitleFontSize)rem;">
+                @Model.DefaultTitle
+            </h5>
+        </div>
+
+        <div class="os-item-price"
+             style="
+                background:@theme.PriceBadgeBackgroundColor;
+                color:@theme.PriceBadgeFontColor;
+                font-size:@(theme.PriceBadgeFontSize)rem;
+                font-weight:@theme.PriceBadgeFontWeight;
+                @(string.IsNullOrWhiteSpace(theme.PriceBadgeFont) ? "" : $"font-family:{theme.PriceBadgeFont};")
+             ">
+            @priceText
+        </div>
+    </div>
+</article>

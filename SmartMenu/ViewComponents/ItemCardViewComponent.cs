@@ -12,6 +12,8 @@ namespace SmartMenu.ViewComponents
             model.ThemeJson = themeJson;
             switch (themKey)
             {
+                case ItemCardThemeKey.OrientalSweets:
+                    return View("OrientalSweets", model);
                 case ItemCardThemeKey.DarkCircle:
                     return View("DarkCircle", model);
                 case ItemCardThemeKey.Default:

@@ -15,6 +15,8 @@ namespace SmartMenu.ViewComponents
             }
             switch (themKey)
             {
+                case CategoryCardThemeKey.OrientalSweets:
+                    return View("OrientalSweets", model);
                 case CategoryCardThemeKey.DarkCircle:
                     return View("DarkCircle", model);
                 case CategoryCardThemeKey.Default:

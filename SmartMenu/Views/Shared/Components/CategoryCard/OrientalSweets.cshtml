@@ -1,0 +1,30 @@
+@using SmartMenu.Models.Theme.Category
+@model SmartMenu.Models.Category.CategoryListItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new CategoryCardTheme_OrientalSweets()
+        : System.Text.Json.JsonSerializer.Deserialize<CategoryCardTheme_OrientalSweets>(Model.ThemeJson) ?? new CategoryCardTheme_OrientalSweets();
+
+    string CardBackground() => $"linear-gradient(140deg, {theme.CardBackgroundStart}, {theme.CardBackgroundEnd})";
+    var boxShadow = $"0 12px 22px rgba(91,52,22,{theme.ShadowOpacity})";
+    var title = Model.DefaultTitle;
+    var url = string.IsNullOrWhiteSpace(Model.LinkUrl) ? "javascript:void(0)" : Model.LinkUrl;
+}
+<a href="@url" class="text-decoration-none d-block h-100">
+    <article class="os-category-card"
+             style="
+                background:@CardBackground();
+                border:@(theme.BorderWidthPx)px solid @theme.BorderColor;
+                border-radius:@(theme.BorderRadiusPx)px;
+                box-shadow:@boxShadow;
+             ">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <div class="os-category-thumb" style="background-image:url('@Model.ImageUrl')"></div>
+        }
+        <div class="os-category-title"
+             style="color:@theme.TitleColor; font-size:@(theme.TitleFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont};")">
+            @title
+        </div>
+    </article>
+</a>

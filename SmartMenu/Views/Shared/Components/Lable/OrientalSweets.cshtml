@@ -1,0 +1,23 @@
+@using SmartMenu.Models.Theme.Lable
+@model SmartMenu.Models.MenuLable.MenuLableListItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new LableTheme_OrientalSweets()
+        : System.Text.Json.JsonSerializer.Deserialize<LableTheme_OrientalSweets>(Model.ThemeJson) ?? new LableTheme_OrientalSweets();
+
+    string Gradient() => $"linear-gradient({theme.BackgroundColorAngle}deg, {theme.BackgroundColorStart}, {theme.BackgroundColorEnd})";
+}
+<span class="os-label"
+      style="
+        border:@(theme.BorderWidth)px solid @theme.BorderColor;
+        border-radius:@(theme.BorderRadius)px;
+        background:@Gradient();
+        color:@theme.TextColor;
+        font-size:@(theme.TextFontSize)rem;
+        @(string.IsNullOrWhiteSpace(theme.TextFont) ? "" : $"font-family:{theme.TextFont};")
+      ">
+    <span class="os-label-icon" style="color:@theme.IconTint;">
+        @await Html.PartialAsync("~/Views/Shared/Icon/IconIdentifierView.cshtml", Model.Icon)
+    </span>
+    <span>@Model.DefaultText</span>
+</span>

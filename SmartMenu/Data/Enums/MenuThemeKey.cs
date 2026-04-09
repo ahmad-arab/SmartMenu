@@ -13,6 +13,11 @@ namespace SmartMenu.Data.Enums
         [OnePageMenu]
         [MenuThemeDefaults(CategoryCardThemeKey.DarkCircle, ItemCardThemeKey.DarkCircle, LableThemeKey.DarkCircle)]
         DarkCircle,
+
+        [Display(Name = "Oriental Sweets")]
+        [OnePageMenu]
+        [MenuThemeDefaults(CategoryCardThemeKey.OrientalSweets, ItemCardThemeKey.OrientalSweets, LableThemeKey.OrientalSweets)]
+        OrientalSweets,
     }
 
     public enum CategoryCardThemeKey
@@ -22,6 +27,9 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "Dark Circle")]
         DarkCircle,
+
+        [Display(Name = "Oriental Sweets")]
+        OrientalSweets,
     }
 
     public enum ItemCardThemeKey
@@ -31,6 +39,9 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "Dark Circle")]
         DarkCircle,
+
+        [Display(Name = "Oriental Sweets")]
+        OrientalSweets,
     }
 
     public enum LableThemeKey
@@ -40,5 +51,8 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "Dark Circle")]
         DarkCircle,
+
+        [Display(Name = "Oriental Sweets")]
+        OrientalSweets,
     }
 }
