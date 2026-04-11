@@ -14,5 +14,6 @@
         Waiter,
         Bill,
         Time,
+        Phone,
     }
 }
