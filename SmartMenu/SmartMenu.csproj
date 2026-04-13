@@ -237,4 +237,9 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Landing\" />
+    <Folder Include="wwwroot\landing\HawleariPaklawa\resources\" />
+  </ItemGroup>
+
 </Project>

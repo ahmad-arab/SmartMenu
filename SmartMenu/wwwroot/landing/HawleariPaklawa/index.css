@@ -1,0 +1,637 @@
+﻿:root {
+	--pomegranate: #8d2f36;
+	--terracotta: #a35f43;
+	--copper: #d97c18;
+	--saffron: #efb052;
+	--sand: #d9b676;
+	--stone: #b79256;
+	--midnight: #243447;
+	--cream: #f7ecdd;
+	--paper: rgba(251, 242, 227, 0.92);
+	--text: #2f1f19;
+	--muted: #6d5146;
+	--ring: rgba(141, 47, 54, 0.18);
+	--shadow: rgba(72, 26, 19, 0.2);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	min-height: 100%;
+}
+
+body {
+	font-family: "Vazirmatn", "Noto Sans Arabic", sans-serif;
+	color: var(--text);
+	background:
+		radial-gradient(circle at 18% 14%, rgba(239, 176, 82, 0.55), transparent 32%),
+		radial-gradient(circle at 80% 15%, rgba(141, 47, 54, 0.18), transparent 34%),
+		linear-gradient(155deg, #f6e3c8 0%, #f4debf 40%, #eed0a7 100%);
+	position: relative;
+}
+
+body::before,
+body::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 0;
+}
+
+body::before {
+	background:
+		linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
+		url("resources/kurdish-pattern.jpg") center/260px repeat;
+	opacity: 0.06;
+}
+
+body::after {
+	background: linear-gradient(180deg, transparent 0%, rgba(106, 59, 39, 0.08) 100%);
+}
+
+.landing {
+	min-height: 100vh;
+	display: grid;
+	place-items: center;
+	padding: 1.5rem;
+	position: relative;
+	z-index: 1;
+}
+
+.hero {
+	width: min(1180px, 100%);
+	background:
+		linear-gradient(180deg, rgba(255, 249, 240, 0.9), rgba(247, 236, 221, 0.94)),
+		url("resources/kurdish-rug.jpg") top left / 300px auto no-repeat;
+	border: 1px solid rgba(163, 95, 67, 0.16);
+	border-radius: 34px;
+	box-shadow: 0 28px 80px var(--shadow);
+	padding: 1.2rem 1.2rem 1.4rem;
+	position: relative;
+	overflow: hidden;
+	backdrop-filter: blur(8px);
+}
+
+.hero::before,
+.hero::after {
+	content: "";
+	position: absolute;
+	pointer-events: none;
+}
+
+.hero::before {
+	inset: auto -120px -140px auto;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(217, 124, 24, 0.16), transparent 64%);
+}
+
+.hero::after {
+	inset: -100px auto auto -60px;
+	width: 320px;
+	height: 320px;
+	background: url("resources/kurdish-pattern.jpg") center/cover no-repeat;
+	opacity: 0.12;
+	transform: rotate(-12deg);
+	border-radius: 26px;
+}
+
+.language-switch {
+	display: flex;
+	justify-content: flex-start;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+	position: relative;
+	z-index: 2;
+}
+
+.lang-link {
+	color: var(--pomegranate);
+	text-decoration: none;
+	border: 1px solid rgba(141, 47, 54, 0.22);
+	border-radius: 999px;
+	padding: 0.35rem 0.9rem;
+	font-size: 0.86rem;
+	font-weight: 700;
+	transition: all 0.25s ease;
+	background: rgba(255, 255, 255, 0.68);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.lang-link:hover,
+.lang-link.active {
+	background: linear-gradient(135deg, var(--pomegranate), #b5453c);
+	border-color: var(--pomegranate);
+	color: #fff;
+}
+
+.hero-shell {
+	display: grid;
+	grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+	gap: 1.4rem;
+	align-items: stretch;
+}
+
+.story-panel {
+	position: relative;
+	padding: 0.2rem 0.2rem 0.4rem;
+	z-index: 1;
+}
+
+.visual-panel {
+	display: grid;
+	align-items: stretch;
+}
+
+.visual-stage {
+	position: relative;
+	min-height: 100%;
+	background:
+		linear-gradient(160deg, rgba(255, 247, 235, 0.94) 0%, rgba(242, 222, 195, 0.92) 100%),
+		url("resources/kurdish-pattern.jpg") center/cover no-repeat;
+	border-radius: 28px;
+	border: 1px solid rgba(163, 95, 67, 0.14);
+	padding: 1rem;
+	overflow: hidden;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.visual-stage::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(141, 47, 54, 0.04));
+	pointer-events: none;
+}
+
+.brand-mark {
+	height: 110px;
+	margin: 0.35rem 0 0.35rem;
+	position: relative;
+}
+
+.sun {
+	position: absolute;
+	top: 0;
+	inset-inline-end: 20%;
+	width: 54px;
+	height: 54px;
+	background: radial-gradient(circle at 35% 35%, #fff1be 0%, var(--saffron) 68%);
+	border-radius: 50%;
+	box-shadow: 0 0 0 14px rgba(239, 176, 82, 0.16);
+}
+
+.citadel {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	height: 72px;
+	background:
+		linear-gradient(to top, rgba(109, 85, 72, 0.25), transparent 65%),
+		repeating-linear-gradient(to right, rgba(255, 255, 255, 0.16) 0 12px, rgba(0, 0, 0, 0.06) 12px 13px),
+		linear-gradient(0deg, #6c3429, var(--terracotta));
+	clip-path: polygon(0 100%, 0 50%, 8% 50%, 8% 34%, 15% 34%, 15% 52%, 24% 52%, 24% 40%, 33% 40%, 33% 58%, 41% 58%, 41% 30%, 50% 30%, 50% 56%, 58% 56%, 58% 42%, 66% 42%, 66% 60%, 75% 60%, 75% 36%, 84% 36%, 84% 53%, 92% 53%, 92% 44%, 100% 44%, 100% 100%);
+	border-radius: 12px;
+}
+
+.eyebrow {
+	margin: 0.2rem 0 0;
+	color: var(--pomegranate);
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	font-size: 0.78rem;
+}
+
+h1 {
+	margin: 0.3rem 0 0;
+	font-size: clamp(2.2rem, 5vw, 4.5rem);
+	line-height: 0.98;
+	max-width: 9ch;
+	text-wrap: balance;
+	font-family: "Noto Kufi Arabic", "Vazirmatn", sans-serif;
+}
+
+.subtitle {
+	margin: 0.85rem 0 1rem;
+	color: var(--muted);
+	font-size: clamp(1rem, 2.1vw, 1.12rem);
+	line-height: 1.9;
+	max-width: 52ch;
+}
+
+html[lang="ckb"] body,
+html[lang="ar"] body {
+	font-family: "Vazirmatn", "Noto Sans Arabic", sans-serif;
+}
+
+html[lang="ckb"] h1,
+html[lang="ar"] h1,
+html[lang="ckb"] .flavor-tags span,
+html[lang="ar"] .flavor-tags span,
+html[lang="ckb"] .menu-cta,
+html[lang="ar"] .menu-cta {
+	font-family: "Noto Kufi Arabic", "Vazirmatn", sans-serif;
+}
+
+.flavor-tags {
+	display: flex;
+	gap: 0.55rem;
+	flex-wrap: wrap;
+	margin: 0 0 1rem;
+}
+
+.flavor-tags span {
+	padding: 0.45rem 0.82rem;
+	border-radius: 999px;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(245, 226, 203, 0.95));
+	border: 1px solid rgba(163, 95, 67, 0.18);
+	font-size: 0.88rem;
+	font-weight: 800;
+	color: #6d382c;
+	box-shadow: 0 8px 18px rgba(109, 56, 44, 0.08);
+}
+
+.flow-cards {
+	display: grid;
+	gap: 0.72rem;
+	margin-bottom: 1.15rem;
+}
+
+.flow-cards article {
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(247, 235, 221, 0.9));
+	border: 1px solid var(--ring);
+	border-radius: 18px;
+	padding: 0.76rem 0.92rem;
+	color: #503428;
+	font-weight: 700;
+	box-shadow: 0 10px 25px rgba(90, 46, 34, 0.06);
+}
+
+.cta-panel {
+	position: relative;
+	margin: 1.25rem 0 1.1rem;
+	padding: 1.15rem 1rem 1rem;
+	border-radius: 24px;
+	background:
+		linear-gradient(125deg, rgba(141, 47, 54, 0.96), rgba(163, 95, 67, 0.96)),
+		url("resources/kurdish-rug.jpg") center/cover no-repeat;
+	color: #fff7ef;
+	box-shadow: 0 20px 34px rgba(100, 34, 32, 0.26);
+	overflow: hidden;
+}
+
+.cta-panel::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 45%);
+	pointer-events: none;
+}
+
+.cta-kicker,
+.cta-note,
+.social-title {
+	margin: 0;
+}
+
+.cta-kicker {
+	font-size: 0.82rem;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	opacity: 0.84;
+}
+
+.menu-cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: fit-content;
+	text-decoration: none;
+	color: #6e261c;
+	background: linear-gradient(180deg, #fff6de, #f5d8a7);
+	border-radius: 999px;
+	padding: 0.86rem 1.65rem;
+	font-size: 1.05rem;
+	font-weight: 800;
+	margin: 0.65rem 0 0.7rem;
+	box-shadow: 0 16px 30px rgba(72, 26, 19, 0.22);
+	transition: transform 0.24s ease, box-shadow 0.24s ease;
+	position: relative;
+	z-index: 1;
+}
+
+.menu-cta:hover {
+	transform: translateY(-2px) scale(1.03);
+	box-shadow: 0 20px 34px rgba(72, 26, 19, 0.28);
+}
+
+.cta-note {
+	max-width: 42ch;
+	font-size: 0.94rem;
+	line-height: 1.8;
+	color: rgba(255, 246, 235, 0.88);
+}
+
+.social-wrap {
+	padding-inline-start: 0.1rem;
+}
+
+.social-title {
+	margin-bottom: 0.6rem;
+	font-weight: 800;
+	color: #5c3628;
+}
+
+.socials {
+	display: flex;
+	justify-content: flex-start;
+	gap: 0.56rem;
+	flex-wrap: wrap;
+}
+
+.socials a {
+	width: 46px;
+	height: 46px;
+	border-radius: 16px;
+	display: grid;
+	place-items: center;
+	background: linear-gradient(180deg, #fffdf8, #f4e6d2);
+	border: 1px solid rgba(163, 95, 67, 0.24);
+	box-shadow: 0 8px 18px rgba(89, 49, 36, 0.08);
+	transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.socials a:hover {
+	transform: translateY(-2px);
+	border-color: var(--terracotta);
+	background: linear-gradient(180deg, #fff7ef, #efd5b3);
+}
+
+.socials svg {
+	width: 20px;
+	height: 20px;
+	fill: #7f3f2d;
+}
+
+.rug-ribbon {
+	position: absolute;
+	inset-inline-start: 0.8rem;
+	top: 1.2rem;
+	bottom: 1.2rem;
+	width: 20px;
+	border-radius: 999px;
+	background: url("resources/kurdish-rug.jpg") center/cover no-repeat;
+	box-shadow: 0 0 0 4px rgba(255, 244, 226, 0.6);
+	opacity: 0.92;
+}
+
+.citadel-frame {
+	position: relative;
+	margin: 1rem 0 0 auto;
+	width: min(100%, 470px);
+	aspect-ratio: 1.02;
+	border-radius: 28px;
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(240, 221, 193, 0.76)),
+		url("resources/kurdish-pattern.jpg") center/cover no-repeat;
+	padding: 1.05rem;
+	box-shadow: 0 22px 40px rgba(92, 50, 36, 0.14);
+	border: 1px solid rgba(163, 95, 67, 0.12);
+}
+
+.citadel-frame img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center bottom;
+	border-radius: 22px;
+	background: linear-gradient(180deg, #fff8ee, #f1ddb8);
+}
+
+.poster-card {
+	position: absolute;
+	inset-inline-start: 1.8rem;
+	bottom: 1.3rem;
+	width: min(50%, 250px);
+	border-radius: 22px;
+	overflow: hidden;
+	box-shadow: 0 16px 30px rgba(90, 46, 34, 0.18);
+	border: 8px solid rgba(250, 240, 227, 0.94);
+	transform: rotate(-5deg);
+	background: #9a6548;
+}
+
+.poster-card img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.pattern-tile {
+	position: absolute;
+	background: url("resources/kurdish-pattern.jpg") center/cover no-repeat;
+	border-radius: 20px;
+	box-shadow: 0 14px 22px rgba(90, 46, 34, 0.12);
+	border: 6px solid rgba(250, 240, 227, 0.8);
+}
+
+.pattern-tile-top {
+	inset-inline-end: 1.4rem;
+	top: 1.5rem;
+	width: 110px;
+	height: 140px;
+	transform: rotate(8deg);
+}
+
+.pattern-tile-bottom {
+	inset-inline-end: 3.4rem;
+	bottom: 8rem;
+	width: 80px;
+	height: 110px;
+	transform: rotate(-10deg);
+	background-image: url("resources/kurdish-rug.jpg");
+	background-position: center;
+}
+
+.floating-card {
+	position: absolute;
+	inset-inline-end: 1.6rem;
+	bottom: 1.6rem;
+	width: min(58%, 250px);
+	padding: 1rem 1rem 0.95rem;
+	border-radius: 22px;
+	background: rgba(36, 52, 71, 0.92);
+	color: #fcefd9;
+	box-shadow: 0 16px 34px rgba(36, 52, 71, 0.24);
+}
+
+.floating-card p {
+	margin: 0 0 0.35rem;
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: rgba(252, 239, 217, 0.78);
+}
+
+.floating-card strong {
+	font-size: 1rem;
+	line-height: 1.5;
+}
+
+.reveal {
+	opacity: 0;
+	transform: translateY(18px) scale(0.985);
+}
+
+.reveal.visible {
+	opacity: 1;
+	transform: translateY(0) scale(1);
+	transition: opacity 0.75s ease, transform 0.75s ease;
+}
+
+@media (max-width: 980px) {
+	.hero-shell {
+		grid-template-columns: 1fr;
+	}
+
+	.visual-panel {
+		order: -1;
+	}
+
+	.visual-stage {
+		min-height: 540px;
+	}
+
+	.poster-card {
+		width: min(46%, 230px);
+	}
+
+	.floating-card {
+		width: min(62%, 280px);
+	}
+
+	h1 {
+		max-width: none;
+	}
+}
+
+@media (max-width: 640px) {
+	.hero {
+		border-radius: 26px;
+		padding: 0.95rem;
+	}
+
+	.language-switch {
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+
+	.story-panel {
+		padding: 0;
+	}
+
+	.brand-mark {
+		height: 88px;
+	}
+
+	.citadel {
+		height: 60px;
+	}
+
+	h1 {
+		font-size: clamp(2rem, 11vw, 3.1rem);
+	}
+
+	.flavor-tags {
+		gap: 0.45rem;
+	}
+
+	.flavor-tags span {
+		font-size: 0.8rem;
+	}
+
+	.cta-panel {
+		padding: 1rem 0.9rem 0.95rem;
+		border-radius: 20px;
+	}
+
+	.socials {
+		justify-content: center;
+	}
+
+	.social-wrap,
+	.social-title {
+		text-align: center;
+	}
+
+	.visual-stage {
+		min-height: 420px;
+		padding: 0.85rem;
+	}
+
+	.rug-ribbon {
+		width: 14px;
+		inset-inline-start: 0.55rem;
+	}
+
+	.citadel-frame {
+		margin-top: 0.7rem;
+		width: 100%;
+		padding: 0.7rem;
+	}
+
+	.poster-card {
+		inset-inline-start: 0.9rem;
+		bottom: 0.8rem;
+		width: 44%;
+		border-width: 6px;
+	}
+
+	.pattern-tile-top {
+		width: 78px;
+		height: 104px;
+	}
+
+	.pattern-tile-bottom {
+		display: none;
+	}
+
+	.floating-card {
+		inset-inline-end: 0.9rem;
+		bottom: 1rem;
+		width: calc(56% - 0.2rem);
+		padding: 0.75rem;
+		border-radius: 18px;
+	}
+
+	.floating-card strong {
+		font-size: 0.9rem;
+	}
+}
+
+html[dir="ltr"] body {
+	font-family: "Manrope", "Segoe UI", sans-serif;
+}
+
+html[dir="ltr"] .subtitle {
+	line-height: 1.75;
+}
+
+html[dir="ltr"] h1 {
+	max-width: 11ch;
+}
+
+html[dir="ltr"] .eyebrow,
+html[dir="ltr"] .cta-kicker,
+html[dir="ltr"] .floating-card p {
+	letter-spacing: 0.08em;
+}

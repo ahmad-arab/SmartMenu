@@ -43,3 +43,8 @@ The ThemeService is responsible for handling themes in the system.
 Each one of those folders has a separate UI file for each theme. Example: Views/Components/ItemCard/DarkCircle.cshtml.
 The folders that end with "Theme" are responsible the designer page, which is a page where tenant administrators can edit the design of the menu. Example: Views/Components/ItemCardTheme/DarkCircle.cshtml.
 - There are View components that handle chosing the correct theme file, they are in ViewComponents folder.
+
+# Landing Pages:
+Some tenants have a custom landing page, which is the page that the end user sees when they open the menu. Landing pages are like mini static websites that shows information about the tenant's business.
+They are located in wwwroot/landing, and then each tenant has a separate folder. Example: wwwroot/landing/tenant1. Each tenant folder contains static files like html, css, js and images.
+The UI of each landing page is unique and is not related to the theme of the menu, meaning that a tenant can have a custom landing page and use any theme for their menu.
