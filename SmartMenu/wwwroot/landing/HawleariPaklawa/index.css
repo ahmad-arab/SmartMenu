@@ -1,17 +1,13 @@
-﻿:root {
-	--pomegranate: #8d2f36;
-	--terracotta: #a35f43;
-	--copper: #d97c18;
-	--saffron: #efb052;
-	--sand: #d9b676;
-	--stone: #b79256;
-	--midnight: #243447;
-	--cream: #f7ecdd;
-	--paper: rgba(251, 242, 227, 0.92);
-	--text: #2f1f19;
-	--muted: #6d5146;
-	--ring: rgba(141, 47, 54, 0.18);
-	--shadow: rgba(72, 26, 19, 0.2);
+:root {
+	--wine: #7b2d2f;
+	--brick: #a64836;
+	--amber: #e2a54b;
+	--ink: #2c1f1b;
+	--muted: #644a40;
+	--cream: #fff5e7;
+	--paper: rgba(255, 248, 236, 0.9);
+	--line: rgba(122, 67, 51, 0.22);
+	--shadow: rgba(77, 30, 20, 0.2);
 }
 
 * {
@@ -26,595 +22,412 @@ body {
 
 body {
 	font-family: "Vazirmatn", "Noto Sans Arabic", sans-serif;
-	color: var(--text);
+	color: var(--ink);
 	background:
-		radial-gradient(circle at 18% 14%, rgba(239, 176, 82, 0.55), transparent 32%),
-		radial-gradient(circle at 80% 15%, rgba(141, 47, 54, 0.18), transparent 34%),
-		linear-gradient(155deg, #f6e3c8 0%, #f4debf 40%, #eed0a7 100%);
-	position: relative;
+		radial-gradient(circle at 14% 12%, rgba(226, 165, 75, 0.42), transparent 32%),
+		radial-gradient(circle at 88% 10%, rgba(123, 45, 47, 0.16), transparent 30%),
+		linear-gradient(165deg, #fae4bf 0%, #f4d4aa 45%, #eec08d 100%);
 }
 
-body::before,
-body::after {
+body::before {
 	content: "";
 	position: fixed;
 	inset: 0;
+	background: url("resources/kurdish-pattern.jpg") center/280px repeat;
+	opacity: 0.06;
 	pointer-events: none;
 	z-index: 0;
 }
 
-body::before {
-	background:
-		linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)),
-		url("resources/kurdish-pattern.jpg") center/260px repeat;
-	opacity: 0.06;
-}
-
-body::after {
-	background: linear-gradient(180deg, transparent 0%, rgba(106, 59, 39, 0.08) 100%);
-}
-
 .landing {
-	min-height: 100vh;
-	display: grid;
-	place-items: center;
-	padding: 1.5rem;
 	position: relative;
 	z-index: 1;
+	width: min(1060px, 100% - 2rem);
+	margin: 1.1rem auto 1.7rem;
+}
+
+.topbar {
+	position: sticky;
+	top: 0.7rem;
+	z-index: 20;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	padding: 0.7rem 0.9rem;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+	background: rgba(255, 248, 236, 0.85);
+	backdrop-filter: blur(6px);
+	box-shadow: 0 12px 28px rgba(70, 25, 20, 0.12);
+}
+
+.brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	font-family: "Noto Kufi Arabic", "Vazirmatn", sans-serif;
+	font-weight: 800;
+	text-decoration: none;
+	color: var(--wine);
+	white-space: nowrap;
+}
+
+.brand-dot {
+	width: 14px;
+	height: 14px;
+	border-radius: 999px;
+	background: linear-gradient(180deg, #ffe2a3, var(--amber));
+	box-shadow: 0 0 0 6px rgba(226, 165, 75, 0.24);
+}
+
+.top-links {
+	display: flex;
+	align-items: center;
+	gap: 0.2rem;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
+.top-links a {
+	text-decoration: none;
+	color: var(--wine);
+	font-weight: 700;
+	font-size: 0.82rem;
+	padding: 0.35rem 0.6rem;
+	border-radius: 999px;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.top-links a:hover,
+.top-links a.is-active {
+	background: linear-gradient(145deg, var(--wine), var(--brick));
+	color: #fff;
+}
+
+.page-panel {
+	margin-top: 0.85rem;
+	border: 1px solid var(--line);
+	border-radius: 28px;
+	padding: 1rem;
+	background: linear-gradient(180deg, rgba(255, 249, 240, 0.82), rgba(249, 235, 212, 0.92));
+	box-shadow: 0 20px 60px var(--shadow);
 }
 
 .hero {
-	width: min(1180px, 100%);
-	background:
-		linear-gradient(180deg, rgba(255, 249, 240, 0.9), rgba(247, 236, 221, 0.94)),
-		url("resources/kurdish-rug.jpg") top left / 300px auto no-repeat;
-	border: 1px solid rgba(163, 95, 67, 0.16);
-	border-radius: 34px;
-	box-shadow: 0 28px 80px var(--shadow);
-	padding: 1.2rem 1.2rem 1.4rem;
-	position: relative;
-	overflow: hidden;
-	backdrop-filter: blur(8px);
+	display: grid;
+	grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+	gap: 1rem;
+	align-items: stretch;
 }
 
-.hero::before,
-.hero::after {
-	content: "";
-	position: absolute;
-	pointer-events: none;
-}
-
-.hero::before {
-	inset: auto -120px -140px auto;
-	width: 420px;
-	height: 420px;
-	border-radius: 50%;
-	background: radial-gradient(circle, rgba(217, 124, 24, 0.16), transparent 64%);
-}
-
-.hero::after {
-	inset: -100px auto auto -60px;
-	width: 320px;
-	height: 320px;
-	background: url("resources/kurdish-pattern.jpg") center/cover no-repeat;
-	opacity: 0.12;
-	transform: rotate(-12deg);
-	border-radius: 26px;
+.hero-copy,
+.hero-visual,
+.section-card {
+	border-radius: 22px;
+	border: 1px solid rgba(122, 67, 51, 0.16);
+	background: var(--paper);
+	padding: 0.95rem;
 }
 
 .language-switch {
 	display: flex;
-	justify-content: flex-start;
-	gap: 0.5rem;
-	margin-bottom: 1rem;
-	position: relative;
-	z-index: 2;
+	gap: 0.45rem;
+	margin-bottom: 0.8rem;
+	flex-wrap: wrap;
 }
 
 .lang-link {
-	color: var(--pomegranate);
 	text-decoration: none;
-	border: 1px solid rgba(141, 47, 54, 0.22);
-	border-radius: 999px;
-	padding: 0.35rem 0.9rem;
-	font-size: 0.86rem;
+	color: var(--wine);
+	font-size: 0.82rem;
 	font-weight: 700;
-	transition: all 0.25s ease;
-	background: rgba(255, 255, 255, 0.68);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+	padding: 0.3rem 0.75rem;
+	border-radius: 999px;
+	border: 1px solid rgba(122, 67, 51, 0.22);
+	background: rgba(255, 255, 255, 0.6);
 }
 
-.lang-link:hover,
 .lang-link.active {
-	background: linear-gradient(135deg, var(--pomegranate), #b5453c);
-	border-color: var(--pomegranate);
+	background: linear-gradient(145deg, var(--wine), var(--brick));
 	color: #fff;
-}
-
-.hero-shell {
-	display: grid;
-	grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
-	gap: 1.4rem;
-	align-items: stretch;
-}
-
-.story-panel {
-	position: relative;
-	padding: 0.2rem 0.2rem 0.4rem;
-	z-index: 1;
-}
-
-.visual-panel {
-	display: grid;
-	align-items: stretch;
-}
-
-.visual-stage {
-	position: relative;
-	min-height: 100%;
-	background:
-		linear-gradient(160deg, rgba(255, 247, 235, 0.94) 0%, rgba(242, 222, 195, 0.92) 100%),
-		url("resources/kurdish-pattern.jpg") center/cover no-repeat;
-	border-radius: 28px;
-	border: 1px solid rgba(163, 95, 67, 0.14);
-	padding: 1rem;
-	overflow: hidden;
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-.visual-stage::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(141, 47, 54, 0.04));
-	pointer-events: none;
-}
-
-.brand-mark {
-	height: 110px;
-	margin: 0.35rem 0 0.35rem;
-	position: relative;
-}
-
-.sun {
-	position: absolute;
-	top: 0;
-	inset-inline-end: 20%;
-	width: 54px;
-	height: 54px;
-	background: radial-gradient(circle at 35% 35%, #fff1be 0%, var(--saffron) 68%);
-	border-radius: 50%;
-	box-shadow: 0 0 0 14px rgba(239, 176, 82, 0.16);
-}
-
-.citadel {
-	position: absolute;
-	inset-inline: 0;
-	bottom: 0;
-	height: 72px;
-	background:
-		linear-gradient(to top, rgba(109, 85, 72, 0.25), transparent 65%),
-		repeating-linear-gradient(to right, rgba(255, 255, 255, 0.16) 0 12px, rgba(0, 0, 0, 0.06) 12px 13px),
-		linear-gradient(0deg, #6c3429, var(--terracotta));
-	clip-path: polygon(0 100%, 0 50%, 8% 50%, 8% 34%, 15% 34%, 15% 52%, 24% 52%, 24% 40%, 33% 40%, 33% 58%, 41% 58%, 41% 30%, 50% 30%, 50% 56%, 58% 56%, 58% 42%, 66% 42%, 66% 60%, 75% 60%, 75% 36%, 84% 36%, 84% 53%, 92% 53%, 92% 44%, 100% 44%, 100% 100%);
-	border-radius: 12px;
+	border-color: transparent;
 }
 
 .eyebrow {
-	margin: 0.2rem 0 0;
-	color: var(--pomegranate);
+	margin: 0;
+	color: var(--wine);
 	font-weight: 800;
-	letter-spacing: 0.04em;
+	font-size: 0.76rem;
 	text-transform: uppercase;
-	font-size: 0.78rem;
+	letter-spacing: 0.06em;
 }
 
 h1 {
-	margin: 0.3rem 0 0;
-	font-size: clamp(2.2rem, 5vw, 4.5rem);
-	line-height: 0.98;
-	max-width: 9ch;
-	text-wrap: balance;
+	margin: 0.35rem 0 0;
+	font-size: clamp(1.9rem, 5vw, 3.3rem);
+	line-height: 1.08;
 	font-family: "Noto Kufi Arabic", "Vazirmatn", sans-serif;
 }
 
 .subtitle {
-	margin: 0.85rem 0 1rem;
+	margin: 0.6rem 0 0;
+	line-height: 1.82;
 	color: var(--muted);
-	font-size: clamp(1rem, 2.1vw, 1.12rem);
-	line-height: 1.9;
-	max-width: 52ch;
-}
-
-html[lang="ckb"] body,
-html[lang="ar"] body {
-	font-family: "Vazirmatn", "Noto Sans Arabic", sans-serif;
-}
-
-html[lang="ckb"] h1,
-html[lang="ar"] h1,
-html[lang="ckb"] .flavor-tags span,
-html[lang="ar"] .flavor-tags span,
-html[lang="ckb"] .menu-cta,
-html[lang="ar"] .menu-cta {
-	font-family: "Noto Kufi Arabic", "Vazirmatn", sans-serif;
-}
-
-.flavor-tags {
-	display: flex;
-	gap: 0.55rem;
-	flex-wrap: wrap;
-	margin: 0 0 1rem;
-}
-
-.flavor-tags span {
-	padding: 0.45rem 0.82rem;
-	border-radius: 999px;
-	background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(245, 226, 203, 0.95));
-	border: 1px solid rgba(163, 95, 67, 0.18);
-	font-size: 0.88rem;
-	font-weight: 800;
-	color: #6d382c;
-	box-shadow: 0 8px 18px rgba(109, 56, 44, 0.08);
-}
-
-.flow-cards {
-	display: grid;
-	gap: 0.72rem;
-	margin-bottom: 1.15rem;
-}
-
-.flow-cards article {
-	background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(247, 235, 221, 0.9));
-	border: 1px solid var(--ring);
-	border-radius: 18px;
-	padding: 0.76rem 0.92rem;
-	color: #503428;
-	font-weight: 700;
-	box-shadow: 0 10px 25px rgba(90, 46, 34, 0.06);
-}
-
-.cta-panel {
-	position: relative;
-	margin: 1.25rem 0 1.1rem;
-	padding: 1.15rem 1rem 1rem;
-	border-radius: 24px;
-	background:
-		linear-gradient(125deg, rgba(141, 47, 54, 0.96), rgba(163, 95, 67, 0.96)),
-		url("resources/kurdish-rug.jpg") center/cover no-repeat;
-	color: #fff7ef;
-	box-shadow: 0 20px 34px rgba(100, 34, 32, 0.26);
-	overflow: hidden;
-}
-
-.cta-panel::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 45%);
-	pointer-events: none;
-}
-
-.cta-kicker,
-.cta-note,
-.social-title {
-	margin: 0;
-}
-
-.cta-kicker {
-	font-size: 0.82rem;
-	font-weight: 800;
-	letter-spacing: 0.05em;
-	text-transform: uppercase;
-	opacity: 0.84;
+	font-size: 1rem;
 }
 
 .menu-cta {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: fit-content;
-	text-decoration: none;
-	color: #6e261c;
-	background: linear-gradient(180deg, #fff6de, #f5d8a7);
+	margin-top: 0.75rem;
+	padding: 0.76rem 1.4rem;
 	border-radius: 999px;
-	padding: 0.86rem 1.65rem;
-	font-size: 1.05rem;
+	background: linear-gradient(180deg, #fff0c8, #efc47d);
+	text-decoration: none;
 	font-weight: 800;
-	margin: 0.65rem 0 0.7rem;
-	box-shadow: 0 16px 30px rgba(72, 26, 19, 0.22);
-	transition: transform 0.24s ease, box-shadow 0.24s ease;
-	position: relative;
-	z-index: 1;
-}
-
-.menu-cta:hover {
-	transform: translateY(-2px) scale(1.03);
-	box-shadow: 0 20px 34px rgba(72, 26, 19, 0.28);
+	color: #6a2b1f;
+	box-shadow: 0 12px 22px rgba(86, 30, 23, 0.16);
 }
 
 .cta-note {
-	max-width: 42ch;
-	font-size: 0.94rem;
-	line-height: 1.8;
-	color: rgba(255, 246, 235, 0.88);
+	margin: 0.65rem 0 0;
+	font-size: 0.92rem;
+	line-height: 1.7;
+	color: #5f4339;
 }
 
-.social-wrap {
-	padding-inline-start: 0.1rem;
+.hero-visual {
+	position: relative;
+	overflow: hidden;
+	background: #2e1c18;
+	padding: 0;
+	min-height: 360px;
+}
+
+.hero-visual::before,
+.hero-visual::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+.hero-visual::before {
+	background-size: cover;
+	background-position: center;
+	animation: heroSlide 18s infinite;
+}
+
+.hero-visual::after {
+	background: linear-gradient(180deg, rgba(14, 8, 7, 0.2), rgba(14, 8, 7, 0.62));
+}
+
+.hero-visual-content {
+	position: relative;
+	z-index: 1;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 1rem;
+	color: #fff7ea;
+}
+
+.slide-caption p {
+	margin: 0;
+	font-size: 0.8rem;
+	opacity: 0.85;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.slide-caption strong {
+	display: block;
+	margin-top: 0.4rem;
+	font-size: clamp(1rem, 2.2vw, 1.3rem);
+	line-height: 1.5;
+}
+
+.hero-thumbs {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.55rem;
+}
+
+.hero-thumbs img {
+	display: block;
+	width: 100%;
+	height: 90px;
+	object-fit: cover;
+	border-radius: 12px;
+	border: 2px solid rgba(255, 244, 230, 0.66);
+	box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.grid-sections {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.9rem;
+	margin-top: 0.9rem;
+}
+
+.section-card h2 {
+	margin: 0;
+	font-size: 1rem;
+	color: #6a2e22;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.flavor-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+	margin-top: 0.65rem;
+}
+
+.flavor-tags span {
+	padding: 0.4rem 0.78rem;
+	border-radius: 999px;
+	border: 1px solid rgba(122, 67, 51, 0.22);
+	background: linear-gradient(180deg, #fff8ee, #f6e4cd);
+	font-size: 0.86rem;
+	font-weight: 800;
+	color: #6a3a2b;
+}
+
+.flow-cards {
+	display: grid;
+	gap: 0.55rem;
+	margin-top: 0.65rem;
+}
+
+.flow-cards article {
+	padding: 0.62rem 0.72rem;
+	border-radius: 14px;
+	border: 1px solid rgba(122, 67, 51, 0.18);
+	background: rgba(255, 255, 255, 0.62);
+	font-weight: 700;
+	color: #543629;
+}
+
+.inline-note {
+	margin: 0.65rem 0 0;
+	color: var(--muted);
+	line-height: 1.7;
+	font-size: 0.93rem;
 }
 
 .social-title {
-	margin-bottom: 0.6rem;
+	margin: 0.65rem 0 0;
 	font-weight: 800;
-	color: #5c3628;
+	color: #5f3427;
 }
 
 .socials {
 	display: flex;
-	justify-content: flex-start;
-	gap: 0.56rem;
 	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 0.55rem;
 }
 
 .socials a {
-	width: 46px;
-	height: 46px;
-	border-radius: 16px;
+	width: 42px;
+	height: 42px;
+	border-radius: 12px;
 	display: grid;
 	place-items: center;
-	background: linear-gradient(180deg, #fffdf8, #f4e6d2);
-	border: 1px solid rgba(163, 95, 67, 0.24);
-	box-shadow: 0 8px 18px rgba(89, 49, 36, 0.08);
-	transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-
-.socials a:hover {
-	transform: translateY(-2px);
-	border-color: var(--terracotta);
-	background: linear-gradient(180deg, #fff7ef, #efd5b3);
+	border: 1px solid rgba(122, 67, 51, 0.22);
+	background: #fffdf8;
 }
 
 .socials svg {
-	width: 20px;
-	height: 20px;
-	fill: #7f3f2d;
-}
-
-.rug-ribbon {
-	position: absolute;
-	inset-inline-start: 0.8rem;
-	top: 1.2rem;
-	bottom: 1.2rem;
-	width: 20px;
-	border-radius: 999px;
-	background: url("resources/kurdish-rug.jpg") center/cover no-repeat;
-	box-shadow: 0 0 0 4px rgba(255, 244, 226, 0.6);
-	opacity: 0.92;
-}
-
-.citadel-frame {
-	position: relative;
-	margin: 1rem 0 0 auto;
-	width: min(100%, 470px);
-	aspect-ratio: 1.02;
-	border-radius: 28px;
-	background:
-		linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(240, 221, 193, 0.76)),
-		url("resources/kurdish-pattern.jpg") center/cover no-repeat;
-	padding: 1.05rem;
-	box-shadow: 0 22px 40px rgba(92, 50, 36, 0.14);
-	border: 1px solid rgba(163, 95, 67, 0.12);
-}
-
-.citadel-frame img {
-	display: block;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: center bottom;
-	border-radius: 22px;
-	background: linear-gradient(180deg, #fff8ee, #f1ddb8);
-}
-
-.poster-card {
-	position: absolute;
-	inset-inline-start: 1.8rem;
-	bottom: 1.3rem;
-	width: min(50%, 250px);
-	border-radius: 22px;
-	overflow: hidden;
-	box-shadow: 0 16px 30px rgba(90, 46, 34, 0.18);
-	border: 8px solid rgba(250, 240, 227, 0.94);
-	transform: rotate(-5deg);
-	background: #9a6548;
-}
-
-.poster-card img {
-	display: block;
-	width: 100%;
-	height: auto;
-}
-
-.pattern-tile {
-	position: absolute;
-	background: url("resources/kurdish-pattern.jpg") center/cover no-repeat;
-	border-radius: 20px;
-	box-shadow: 0 14px 22px rgba(90, 46, 34, 0.12);
-	border: 6px solid rgba(250, 240, 227, 0.8);
-}
-
-.pattern-tile-top {
-	inset-inline-end: 1.4rem;
-	top: 1.5rem;
-	width: 110px;
-	height: 140px;
-	transform: rotate(8deg);
-}
-
-.pattern-tile-bottom {
-	inset-inline-end: 3.4rem;
-	bottom: 8rem;
-	width: 80px;
-	height: 110px;
-	transform: rotate(-10deg);
-	background-image: url("resources/kurdish-rug.jpg");
-	background-position: center;
-}
-
-.floating-card {
-	position: absolute;
-	inset-inline-end: 1.6rem;
-	bottom: 1.6rem;
-	width: min(58%, 250px);
-	padding: 1rem 1rem 0.95rem;
-	border-radius: 22px;
-	background: rgba(36, 52, 71, 0.92);
-	color: #fcefd9;
-	box-shadow: 0 16px 34px rgba(36, 52, 71, 0.24);
-}
-
-.floating-card p {
-	margin: 0 0 0.35rem;
-	font-size: 0.8rem;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
-	color: rgba(252, 239, 217, 0.78);
-}
-
-.floating-card strong {
-	font-size: 1rem;
-	line-height: 1.5;
+	width: 19px;
+	height: 19px;
+	fill: #7b2d2f;
 }
 
 .reveal {
 	opacity: 0;
-	transform: translateY(18px) scale(0.985);
+	transform: translateY(12px);
 }
 
 .reveal.visible {
 	opacity: 1;
-	transform: translateY(0) scale(1);
-	transition: opacity 0.75s ease, transform 0.75s ease;
+	transform: translateY(0);
+	transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-@media (max-width: 980px) {
-	.hero-shell {
+.footer-note {
+	margin-top: 0.8rem;
+	text-align: center;
+	color: rgba(54, 29, 24, 0.76);
+	font-size: 0.84rem;
+}
+
+@keyframes heroSlide {
+	0%,
+	30% {
+		background-image: url("resources/erbil-theme.jpg");
+	}
+	33%,
+	63% {
+		background-image: url("resources/erbil-citadle.jpg");
+	}
+	66%,
+	100% {
+		background-image: url("resources/kurdish-rug.jpg");
+	}
+}
+
+@media (max-width: 900px) {
+	.topbar {
+		border-radius: 18px;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.top-links {
+		justify-content: flex-start;
+	}
+
+	.hero {
 		grid-template-columns: 1fr;
 	}
 
-	.visual-panel {
-		order: -1;
+	.hero-visual {
+		min-height: 300px;
 	}
 
-	.visual-stage {
-		min-height: 540px;
-	}
-
-	.poster-card {
-		width: min(46%, 230px);
-	}
-
-	.floating-card {
-		width: min(62%, 280px);
-	}
-
-	h1 {
-		max-width: none;
+	.grid-sections {
+		grid-template-columns: 1fr;
 	}
 }
 
-@media (max-width: 640px) {
-	.hero {
-		border-radius: 26px;
-		padding: 0.95rem;
+@media (max-width: 560px) {
+	.landing {
+		width: calc(100% - 1rem);
+		margin-top: 0.6rem;
 	}
 
-	.language-switch {
-		justify-content: center;
-		flex-wrap: wrap;
+	.page-panel {
+		padding: 0.65rem;
+		border-radius: 22px;
 	}
 
-	.story-panel {
-		padding: 0;
+	.hero-copy,
+	.hero-visual,
+	.section-card {
+		padding: 0.8rem;
 	}
 
-	.brand-mark {
-		height: 88px;
-	}
-
-	.citadel {
-		height: 60px;
-	}
-
-	h1 {
-		font-size: clamp(2rem, 11vw, 3.1rem);
-	}
-
-	.flavor-tags {
-		gap: 0.45rem;
-	}
-
-	.flavor-tags span {
-		font-size: 0.8rem;
-	}
-
-	.cta-panel {
-		padding: 1rem 0.9rem 0.95rem;
-		border-radius: 20px;
-	}
-
-	.socials {
-		justify-content: center;
-	}
-
-	.social-wrap,
-	.social-title {
-		text-align: center;
-	}
-
-	.visual-stage {
-		min-height: 420px;
-		padding: 0.85rem;
-	}
-
-	.rug-ribbon {
-		width: 14px;
-		inset-inline-start: 0.55rem;
-	}
-
-	.citadel-frame {
-		margin-top: 0.7rem;
-		width: 100%;
-		padding: 0.7rem;
-	}
-
-	.poster-card {
-		inset-inline-start: 0.9rem;
-		bottom: 0.8rem;
-		width: 44%;
-		border-width: 6px;
-	}
-
-	.pattern-tile-top {
-		width: 78px;
-		height: 104px;
-	}
-
-	.pattern-tile-bottom {
-		display: none;
-	}
-
-	.floating-card {
-		inset-inline-end: 0.9rem;
-		bottom: 1rem;
-		width: calc(56% - 0.2rem);
+	.hero-visual-content {
 		padding: 0.75rem;
-		border-radius: 18px;
 	}
 
-	.floating-card strong {
-		font-size: 0.9rem;
+	.hero-thumbs img {
+		height: 74px;
 	}
 }
 
@@ -622,16 +435,12 @@ html[dir="ltr"] body {
 	font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
-html[dir="ltr"] .subtitle {
-	line-height: 1.75;
-}
-
 html[dir="ltr"] h1 {
 	max-width: 11ch;
 }
 
-html[dir="ltr"] .eyebrow,
-html[dir="ltr"] .cta-kicker,
-html[dir="ltr"] .floating-card p {
-	letter-spacing: 0.08em;
+html[dir="ltr"] .subtitle,
+html[dir="ltr"] .inline-note,
+html[dir="ltr"] .cta-note {
+	line-height: 1.7;
 }
