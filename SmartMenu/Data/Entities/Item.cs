@@ -8,6 +8,7 @@ namespace SmartMenu.Data.Entities
         public int Id { get; set; }
         public string ImageUrl { get; set; }
         public decimal Price { get; set; } = 0.0m;
+        public int Order { get; set; } = int.MaxValue;
         public bool IsAvailable { get; set; } = true;
 
         public int CategoryId { get; set; }

@@ -11,6 +11,10 @@ namespace SmartMenu.Models.Category
         [DataType(DataType.Upload)]
         public IFormFile Image { get; set; }
 
+        [Required(ErrorMessage = "Order is required.")]
+        [Range(0, int.MaxValue, ErrorMessage = "Order must be between 0 and 2,147,483,647.")]
+        public int Order { get; set; } = int.MaxValue;
+
         public List<CategoryTitleAndDescriptionViewModel> TitlesAndDescriptions { get; set; } = new();
         public List<LanguageListItemViewModel> AvailableLanguages { get; set; } = new();
     }

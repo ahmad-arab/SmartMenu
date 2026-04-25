@@ -34,6 +34,7 @@ namespace SmartMenu.Services.Category
             return new CreateCategoryViewModel
             {
                 MenuId = menuId,
+                Order = int.MaxValue,
                 AvailableLanguages = languages.ToList(),
                 TitlesAndDescriptions = languages.Select(l => new CategoryTitleAndDescriptionViewModel
                 {
@@ -49,7 +50,8 @@ namespace SmartMenu.Services.Category
             var category = new Data.Entities.Category
             {
                 ImageUrl = imageUrl,
-                MenuId = model.MenuId
+                MenuId = model.MenuId,
+                Order = model.Order
             };
             await _categoryRepository.AddAsync(category);
 
@@ -95,6 +97,7 @@ namespace SmartMenu.Services.Category
             {
                 CategoryId = category.Id,
                 ImageUrl = category.ImageUrl,
+                Order = category.Order,
                 AvailableLanguages = languages.ToList(),
                 TitlesAndDescriptions = titlesAndDescriptions
             };
@@ -108,6 +111,7 @@ namespace SmartMenu.Services.Category
 
             if (model.Image?.Length > 0)
                 category.ImageUrl = await _fileUploadService.UploadImageAsync(model.Image, "category-images");
+            category.Order = model.Order;
 
             foreach (var td in model.TitlesAndDescriptions)
             {
@@ -154,6 +158,7 @@ namespace SmartMenu.Services.Category
                 Id = item.Id,
                 ImageUrl = item.ImageUrl,
                 Price = item.Price,
+                Order = item.Order,
                 IsAvailable = item.IsAvailable,
                 DefaultTitle =
                     item.ItemTitles.FirstOrDefault(t => t.LanguageId == defaultLangId)?.Text
@@ -168,6 +173,7 @@ namespace SmartMenu.Services.Category
             {
                 Id = category.Id,
                 MenuId = category.MenuId,
+                Order = category.Order,
                 DefaultTitle =
                     category.CategoryTitles.FirstOrDefault(t => t.LanguageId == defaultLangId)?.Text
                     ?? category.CategoryTitles.FirstOrDefault()?.Text

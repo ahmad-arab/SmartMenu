@@ -7,6 +7,7 @@
         public bool TenantIsUsingCommands { get; set; }
         public string CategoryTitle { get; set; }
         public string CategoryImageUrl { get; set; }
+        public int Order { get; set; }
         public string ThemeJson { get; set; }
         public List<PublicCategoryItemViewModel> Items { get; set; }
     }
@@ -18,6 +19,7 @@
         public string DefaultTitle { get; set; }
         public Dictionary<string, string> TitlesByLanguage { get; set; }
         public decimal Price { get; set; }
+        public int Order { get; set; }
         public string Description { get; set; }
         public string ThemeJson { get; set; }
     }

@@ -7,6 +7,7 @@ namespace SmartMenu.Data.Entities
         [Key]
         public int Id { get; set; }
         public string ImageUrl { get; set; }
+        public int Order { get; set; } = int.MaxValue;
 
         public int MenuId { get; set; }
         public virtual Menu Menu { get; set; }

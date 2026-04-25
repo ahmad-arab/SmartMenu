@@ -45,6 +45,7 @@ namespace SmartMenu.Services.Item
             {
                 ImageUrl = imageUrl,
                 Price = model.Price,
+                Order = model.Order,
                 IsAvailable = model.IsAvailable,
                 CategoryId = model.CategoryId
             };
@@ -90,6 +91,7 @@ namespace SmartMenu.Services.Item
                 ItemId = item.Id,
                 ImageUrl = item.ImageUrl,
                 Price = item.Price,
+                Order = item.Order,
                 IsAvailable = item.IsAvailable,
                 AvailableLanguages = languages.ToList(),
                 TitlesAndDescriptions = titlesAndDescriptions
@@ -106,6 +108,7 @@ namespace SmartMenu.Services.Item
                 item.ImageUrl = await _fileUploadService.UploadImageAsync(model.Image, "item-images");
 
             item.Price = model.Price;
+            item.Order = model.Order;
             item.IsAvailable = model.IsAvailable;
 
             foreach (var td in model.TitlesAndDescriptions)

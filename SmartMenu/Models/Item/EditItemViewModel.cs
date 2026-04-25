@@ -19,6 +19,10 @@ namespace SmartMenu.Models.Item
         [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Price cannot have more than 2 decimal places.")]
         public decimal Price { get; set; } = 0.0m;
 
+        [Required(ErrorMessage = "Order is required.")]
+        [Range(0, int.MaxValue, ErrorMessage = "Order must be between 0 and 2,147,483,647.")]
+        public int Order { get; set; } = int.MaxValue;
+
         [Display(Name = "Is Available")]
         public bool IsAvailable { get; set; } = true;
 

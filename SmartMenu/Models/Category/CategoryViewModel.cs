@@ -6,6 +6,7 @@ namespace SmartMenu.Models.Category
     {
         public int Id { get; set; }
         public int MenuId { get; set; }
+        public int Order { get; set; }
         public string DefaultTitle { get; set; }
         public string Title { get; set; }
         public string ImageUrl { get; set; }

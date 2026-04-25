@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public string ImageUrl { get; set; }
+        public int Order { get; set; }
         public string DefaultTitle { get; set; }
         public string ThemeJson { get; set; }
         public string? LinkUrl { get; set; }

@@ -7,7 +7,7 @@
     <form asp-action="EditItem" asp-route-id="@Model.ItemId" enctype="multipart/form-data" method="post" id="editItemForm">
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.ItemId)
-        <!-- Image, Price, and IsAvailable side by side -->
+        <!-- Image, Price, Order, and IsAvailable side by side -->
         <div class="row mb-3">
             <!-- Image upload (left column) -->
             <div class="col-md-5 d-flex flex-column align-items-center justify-content-center">
@@ -19,12 +19,17 @@
                 </div>
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
-            <!-- Price and IsAvailable (right column) -->
+            <!-- Price, Order, and IsAvailable (right column) -->
             <div class="col-md-7">
                 <div class="mb-3">
                     <label asp-for="Price" class="form-label"></label>
                     <input asp-for="Price" class="form-control" />
                     <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Order" class="form-label"></label>
+                    <input asp-for="Order" class="form-control" />
+                    <span asp-validation-for="Order" class="text-danger"></span>
                 </div>
                 <div class="mb-3 form-check">
                     <input asp-for="IsAvailable" class="form-check-input" type="checkbox" />

@@ -181,6 +181,7 @@ namespace SmartMenu.Services.Menu
             {
                 Id = cat.Id,
                 ImageUrl = cat.ImageUrl,
+                Order = cat.Order,
                 DefaultTitle =
                     cat.CategoryTitles.FirstOrDefault(t => t.LanguageId == defaultLangId)?.Text
                     ?? cat.CategoryTitles.FirstOrDefault()?.Text

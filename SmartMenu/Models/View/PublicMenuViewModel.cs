@@ -17,6 +17,7 @@ namespace SmartMenu.Models.View
         public int CategoryId { get; set; }
         public string CategoryTitle { get; set; }
         public string? CategoryImageUrl { get; set; }
+        public int Order { get; set; }
         public List<PublicCategoryItemViewModel> Items { get; set; } = new();
     }
 }

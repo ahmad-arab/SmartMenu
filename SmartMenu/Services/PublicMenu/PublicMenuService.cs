@@ -83,6 +83,7 @@ namespace SmartMenu.Services.PublicMenu
                 {
                     Id = c.Id,
                     ImageUrl = c.ImageUrl,
+                    Order = c.Order,
                     DefaultTitle =
                         c.CategoryTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                         ?? c.CategoryTitles.FirstOrDefault()?.Text
@@ -137,6 +138,7 @@ namespace SmartMenu.Services.PublicMenu
                     {
                         Id = i.Id,
                         ImageUrl = i.ImageUrl,
+                        Order = i.Order,
                         DefaultTitle = i.ItemTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                             ?? i.ItemTitles.FirstOrDefault()?.Text
                             ?? FallbackText.NoText,
@@ -145,15 +147,18 @@ namespace SmartMenu.Services.PublicMenu
                         Description = i.ItemDescriptions.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                             ?? i.ItemDescriptions.FirstOrDefault()?.Text
                             ?? FallbackText.NoText
-                    }).ToList();
+                    }).OrderBy(i => i.Order).ToList();
 
                     model.CategoriesWithItems.Add(new MenuCategoryWithItemsViewModel
                     {
                         CategoryId = grp.Key,
                         CategoryTitle = catInfo.DefaultTitle,
                         CategoryImageUrl = catEntity.ImageUrl,
+                        Order = catInfo.Order,
                         Items = itemVMs
                     });
+
+                    model.CategoriesWithItems = model.CategoriesWithItems.OrderBy(c => c.Order).ToList();
                 }
             }
 
@@ -196,6 +201,7 @@ namespace SmartMenu.Services.PublicMenu
                     ?? FallbackText.NoText,
                 TitlesByLanguage = i.ItemTitles.ToDictionary(it => it.Language.Name, it => it.Text),
                 Price = i.Price,
+                Order = i.Order,
                 Description = i.ItemDescriptions.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? i.ItemDescriptions.FirstOrDefault()?.Text
                     ?? FallbackText.NoText
@@ -217,6 +223,7 @@ namespace SmartMenu.Services.PublicMenu
                 CategoryId = category.Id,
                 CategoryTitle = title,
                 CategoryImageUrl = category.ImageUrl,
+                Order = category.Order,
                 AvailableLanguages = availableLanguages,
                 SelectedLanguage = selectedLang?.Code ?? "",
                 IsRtl = selectedLang?.IsRtl ?? false,

@@ -18,6 +18,7 @@ namespace SmartMenu.Repositories.Category
             return await _context.Categories
                 .Where(c => c.MenuId == menuId)
                 .Include(c => c.CategoryTitles)
+                .OrderBy(c => c.Order)
                 .ToListAsync();
         }
 
@@ -26,6 +27,7 @@ namespace SmartMenu.Repositories.Category
             return await _context.Categories
                 .Where(c => c.MenuId == menuId)
                 .Include(c => c.CategoryTitles).ThenInclude(ct => ct.Language)
+                .OrderBy(c => c.Order)
                 .ToListAsync();
         }
 
@@ -49,6 +51,7 @@ namespace SmartMenu.Repositories.Category
         {
             return await _context.Categories
                 .Where(c => c.MenuId == menuId)
+                .OrderBy(c => c.Order)
                 .ToListAsync();
         }
 
