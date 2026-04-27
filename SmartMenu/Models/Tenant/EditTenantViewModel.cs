@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
+using SmartMenu.Attributes.Validation;
 
 namespace SmartMenu.Models.Tenant
 {
@@ -20,6 +21,14 @@ namespace SmartMenu.Models.Tenant
         [Required]
         [Display(Name = "Use Commands")]
         public bool UseCommands { get; set; }
+
+        [Display(Name = "Domain Name")]
+        [DomainName(ErrorMessage = "Please enter a valid domain or subdomain name (for example: example.com or menu.example.com).")]
+        public string? DomainName { get; set; }
+
+        [Display(Name = "Landing Page URL")]
+        [UrlOrRelativePath(ErrorMessage = "Please enter a valid URL.")]
+        public string? LandingPageUrl { get; set; }
 
         [Display(Name = "Current Logo")]
         public string? LogoUrl { get; set; }

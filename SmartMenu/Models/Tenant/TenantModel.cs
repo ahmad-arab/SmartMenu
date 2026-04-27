@@ -8,6 +8,8 @@ namespace SmartMenu.Models.Tenant
         public string Name { get; set; }
         public int AllowedMenusCount { get; set; }
         public bool UseCommands { get; set; }
+        public string? DomainName { get; set; }
+        public string? LandingPageUrl { get; set; }
         public string? LogoUrl { get; set; }
         public IFormFile? Logo { get; set; }
     }

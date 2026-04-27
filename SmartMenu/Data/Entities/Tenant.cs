@@ -8,6 +8,8 @@ namespace SmartMenu.Data.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public string LogoUrl { get; set; }
+        public string? DomainName { get; set; }
+        public string? LandingPageUrl { get; set; }
         public int AllowedMenusCount { get; set; } = 1;
         public bool UseCommands { get; set; } = false;
 

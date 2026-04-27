@@ -15,6 +15,16 @@
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
+                    <label asp-for="DomainName" class="form-label"></label>
+                    <input asp-for="DomainName" class="form-control" placeholder="example.com" />
+                    <span asp-validation-for="DomainName" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="LandingPageUrl" class="form-label"></label>
+                    <input asp-for="LandingPageUrl" class="form-control" placeholder="/landing/tenantname/index.html" />
+                    <span asp-validation-for="LandingPageUrl" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
                     <label asp-for="AllowedMenusCount" class="form-label"></label>
                     <input asp-for="AllowedMenusCount" class="form-control" type="number" min="1" />
                     <span asp-validation-for="AllowedMenusCount" class="text-danger"></span>

@@ -29,15 +29,15 @@ body {
 		linear-gradient(165deg, #fae4bf 0%, #f4d4aa 45%, #eec08d 100%);
 }
 
-body::before {
-	content: "";
-	position: fixed;
-	inset: 0;
-	background: url("resources/kurdish-pattern.jpg") center/280px repeat;
-	opacity: 0.06;
-	pointer-events: none;
-	z-index: 0;
-}
+	body::before {
+		content: "";
+		position: fixed;
+		inset: 0;
+		background: url("https://hawlearipaklawa.com/landing/hawlearipaklawa/resources/kurdish-pattern.jpg") center/280px repeat;
+		opacity: 0.06;
+		pointer-events: none;
+		z-index: 0;
+	}
 
 .landing {
 	position: relative;
@@ -367,17 +367,14 @@ h1 {
 }
 
 @keyframes heroSlide {
-	0%,
-	30% {
-		background-image: url("resources/erbil-theme.jpg");
+	0%, 30% {
+		background-image: url("https://hawlearipaklawa.com/landing/hawlearipaklawa/resources/erbil-theme.jpg");
 	}
-	33%,
-	63% {
-		background-image: url("resources/erbil-citadle.jpg");
+	33%, 63% {
+		background-image: url("https://hawlearipaklawa.com/landing/hawlearipaklawa/resources/erbil-citadle.jpg");
 	}
-	66%,
-	100% {
-		background-image: url("resources/kurdish-rug.jpg");
+	66%, 100% {
+		background-image: url("https://hawlearipaklawa.com/landing/hawlearipaklawa/resources/kurdish-rug.jpg");
 	}
 }
 

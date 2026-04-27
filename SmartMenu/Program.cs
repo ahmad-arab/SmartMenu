@@ -44,6 +44,9 @@ builder.Services.AddSingleton<IQrCodeService, QrCodeService>();
 // Register Theme Service
 builder.Services.AddSingleton<IThemeService, ThemeService>();
 
+// Register tenant domain cache service
+builder.Services.AddSingleton<ITenantDomainInfoService, TenantDomainInfoService>();
+
 // Register ApplicationDbContext with your database provider (e.g., SQL Server)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -105,6 +108,9 @@ using (var scope = app.Services.CreateScope())
     seeder.ApplyMigrationsAndSeed();
 }
 
+var tenantDomainInfoService = app.Services.GetRequiredService<ITenantDomainInfoService>();
+await tenantDomainInfoService.InitializeAsync();
+
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 // Configure the HTTP request pipeline.
@@ -116,6 +122,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<TenantLandingPageRouter>();
 app.UseStaticFiles();
 
 app.UseRouting();
