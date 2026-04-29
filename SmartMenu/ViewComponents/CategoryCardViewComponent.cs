@@ -19,6 +19,8 @@ namespace SmartMenu.ViewComponents
                     return View("OrientalSweets", model);
                 case CategoryCardThemeKey.DarkCircle:
                     return View("DarkCircle", model);
+                case CategoryCardThemeKey.BbqGrill:
+                    return View("BbqGrill", model);
                 case CategoryCardThemeKey.Default:
                 default:
                     return View("Default", model);

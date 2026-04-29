@@ -1,0 +1,22 @@
+@using SmartMenu.Models.Theme.Lable
+@model SmartMenu.Models.MenuLable.MenuLableListItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new LableTheme_BbqGrill()
+        : System.Text.Json.JsonSerializer.Deserialize<LableTheme_BbqGrill>(Model.ThemeJson) ?? new LableTheme_BbqGrill();
+
+    string Gradient() => $"linear-gradient({theme.BackgroundColorAngle}deg, {theme.BackgroundColorStart}, {theme.BackgroundColorEnd})";
+}
+<span class="bq-label"
+      style="
+        border:@(theme.BorderWidth)px solid @theme.BorderColor;
+        background:@Gradient();
+        color:@theme.TextColor;
+        font-size:@(theme.TextFontSize)rem;
+        @(string.IsNullOrWhiteSpace(theme.TextFont) ? "" : $"font-family:{theme.TextFont};")
+      ">
+    <span class="bq-label-icon" style="color:@theme.IconTint;">
+        @await Html.PartialAsync("~/Views/Shared/Icon/IconIdentifierView.cshtml", Model.Icon)
+    </span>
+    <span class="bq-label-text">@Model.DefaultText</span>
+</span>

@@ -20,6 +20,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new MenuTheme_OrientalSweets(), getDefaultValues);
                 case MenuThemeKey.DarkCircle:
                     return DeserializeOrDefault(json, new MenuTheme_DarkCircle(), getDefaultValues);
+                case MenuThemeKey.BbqGrill:
+                    return DeserializeOrDefault(json, new MenuTheme_BbqGrill(), getDefaultValues);
                 case MenuThemeKey.Default:
                 default:
                     return DeserializeOrDefault(json, new MenuTheme_Default(), getDefaultValues);
@@ -34,6 +36,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new CategoryCardTheme_OrientalSweets(), getDefaultValues);
                 case CategoryCardThemeKey.DarkCircle:
                     return DeserializeOrDefault(json, new CategoryCardTheme_DarkCircle(), getDefaultValues);
+                case CategoryCardThemeKey.BbqGrill:
+                    return DeserializeOrDefault(json, new CategoryCardTheme_BbqGrill(), getDefaultValues);
                 case CategoryCardThemeKey.Default:
                 default:
                     return DeserializeOrDefault(json, new CategoryCardTheme_Default(), getDefaultValues);
@@ -48,6 +52,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new ItemCardTheme_OrientalSweets(), getDefaultValues);
                 case ItemCardThemeKey.DarkCircle:
                     return DeserializeOrDefault(json, new ItemCardTheme_DarkCircle(), getDefaultValues);
+                case ItemCardThemeKey.BbqGrill:
+                    return DeserializeOrDefault(json, new ItemCardTheme_BbqGrill(), getDefaultValues);
                 case ItemCardThemeKey.Default:
                 default:
                     return DeserializeOrDefault(json, new ItemCardTheme_Default(), getDefaultValues);
@@ -62,6 +68,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new LableTheme_OrientalSweets(), getDefaultValues);
                 case LableThemeKey.DarkCircle:
                     return DeserializeOrDefault(json, new LableTheme_DarkCircle(), getDefaultValues);
+                case LableThemeKey.BbqGrill:
+                    return DeserializeOrDefault(json, new LableTheme_BbqGrill(), getDefaultValues);
                 case LableThemeKey.Default:
                 default:
                     return DeserializeOrDefault(json, new LableTheme_Default(), getDefaultValues);

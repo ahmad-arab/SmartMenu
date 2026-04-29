@@ -18,6 +18,11 @@ namespace SmartMenu.Data.Enums
         [OnePageMenu]
         [MenuThemeDefaults(CategoryCardThemeKey.OrientalSweets, ItemCardThemeKey.OrientalSweets, LableThemeKey.OrientalSweets)]
         OrientalSweets,
+
+        [Display(Name = "BBQ Grill")]
+        [OnePageMenu]
+        [MenuThemeDefaults(CategoryCardThemeKey.BbqGrill, ItemCardThemeKey.BbqGrill, LableThemeKey.BbqGrill)]
+        BbqGrill,
     }
 
     public enum CategoryCardThemeKey
@@ -30,6 +35,9 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "Oriental Sweets")]
         OrientalSweets,
+
+        [Display(Name = "BBQ Grill")]
+        BbqGrill,
     }
 
     public enum ItemCardThemeKey
@@ -42,6 +50,9 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "Oriental Sweets")]
         OrientalSweets,
+
+        [Display(Name = "BBQ Grill")]
+        BbqGrill,
     }
 
     public enum LableThemeKey
@@ -54,5 +65,8 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "Oriental Sweets")]
         OrientalSweets,
+
+        [Display(Name = "BBQ Grill")]
+        BbqGrill,
     }
 }

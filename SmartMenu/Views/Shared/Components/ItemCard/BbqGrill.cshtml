@@ -1,0 +1,62 @@
+@using SmartMenu.Models.Theme.Item
+@model SmartMenu.Models.View.PublicCategoryItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new ItemCardTheme_BbqGrill()
+        : System.Text.Json.JsonSerializer.Deserialize<ItemCardTheme_BbqGrill>(Model.ThemeJson) ?? new ItemCardTheme_BbqGrill();
+
+    var overlay = $"rgba(0, 0, 0, {theme.ImageOverlayOpacity.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+    var priceText = Model.Price.ToString("0.##");
+}
+<article class="bq-item-card"
+         style="
+            border:@(theme.BorderWidth)px solid @theme.BorderColor;
+            border-radius:@(theme.BorderRadius)px;
+            min-height:@(theme.ImageHeightPx)px;
+            --bq-grill-opacity:@theme.GrillMarkOpacity.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            --bq-item-ember:@theme.EmberGlowColor;
+         ">
+
+    @* Full-bleed image layer *@
+    <div class="bq-item-bg-wrap">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.DefaultTitle" class="bq-item-img" />
+        }
+        else
+        {
+            <div class="bq-item-no-img" style="background:@theme.CardBackground;"></div>
+        }
+        <span class="bq-item-overlay" style="background:@overlay;"></span>
+        <span class="bq-item-overlay-top"></span>
+        <span class="bq-item-overlay-bottom"></span>
+    </div>
+
+    @* Price slash tag — top-right corner *@
+    <div class="bq-item-price"
+         style="
+            background:@theme.PriceBadgeBackgroundColor;
+            color:@theme.PriceBadgeFontColor;
+            font-size:@(theme.PriceBadgeFontSize)rem;
+            font-weight:@theme.PriceBadgeFontWeight;
+            @(string.IsNullOrWhiteSpace(theme.PriceBadgeFont) ? "" : $"font-family:{theme.PriceBadgeFont};")
+         ">
+        @priceText
+    </div>
+
+    @* Smoke shelf — title + optional description + ember line *@
+    <div class="bq-item-body">
+        <h5 class="bq-item-name"
+            style="color:@theme.TitleColor; font-size:@(theme.TitleFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont};")">
+            @Model.DefaultTitle
+        </h5>
+        @if (theme.ShowDescription && !string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="bq-item-desc"
+               style="color:@theme.DescribtionColor; font-size:@(theme.DescribtionFontSize)rem; @(string.IsNullOrWhiteSpace(theme.DescribtionFont) ? "" : $"font-family:{theme.DescribtionFont};")">
+                @Model.Description
+            </p>
+        }
+        <div class="bq-item-ember-line"></div>
+    </div>
+</article>
