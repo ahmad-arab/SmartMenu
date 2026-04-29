@@ -4,6 +4,53 @@ body {
     background: var(--bq-body-bg);
 }
 
+html[dir="rtl"] body {
+    font-family: "Cairo", "Segoe UI", sans-serif;
+}
+
+html[dir="rtl"] .bq-title,
+html[dir="rtl"] .bq-search,
+html[dir="rtl"] .bq-search::placeholder,
+html[dir="rtl"] .bq-ribbon-link,
+html[dir="rtl"] .bq-section-title,
+html[dir="rtl"] .bq-category-title,
+html[dir="rtl"] .bq-item-name,
+html[dir="rtl"] .bq-item-price,
+html[dir="rtl"] .bq-label {
+    font-family: "Cairo", "Segoe UI", sans-serif;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+html[dir="rtl"] .bq-title,
+html[dir="rtl"] .bq-section-title,
+html[dir="rtl"] .bq-item-name,
+html[dir="rtl"] .bq-label {
+    font-weight: 700;
+}
+
+html[dir="rtl"] .bq-item-desc,
+html[dir="rtl"] .bq-control {
+    font-family: "Cairo", "Segoe UI", sans-serif;
+}
+
+html[dir="rtl"] .bq-search-fire {
+    left: auto;
+    right: 1.1rem;
+}
+
+html[dir="rtl"] .bq-search {
+    padding: .82rem 2.9rem .82rem 1.2rem;
+}
+
+html[dir="rtl"] .bq-item-price {
+    right: auto;
+    left: 0;
+    padding: .48rem .7rem .48rem 1.1rem;
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 100%, 0 100%);
+    box-shadow: 4px 4px 16px rgba(0, 0, 0, .55);
+}
+
 /* ── Topbar ─────────────────────────────────────────────── */
 .bq-topbar {
     position: absolute;
