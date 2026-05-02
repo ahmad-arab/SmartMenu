@@ -35,6 +35,20 @@
     </div>
     <div class="row mb-4">
         <div class="col">
+            @if (!string.IsNullOrWhiteSpace(Model.HeroSubtitleText) || !string.IsNullOrWhiteSpace(Model.CategoryIndexTitleText))
+            {
+                <div class="alert alert-light border mb-3">
+                    @if (!string.IsNullOrWhiteSpace(Model.HeroSubtitleText))
+                    {
+                        <div><strong>Hero subtitle:</strong> @Model.HeroSubtitleText</div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.CategoryIndexTitleText))
+                    {
+                        <div><strong>Category index title:</strong> @Model.CategoryIndexTitleText</div>
+                    }
+                </div>
+            }
+
             @if (!string.IsNullOrEmpty(Model.ImageUrl))
             {
                 <div class="d-flex align-items-start gap-2">

@@ -29,6 +29,14 @@
                         }
                         <div class="card-body">
                             <h5 class="card-title">@menu.DefaultTitle</h5>
+                            @if (!string.IsNullOrWhiteSpace(menu.HeroSubtitleText))
+                            {
+                                <p class="card-text text-muted small mb-1">@menu.HeroSubtitleText</p>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(menu.CategoryIndexTitleText))
+                            {
+                                <span class="badge bg-light text-dark border">@menu.CategoryIndexTitleText</span>
+                            }
                         </div>
                     </a>
                     <div class="menu-actions position-absolute top-0 end-0 p-2" style="display:none; z-index:2;">

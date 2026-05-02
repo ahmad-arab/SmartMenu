@@ -17,6 +17,9 @@ namespace SmartMenu.Models.Menu
         [DataType(DataType.Upload)]
         public IFormFile? Image { get; set; }
 
+        public List<LocalizedMenuTextViewModel> HeroSubtitleTexts { get; set; } = new();
+        public List<LocalizedMenuTextViewModel> CategoryIndexTitleTexts { get; set; } = new();
+
         public List<MenuTitleViewModel> Titles { get; set; } = new();
         public List<LanguageListItemViewModel> AvailableLanguages { get; set; } = new();
     }

@@ -44,6 +44,8 @@ namespace SmartMenu.Repositories.Category
             return await _context.Categories
                 .Include(c => c.CategoryTitles).ThenInclude(ct => ct.Language)
                 .Include(c => c.Menu).ThenInclude(m => m.MenuTitles).ThenInclude(mt => mt.Language)
+                .Include(c => c.Menu).ThenInclude(m => m.MenuHeroSubtitleTexts)
+                .Include(c => c.Menu).ThenInclude(m => m.MenuCategoryIndexTitleTexts)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 

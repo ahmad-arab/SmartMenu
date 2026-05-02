@@ -1,0 +1,209 @@
+@using SmartMenu.Models.Theme.Menu
+@model SmartMenu.Models.View.PublicCategoryViewModel
+@{
+    Layout = "~/Views/Shared/_MenuLayout_RomeTricolore.cshtml";
+    ViewData["Title"] = $"{Model.CategoryTitle} - {Model.MenuDefaultTitle}";
+
+    var theme = string.IsNullOrWhiteSpace(Model.MenuThemeJson)
+        ? new MenuTheme_RomeTricolore()
+        : System.Text.Json.JsonSerializer.Deserialize<MenuTheme_RomeTricolore>(Model.MenuThemeJson) ?? new MenuTheme_RomeTricolore();
+
+    var heroSubtitle = string.IsNullOrWhiteSpace(Model.HeroSubtitleText)
+        ? "Designed for large menus: filter fast, sort smart, decide quickly."
+        : Model.HeroSubtitleText;
+}
+@section LanguageSelector {
+    <form class="mx-2" method="get" action="/Menu/Category">
+        <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+        <input type="hidden" name="identifier" value="@Model.Identifier" />
+        @if (Model.IsThemePreview)
+        {
+            <input type="hidden" name="previewTheme" value="true" />
+        }
+        <select name="lang" onchange="this.form.submit()" class="form-select form-select-sm rtm-control" style="min-width:120px;">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                var selected = lang.Code == Model.SelectedLanguage ? "selected" : "";
+                @Html.Raw($"<option value=\"{lang.Code}\" {selected}>{lang.Name}</option>")
+            }
+        </select>
+    </form>
+}
+@section CommandSelector {
+    <form class="mx-2">
+        <select id="menuCommandSelect" class="form-select form-select-sm rtm-control" style="min-width:220px;">
+            <option value="">Select Command</option>
+            @foreach (var cmd in Model.MenuCommands)
+            {
+                <option value="@cmd.Id"
+                        data-message="@cmd.SystemMessage"
+                        data-text="@cmd.DefaultText"
+                        data-identifier="@Model.Identifier"
+                        data-hascustomermessage="@cmd.HasCustomerMessage.ToString().ToLower()">
+                    @cmd.DefaultText
+                </option>
+            }
+        </select>
+    </form>
+}
+
+<div class="rtm-page rtm-category-page">
+    <section class="rtm-category-hero">
+        <div class="rtm-category-hero-cover" style="background-image:url('@(string.IsNullOrWhiteSpace(Model.CategoryImageUrl) ? Model.MenuCoverUrl : Model.CategoryImageUrl)')"></div>
+        <div class="rtm-category-hero-veils"></div>
+        <div class="container rtm-category-hero-content">
+            <a href="@Url.Action("View", "Menu", new { menuId = Model.MenuId, lang = Model.SelectedLanguage, identifier = Model.Identifier, previewTheme = Model.IsThemePreview })" class="rtm-back-link">
+                <span aria-hidden="true">&#8592;</span> Back To Menu
+            </a>
+            <h1 class="rtm-category-title-main">@Model.CategoryTitle</h1>
+            <p class="rtm-category-subtitle">@heroSubtitle</p>
+        </div>
+    </section>
+
+    <section class="container rtm-item-controls-wrap">
+        <div class="rtm-item-controls">
+            <input id="itemFilter" type="search" class="rtm-search" placeholder="Search items in this category..." autocomplete="off" />
+            <select id="sortItems" class="form-select rtm-control rtm-sort-select">
+                <option value="default">Sort: Default</option>
+                <option value="az">Sort: A-Z</option>
+                <option value="za">Sort: Z-A</option>
+                <option value="priceLow">Sort: Price low-high</option>
+                <option value="priceHigh">Sort: Price high-low</option>
+            </select>
+            <span id="itemCount" class="rtm-search-count"></span>
+        </div>
+    </section>
+
+    <section class="container rtm-item-grid-wrap">
+        <div class="row g-3" id="itemGrid">
+            @foreach (var item in Model.Items)
+            {
+                <div class="col-12 col-md-6 col-xl-4 rtm-item-col"
+                     data-title="@(item.DefaultTitle ?? string.Empty).ToLowerInvariant()"
+                     data-description="@(item.Description ?? string.Empty).ToLowerInvariant()"
+                     data-price="@item.Price"
+                     data-order="@item.Order">
+                    @await Component.InvokeAsync("ItemCard", new {
+                        themKey = Model.ItemCardThemeKey,
+                        model = item,
+                        themeJson = Model.ItemCardThemeJson
+                    })
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+<script>
+    (function () {
+        var input = document.getElementById('itemFilter');
+        var sort = document.getElementById('sortItems');
+        var grid = document.getElementById('itemGrid');
+        var count = document.getElementById('itemCount');
+
+        function toNumber(value) {
+            var n = Number(value);
+            return Number.isNaN(n) ? 0 : n;
+        }
+
+        function applyFilterAndSort() {
+            if (!grid) return;
+
+            var q = (input?.value || '').trim().toLowerCase();
+            var mode = sort?.value || 'default';
+            var cards = Array.from(grid.querySelectorAll('.rtm-item-col'));
+            var visibleCount = 0;
+
+            cards.forEach(function (card) {
+                var title = card.getAttribute('data-title') || '';
+                var desc = card.getAttribute('data-description') || '';
+                var show = q.length === 0 || title.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+                card.style.display = show ? '' : 'none';
+                if (show) visibleCount += 1;
+            });
+
+            cards.sort(function (a, b) {
+                var aTitle = a.getAttribute('data-title') || '';
+                var bTitle = b.getAttribute('data-title') || '';
+                var aPrice = toNumber(a.getAttribute('data-price'));
+                var bPrice = toNumber(b.getAttribute('data-price'));
+                var aOrder = toNumber(a.getAttribute('data-order'));
+                var bOrder = toNumber(b.getAttribute('data-order'));
+
+                if (mode === 'az') return aTitle.localeCompare(bTitle);
+                if (mode === 'za') return bTitle.localeCompare(aTitle);
+                if (mode === 'priceLow') return aPrice - bPrice;
+                if (mode === 'priceHigh') return bPrice - aPrice;
+                return aOrder - bOrder;
+            });
+
+            cards.forEach(function (card) { grid.appendChild(card); });
+
+            if (count) {
+                count.textContent = visibleCount + ' shown';
+            }
+        }
+
+        input?.addEventListener('input', applyFilterAndSort);
+        sort?.addEventListener('change', applyFilterAndSort);
+        applyFilterAndSort();
+
+        function sendCommand(cmdId, identifier, message, hasCustomerMessage, text) {
+            function post(customerMessage) {
+                const payload = {
+                    menuCommandId: parseInt(cmdId),
+                    identifier: identifier || null,
+                    customerMessage: customerMessage || null,
+                    firedAt: new Date().toISOString(),
+                    timezoneOffsetMinutes: new Date().getTimezoneOffset()
+                };
+
+                fetch('/Menu/SendCommand', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    body: JSON.stringify(payload)
+                }).then(r => r.json()).then(res => {
+                    if (res?.success) Swal.fire('Sent!', 'Command sent successfully.', 'success');
+                    else Swal.fire('Error', res?.message || 'Failed to send.', 'error');
+                }).catch(() => Swal.fire('Error', 'Failed to send.', 'error'));
+            }
+
+            if (window.Swal) {
+                if (hasCustomerMessage) {
+                    Swal.fire({
+                        title: text,
+                        html: `<div><div style="margin-bottom:8px;">${message}</div><textarea id="cmsg" class="form-control" rows="4" placeholder="Enter your message"></textarea></div>`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Send',
+                        cancelButtonText: 'Cancel',
+                        preConfirm: () => document.getElementById('cmsg').value
+                    }).then(res => { if (res.isConfirmed) post(res.value); });
+                } else {
+                    Swal.fire({ title: text, text: message, icon: 'question', showCancelButton: true, confirmButtonText: 'Send' })
+                        .then(res => { if (res.isConfirmed) post(''); });
+                }
+            } else {
+                let cm = '';
+                if (hasCustomerMessage) {
+                    cm = prompt(message + "\n\nEnter your message:");
+                    if (cm === null) return;
+                } else {
+                    if (!confirm(message)) return;
+                }
+                post(cm);
+            }
+        }
+
+        document.getElementById('menuCommandSelect')?.addEventListener('change', function () {
+            const opt = this.selectedOptions[0];
+            if (!opt || !opt.value) return;
+            sendCommand(opt.value, opt.dataset.identifier, opt.dataset.message, opt.dataset.hascustomermessage === 'true', opt.dataset.text);
+            this.value = '';
+        });
+    })();
+</script>
+@Html.AntiForgeryToken()

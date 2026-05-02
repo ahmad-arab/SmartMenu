@@ -74,6 +74,40 @@ namespace SmartMenu.Data
                     .IsRequired();
             });
 
+            builder.Entity<MenuHeroSubtitleText>(b =>
+            {
+                b.HasKey(ur => new { ur.MenuId, ur.LanguageId });
+
+                b.HasOne(ur => ur.Menu)
+                    .WithMany(u => u.MenuHeroSubtitleTexts)
+                    .HasForeignKey(ur => ur.MenuId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
+
+                b.HasOne(ur => ur.Language)
+                    .WithMany(r => r.MenuHeroSubtitleTexts)
+                    .HasForeignKey(ur => ur.LanguageId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
+            });
+
+            builder.Entity<MenuCategoryIndexTitleText>(b =>
+            {
+                b.HasKey(ur => new { ur.MenuId, ur.LanguageId });
+
+                b.HasOne(ur => ur.Menu)
+                    .WithMany(u => u.MenuCategoryIndexTitleTexts)
+                    .HasForeignKey(ur => ur.MenuId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
+
+                b.HasOne(ur => ur.Language)
+                    .WithMany(r => r.MenuCategoryIndexTitleTexts)
+                    .HasForeignKey(ur => ur.LanguageId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired();
+            });
+
             builder.Entity<CategoryTitle>(b =>
             {
                 b.HasKey(ur => new { ur.CategoryId, ur.LanguageId });
@@ -201,6 +235,8 @@ namespace SmartMenu.Data
         public DbSet<Menu> Menus { get; set; }
         public DbSet<MenuLanguage> MenuLanguages { get; set; }
         public DbSet<MenuTitle> MenuTitles { get; set; }
+        public DbSet<MenuHeroSubtitleText> MenuHeroSubtitleTexts { get; set; }
+        public DbSet<MenuCategoryIndexTitleText> MenuCategoryIndexTitleTexts { get; set; }
         public DbSet<CategoryTitle> CategoryTitles { get; set; }
         public DbSet<CategoryDescription> CategoryDescriptions { get; set; }
         public DbSet<Category> Categories { get; set; }

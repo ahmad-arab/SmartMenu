@@ -12,8 +12,12 @@ namespace SmartMenu.Repositories.Menu
         Task<Data.Entities.Menu?> GetByIdForPublicViewAsync(int id);
         Task AddAsync(Data.Entities.Menu menu);
         Task AddTitleAsync(MenuTitle title);
+        Task AddHeroSubtitleTextAsync(MenuHeroSubtitleText text);
+        Task AddCategoryIndexTitleTextAsync(MenuCategoryIndexTitleText text);
         Task UpdateAsync(Data.Entities.Menu menu);
         Task RemoveTitlesRangeAsync(IEnumerable<MenuTitle> titles);
+        Task RemoveHeroSubtitleTextsRangeAsync(IEnumerable<MenuHeroSubtitleText> texts);
+        Task RemoveCategoryIndexTitleTextsRangeAsync(IEnumerable<MenuCategoryIndexTitleText> texts);
         Task DeleteAsync(Data.Entities.Menu menu);
     }
 }

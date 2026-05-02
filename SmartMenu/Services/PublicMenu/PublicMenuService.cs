@@ -1,4 +1,5 @@
 using SmartMenu.Data.Enums;
+using SmartMenu.Data.Entities;
 using SmartMenu.Models.Category;
 using SmartMenu.Models.MenuCommand;
 using SmartMenu.Models.MenuLable;
@@ -106,6 +107,8 @@ namespace SmartMenu.Services.PublicMenu
                     ?? FallbackText.NoText,
                 MenuLogoUrl = tenant?.LogoUrl ?? menu.ImageUrl,
                 MenuCoverUrl = menu.ImageUrl,
+                HeroSubtitleText = ResolveLocalizedText(menu.MenuHeroSubtitleTexts, selectedLang?.Id),
+                CategoryIndexTitleText = ResolveLocalizedText(menu.MenuCategoryIndexTitleTexts, selectedLang?.Id),
                 Categories = categories,
                 AvailableLanguages = availableLanguages,
                 SelectedLanguage = selectedLang?.Code ?? "",
@@ -218,8 +221,10 @@ namespace SmartMenu.Services.PublicMenu
                 MenuDefaultTitle = menu.MenuTitles.FirstOrDefault(t => t.LanguageId == selectedLang?.Id)?.Text
                     ?? menu.MenuTitles.FirstOrDefault()?.Text
                     ?? FallbackText.NoText,
-                MenuLogoUrl = tenant?.LogoUrl?? menu.ImageUrl,
+                MenuLogoUrl = tenant?.LogoUrl ?? menu.ImageUrl,
                 MenuCoverUrl = menu.ImageUrl,
+                HeroSubtitleText = ResolveLocalizedText(menu.MenuHeroSubtitleTexts, selectedLang?.Id),
+                CategoryIndexTitleText = ResolveLocalizedText(menu.MenuCategoryIndexTitleTexts, selectedLang?.Id),
                 CategoryId = category.Id,
                 CategoryTitle = title,
                 CategoryImageUrl = category.ImageUrl,
@@ -322,6 +327,34 @@ namespace SmartMenu.Services.PublicMenu
             return availableLanguages.FirstOrDefault(l => l.Code == lang)
                 ?? availableLanguages.FirstOrDefault(l => l.IsDefault)
                 ?? availableLanguages.FirstOrDefault();
+        }
+
+        private static string? ResolveLocalizedText(IEnumerable<MenuHeroSubtitleText> texts, int? langId)
+        {
+            if (langId.HasValue)
+            {
+                var exact = texts.FirstOrDefault(t => t.LanguageId == langId.Value)?.Text;
+                if (!string.IsNullOrWhiteSpace(exact))
+                {
+                    return exact;
+                }
+            }
+
+            return texts.FirstOrDefault(t => !string.IsNullOrWhiteSpace(t.Text))?.Text;
+        }
+
+        private static string? ResolveLocalizedText(IEnumerable<MenuCategoryIndexTitleText> texts, int? langId)
+        {
+            if (langId.HasValue)
+            {
+                var exact = texts.FirstOrDefault(t => t.LanguageId == langId.Value)?.Text;
+                if (!string.IsNullOrWhiteSpace(exact))
+                {
+                    return exact;
+                }
+            }
+
+            return texts.FirstOrDefault(t => !string.IsNullOrWhiteSpace(t.Text))?.Text;
         }
 
         private List<MenuLableListItemViewModel> BuildLableViewModels(

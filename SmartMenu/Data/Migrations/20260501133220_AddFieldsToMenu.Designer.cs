@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartMenu.Data;
 
@@ -11,9 +12,11 @@ using SmartMenu.Data;
 namespace SmartMenu.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260501133220_AddFieldsToMenu")]
+    partial class AddFieldsToMenu
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -435,8 +438,14 @@ namespace SmartMenu.Data.Migrations
                     b.Property<int?>("CategoryCardThemeKey")
                         .HasColumnType("int");
 
+                    b.Property<string>("CategoryIndexTitleText")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("HeroSubtitleText")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
@@ -468,28 +477,6 @@ namespace SmartMenu.Data.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Menus");
-                });
-
-            modelBuilder.Entity("SmartMenu.Data.Entities.MenuCategoryIndexTitleText", b =>
-                {
-                    b.Property<int>("MenuId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MenuId", "LanguageId");
-
-                    b.HasIndex("LanguageId");
-
-                    b.ToTable("MenuCategoryIndexTitleTexts");
                 });
 
             modelBuilder.Entity("SmartMenu.Data.Entities.MenuCommand", b =>
@@ -563,28 +550,6 @@ namespace SmartMenu.Data.Migrations
                     b.HasIndex("LanguageId");
 
                     b.ToTable("MenuCommandTexts");
-                });
-
-            modelBuilder.Entity("SmartMenu.Data.Entities.MenuHeroSubtitleText", b =>
-                {
-                    b.Property<int>("MenuId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MenuId", "LanguageId");
-
-                    b.HasIndex("LanguageId");
-
-                    b.ToTable("MenuHeroSubtitleTexts");
                 });
 
             modelBuilder.Entity("SmartMenu.Data.Entities.MenuLable", b =>
@@ -954,25 +919,6 @@ namespace SmartMenu.Data.Migrations
                     b.Navigation("Tenant");
                 });
 
-            modelBuilder.Entity("SmartMenu.Data.Entities.MenuCategoryIndexTitleText", b =>
-                {
-                    b.HasOne("SmartMenu.Data.Entities.Language", "Language")
-                        .WithMany("MenuCategoryIndexTitleTexts")
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SmartMenu.Data.Entities.Menu", "Menu")
-                        .WithMany("MenuCategoryIndexTitleTexts")
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Language");
-
-                    b.Navigation("Menu");
-                });
-
             modelBuilder.Entity("SmartMenu.Data.Entities.MenuCommand", b =>
                 {
                     b.HasOne("SmartMenu.Data.Entities.Menu", "Menu")
@@ -1020,25 +966,6 @@ namespace SmartMenu.Data.Migrations
                     b.Navigation("Language");
 
                     b.Navigation("MenuCommand");
-                });
-
-            modelBuilder.Entity("SmartMenu.Data.Entities.MenuHeroSubtitleText", b =>
-                {
-                    b.HasOne("SmartMenu.Data.Entities.Language", "Language")
-                        .WithMany("MenuHeroSubtitleTexts")
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SmartMenu.Data.Entities.Menu", "Menu")
-                        .WithMany("MenuHeroSubtitleTexts")
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Language");
-
-                    b.Navigation("Menu");
                 });
 
             modelBuilder.Entity("SmartMenu.Data.Entities.MenuLable", b =>
@@ -1169,11 +1096,7 @@ namespace SmartMenu.Data.Migrations
 
                     b.Navigation("LanguageTexts");
 
-                    b.Navigation("MenuCategoryIndexTitleTexts");
-
                     b.Navigation("MenuCommandTexts");
-
-                    b.Navigation("MenuHeroSubtitleTexts");
 
                     b.Navigation("MenuLableTexts");
 
@@ -1186,11 +1109,7 @@ namespace SmartMenu.Data.Migrations
                 {
                     b.Navigation("Categorys");
 
-                    b.Navigation("MenuCategoryIndexTitleTexts");
-
                     b.Navigation("MenuCommands");
-
-                    b.Navigation("MenuHeroSubtitleTexts");
 
                     b.Navigation("MenuLables");
 

@@ -23,6 +23,10 @@ namespace SmartMenu.Data.Enums
         [OnePageMenu]
         [MenuThemeDefaults(CategoryCardThemeKey.BbqGrill, ItemCardThemeKey.BbqGrill, LableThemeKey.BbqGrill)]
         BbqGrill,
+
+        [Display(Name = "Rome Tricolore")]
+        [MenuThemeDefaults(CategoryCardThemeKey.RomeTricolore, ItemCardThemeKey.RomeTricolore, LableThemeKey.RomeTricolore)]
+        RomeTricolore,
     }
 
     public enum CategoryCardThemeKey
@@ -38,6 +42,9 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "BBQ Grill")]
         BbqGrill,
+
+        [Display(Name = "Rome Tricolore")]
+        RomeTricolore,
     }
 
     public enum ItemCardThemeKey
@@ -53,6 +60,9 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "BBQ Grill")]
         BbqGrill,
+
+        [Display(Name = "Rome Tricolore")]
+        RomeTricolore,
     }
 
     public enum LableThemeKey
@@ -68,5 +78,8 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "BBQ Grill")]
         BbqGrill,
+
+        [Display(Name = "Rome Tricolore")]
+        RomeTricolore,
     }
 }

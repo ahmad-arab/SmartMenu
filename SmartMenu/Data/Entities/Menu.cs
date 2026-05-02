@@ -27,6 +27,8 @@ namespace SmartMenu.Data.Entities
         public DateTime CreateDate { get; set; } = new DateTime(630822816000000000); // for 1-Jan-2000 at midnight
 
         public ICollection<MenuTitle> MenuTitles { get; set; } = new List<MenuTitle>();
+        public ICollection<MenuHeroSubtitleText> MenuHeroSubtitleTexts { get; set; } = new List<MenuHeroSubtitleText>();
+        public ICollection<MenuCategoryIndexTitleText> MenuCategoryIndexTitleTexts { get; set; } = new List<MenuCategoryIndexTitleText>();
         public ICollection<Category> Categorys { get; set; } = new List<Category>();
         public ICollection<MenuLable> MenuLables { get; set; } = new List<MenuLable>();
         public ICollection<MenuCommand> MenuCommands { get; set; } = new List<MenuCommand>();

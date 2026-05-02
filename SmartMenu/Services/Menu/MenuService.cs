@@ -49,6 +49,8 @@ namespace SmartMenu.Services.Menu
             {
                 Id = m.Id,
                 ImageUrl = m.ImageUrl,
+                HeroSubtitleText = ResolveLocalizedText(m.MenuHeroSubtitleTexts, defaultLangId),
+                CategoryIndexTitleText = ResolveLocalizedText(m.MenuCategoryIndexTitleTexts, defaultLangId),
                 DefaultTitle =
                     m.MenuTitles.FirstOrDefault(t => t.LanguageId == defaultLangId)?.Text
                     ?? m.MenuTitles.FirstOrDefault()?.Text
@@ -79,7 +81,9 @@ namespace SmartMenu.Services.Menu
             return new CreateMenuViewModel
             {
                 AvailableLanguages = languageVMs,
-                Titles = languageVMs.Select(l => new MenuTitleViewModel { LanguageId = l.Id }).ToList()
+                Titles = languageVMs.Select(l => new MenuTitleViewModel { LanguageId = l.Id }).ToList(),
+                HeroSubtitleTexts = languageVMs.Select(l => new LocalizedMenuTextViewModel { LanguageId = l.Id }).ToList(),
+                CategoryIndexTitleTexts = languageVMs.Select(l => new LocalizedMenuTextViewModel { LanguageId = l.Id }).ToList()
             };
         }
 
@@ -102,6 +106,26 @@ namespace SmartMenu.Services.Menu
                     MenuId = menu.Id,
                     LanguageId = td.LanguageId,
                     Text = td.Text
+                });
+            }
+
+            foreach (var td in model.HeroSubtitleTexts.Where(t => !string.IsNullOrWhiteSpace(t.Text)))
+            {
+                await _menuRepository.AddHeroSubtitleTextAsync(new MenuHeroSubtitleText
+                {
+                    MenuId = menu.Id,
+                    LanguageId = td.LanguageId,
+                    Text = td.Text!.Trim()
+                });
+            }
+
+            foreach (var td in model.CategoryIndexTitleTexts.Where(t => !string.IsNullOrWhiteSpace(t.Text)))
+            {
+                await _menuRepository.AddCategoryIndexTitleTextAsync(new MenuCategoryIndexTitleText
+                {
+                    MenuId = menu.Id,
+                    LanguageId = td.LanguageId,
+                    Text = td.Text!.Trim()
                 });
             }
         }
@@ -131,7 +155,17 @@ namespace SmartMenu.Services.Menu
                 Id = menu.Id,
                 AvailableLanguages = languageVMs,
                 Titles = titles,
-                ImageUrl = menu.ImageUrl
+                ImageUrl = menu.ImageUrl,
+                HeroSubtitleTexts = languageVMs.Select(l => new LocalizedMenuTextViewModel
+                {
+                    LanguageId = l.Id,
+                    Text = menu.MenuHeroSubtitleTexts.FirstOrDefault(t => t.LanguageId == l.Id)?.Text ?? string.Empty
+                }).ToList(),
+                CategoryIndexTitleTexts = languageVMs.Select(l => new LocalizedMenuTextViewModel
+                {
+                    LanguageId = l.Id,
+                    Text = menu.MenuCategoryIndexTitleTexts.FirstOrDefault(t => t.LanguageId == l.Id)?.Text ?? string.Empty
+                }).ToList()
             };
         }
 
@@ -158,6 +192,56 @@ namespace SmartMenu.Services.Menu
                         MenuId = menu.Id,
                         LanguageId = td.LanguageId,
                         Text = td.Text
+                    });
+                }
+            }
+
+            foreach (var td in model.HeroSubtitleTexts)
+            {
+                var heroSubtitleText = menu.MenuHeroSubtitleTexts.FirstOrDefault(t => t.LanguageId == td.LanguageId);
+                if (heroSubtitleText != null)
+                {
+                    if (string.IsNullOrWhiteSpace(td.Text))
+                    {
+                        await _menuRepository.RemoveHeroSubtitleTextsRangeAsync(new[] { heroSubtitleText });
+                    }
+                    else
+                    {
+                        heroSubtitleText.Text = td.Text.Trim();
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(td.Text))
+                {
+                    await _menuRepository.AddHeroSubtitleTextAsync(new MenuHeroSubtitleText
+                    {
+                        MenuId = menu.Id,
+                        LanguageId = td.LanguageId,
+                        Text = td.Text.Trim()
+                    });
+                }
+            }
+
+            foreach (var td in model.CategoryIndexTitleTexts)
+            {
+                var categoryIndexTitleText = menu.MenuCategoryIndexTitleTexts.FirstOrDefault(t => t.LanguageId == td.LanguageId);
+                if (categoryIndexTitleText != null)
+                {
+                    if (string.IsNullOrWhiteSpace(td.Text))
+                    {
+                        await _menuRepository.RemoveCategoryIndexTitleTextsRangeAsync(new[] { categoryIndexTitleText });
+                    }
+                    else
+                    {
+                        categoryIndexTitleText.Text = td.Text.Trim();
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(td.Text))
+                {
+                    await _menuRepository.AddCategoryIndexTitleTextAsync(new MenuCategoryIndexTitleText
+                    {
+                        MenuId = menu.Id,
+                        LanguageId = td.LanguageId,
+                        Text = td.Text.Trim()
                     });
                 }
             }
@@ -199,6 +283,8 @@ namespace SmartMenu.Services.Menu
                     ?? menu.MenuTitles.FirstOrDefault()?.Text
                     ?? FallbackText.NoTitle,
                 ImageUrl = menu.ImageUrl,
+                HeroSubtitleText = ResolveLocalizedText(menu.MenuHeroSubtitleTexts, defaultLangId),
+                CategoryIndexTitleText = ResolveLocalizedText(menu.MenuCategoryIndexTitleTexts, defaultLangId),
                 Categories = categoryViewModels
             };
         }
@@ -238,6 +324,8 @@ namespace SmartMenu.Services.Menu
 
             // Delete menu titles, labels, commands, staff
             await _menuRepository.RemoveTitlesRangeAsync(menu.MenuTitles);
+            await _menuRepository.RemoveHeroSubtitleTextsRangeAsync(menu.MenuHeroSubtitleTexts);
+            await _menuRepository.RemoveCategoryIndexTitleTextsRangeAsync(menu.MenuCategoryIndexTitleTexts);
 
             _fileUploadService.DeleteImage(menu.ImageUrl);
             await _menuRepository.DeleteAsync(menu);
@@ -296,6 +384,34 @@ namespace SmartMenu.Services.Menu
         {
             var menu = await _menuRepository.GetByIdAsync(menuId);
             return menu != null && menu.TenantId == tenantId;
+        }
+
+        private static string? ResolveLocalizedText(IEnumerable<MenuHeroSubtitleText> texts, int? langId)
+        {
+            if (langId.HasValue)
+            {
+                var exact = texts.FirstOrDefault(t => t.LanguageId == langId.Value)?.Text;
+                if (!string.IsNullOrWhiteSpace(exact))
+                {
+                    return exact;
+                }
+            }
+
+            return texts.FirstOrDefault(t => !string.IsNullOrWhiteSpace(t.Text))?.Text;
+        }
+
+        private static string? ResolveLocalizedText(IEnumerable<MenuCategoryIndexTitleText> texts, int? langId)
+        {
+            if (langId.HasValue)
+            {
+                var exact = texts.FirstOrDefault(t => t.LanguageId == langId.Value)?.Text;
+                if (!string.IsNullOrWhiteSpace(exact))
+                {
+                    return exact;
+                }
+            }
+
+            return texts.FirstOrDefault(t => !string.IsNullOrWhiteSpace(t.Text))?.Text;
         }
     }
 }

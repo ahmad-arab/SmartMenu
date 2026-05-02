@@ -1,0 +1,36 @@
+@using SmartMenu.Models.Theme.Category
+@model SmartMenu.Models.Category.CategoryListItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new CategoryCardTheme_RomeTricolore()
+        : System.Text.Json.JsonSerializer.Deserialize<CategoryCardTheme_RomeTricolore>(Model.ThemeJson) ?? new CategoryCardTheme_RomeTricolore();
+
+    var shadow = $"0 14px 34px rgba(3, 7, 18, {theme.ShadowOpacity.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+    var url = string.IsNullOrWhiteSpace(Model.LinkUrl) ? "javascript:void(0)" : Model.LinkUrl;
+}
+<a href="@url" class="text-decoration-none d-block h-100" aria-label="@Model.DefaultTitle">
+    <article class="rtm-category-card"
+             style="
+                background:linear-gradient(152deg, @theme.CardBackgroundStart, @theme.CardBackgroundEnd);
+                border:@(theme.BorderWidthPx)px solid @theme.BorderColor;
+                border-radius:@(theme.BorderRadiusPx)px;
+                     box-shadow:@shadow, 0 34px 90px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(0, 146, 70, 0.14), 0 0 88px rgba(206, 43, 55, 0.16);
+                --rtm-category-green:@theme.AccentGreen;
+                --rtm-category-red:@theme.AccentRed;
+             ">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.DefaultTitle" class="rtm-category-image" />
+        }
+        else
+        {
+            <div class="rtm-category-image rtm-category-image-fallback"></div>
+        }
+
+        <div class="rtm-category-flag-line" aria-hidden="true"></div>
+        <h3 class="rtm-category-title"
+            style="color:@theme.TitleColor; font-size:@(theme.TitleFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont};")">
+            @Model.DefaultTitle
+        </h3>
+    </article>
+</a>

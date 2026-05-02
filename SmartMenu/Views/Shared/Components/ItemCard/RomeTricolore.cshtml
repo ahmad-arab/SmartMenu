@@ -1,0 +1,65 @@
+@using SmartMenu.Models.Theme.Item
+@model SmartMenu.Models.View.PublicCategoryItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new ItemCardTheme_RomeTricolore()
+        : System.Text.Json.JsonSerializer.Deserialize<ItemCardTheme_RomeTricolore>(Model.ThemeJson) ?? new ItemCardTheme_RomeTricolore();
+
+    string BuildOverlay(string hex, float opacity)
+    {
+        if (string.IsNullOrWhiteSpace(hex))
+        {
+            return $"rgba(0, 0, 0, {opacity.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+        }
+
+        var clean = hex.Trim().TrimStart('#');
+        if (clean.Length == 3)
+        {
+            clean = $"{clean[0]}{clean[0]}{clean[1]}{clean[1]}{clean[2]}{clean[2]}";
+        }
+
+        if (clean.Length == 6
+            && int.TryParse(clean.Substring(0, 2), System.Globalization.NumberStyles.HexNumber, null, out var r)
+            && int.TryParse(clean.Substring(2, 2), System.Globalization.NumberStyles.HexNumber, null, out var g)
+            && int.TryParse(clean.Substring(4, 2), System.Globalization.NumberStyles.HexNumber, null, out var b))
+        {
+            return $"rgba({r}, {g}, {b}, {opacity.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+        }
+
+        return $"rgba(0, 0, 0, {opacity.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+    }
+
+    var overlay = BuildOverlay(theme.ImageOverlayColor, theme.ImageOverlayOpacity);
+    var itemHeight = Math.Max(190, theme.ImageHeightPx);
+    var priceText = Model.Price.ToString("0.##");
+}
+<article class="rtm-item-card"
+         style="background:linear-gradient(145deg, rgba(255, 248, 235, 0.13), rgba(255, 248, 235, 0.03) 34%), linear-gradient(180deg, rgba(22, 19, 16, 0.82), rgba(9, 8, 7, 0.95)), @theme.CardBackground; border:@(theme.BorderWidth)px solid @theme.BorderColor; border-radius:@(theme.BorderRadius)px; --rtm-accent-green:@theme.AccentGreen; --rtm-accent-red:@theme.AccentRed;">
+    <div class="rtm-item-image-frame" style="height:@(itemHeight)px;">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.DefaultTitle" class="rtm-item-image" />
+            <span class="rtm-item-overlay" style="background:@overlay;"></span>
+        }
+        else
+        {
+            <div class="rtm-item-empty"></div>
+        }
+    </div>
+
+    <section class="rtm-item-content">
+        <h5 class="rtm-item-title"
+            style="color:@theme.TitleColor; font-size:@(theme.TitleFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont};")">@Model.DefaultTitle</h5>
+
+        @if (theme.ShowDescription && !string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="rtm-item-description"
+               style="color:@theme.DescribtionColor; font-size:@(theme.DescribtionFontSize)rem; @(string.IsNullOrWhiteSpace(theme.DescribtionFont) ? "" : $"font-family:{theme.DescribtionFont};")">@Model.Description</p>
+        }
+
+        <p class="rtm-item-price"
+              style="background:linear-gradient(90deg, rgba(0, 146, 70, 0.52), rgba(244, 245, 240, 0.12), rgba(206, 43, 55, 0.52)), @theme.PriceBadgeBackgroundColor; color:@theme.PriceBadgeFontColor; font-size:@(theme.PriceBadgeFontSize)rem; font-weight:@theme.PriceBadgeFontWeight; @(string.IsNullOrWhiteSpace(theme.PriceBadgeFont) ? "" : $"font-family:{theme.PriceBadgeFont};")">
+            @priceText
+        </p>
+    </section>
+</article>

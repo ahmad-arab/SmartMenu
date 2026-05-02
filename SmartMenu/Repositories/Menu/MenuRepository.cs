@@ -18,6 +18,8 @@ namespace SmartMenu.Repositories.Menu
             return await _context.Menus
                 .Where(m => m.TenantId == tenantId)
                 .Include(m => m.MenuTitles)
+                .Include(m => m.MenuHeroSubtitleTexts)
+                .Include(m => m.MenuCategoryIndexTitleTexts)
                 .ToListAsync();
         }
 
@@ -37,6 +39,8 @@ namespace SmartMenu.Repositories.Menu
         {
             return await _context.Menus
                 .Include(m => m.MenuTitles)
+                .Include(m => m.MenuHeroSubtitleTexts)
+                .Include(m => m.MenuCategoryIndexTitleTexts)
                 .Where(m => m.Id == id && m.TenantId == tenantId)
                 .FirstOrDefaultAsync();
         }
@@ -45,6 +49,8 @@ namespace SmartMenu.Repositories.Menu
         {
             return await _context.Menus
                 .Include(m => m.MenuTitles)
+                .Include(m => m.MenuHeroSubtitleTexts)
+                .Include(m => m.MenuCategoryIndexTitleTexts)
                 .Include(m => m.Categorys)
                 .Include(m => m.MenuLables)
                 .Include(m => m.MenuCommands)
@@ -56,6 +62,8 @@ namespace SmartMenu.Repositories.Menu
         {
             return await _context.Menus
                 .Include(m => m.MenuTitles).ThenInclude(mt => mt.Language)
+                .Include(m => m.MenuHeroSubtitleTexts)
+                .Include(m => m.MenuCategoryIndexTitleTexts)
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
 
@@ -71,6 +79,18 @@ namespace SmartMenu.Repositories.Menu
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddHeroSubtitleTextAsync(MenuHeroSubtitleText text)
+        {
+            _context.MenuHeroSubtitleTexts.Add(text);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddCategoryIndexTitleTextAsync(MenuCategoryIndexTitleText text)
+        {
+            _context.MenuCategoryIndexTitleTexts.Add(text);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task UpdateAsync(Data.Entities.Menu menu)
         {
             await _context.SaveChangesAsync();
@@ -79,6 +99,18 @@ namespace SmartMenu.Repositories.Menu
         public async Task RemoveTitlesRangeAsync(IEnumerable<MenuTitle> titles)
         {
             _context.MenuTitles.RemoveRange(titles);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveHeroSubtitleTextsRangeAsync(IEnumerable<MenuHeroSubtitleText> texts)
+        {
+            _context.MenuHeroSubtitleTexts.RemoveRange(texts);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveCategoryIndexTitleTextsRangeAsync(IEnumerable<MenuCategoryIndexTitleText> texts)
+        {
+            _context.MenuCategoryIndexTitleTexts.RemoveRange(texts);
             await _context.SaveChangesAsync();
         }
 

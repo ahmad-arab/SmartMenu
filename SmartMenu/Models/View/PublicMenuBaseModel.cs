@@ -12,6 +12,8 @@ namespace SmartMenu.Models.View
         public string MenuDefaultTitle { get; set; }
         public string MenuLogoUrl { get; set; }
         public string MenuCoverUrl { get; set; }
+        public string? HeroSubtitleText { get; set; }
+        public string? CategoryIndexTitleText { get; set; }
         public List<LanguageOption> AvailableLanguages { get; set; }
         public string SelectedLanguage { get; set; }
         public bool IsRtl { get; set; }

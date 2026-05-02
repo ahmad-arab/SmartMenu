@@ -7,6 +7,8 @@ namespace SmartMenu.Models.Menu
         public int Id { get; set; }
         public string DefaultTitle { get; set; }
         public string ImageUrl { get; set; }
+        public string? HeroSubtitleText { get; set; }
+        public string? CategoryIndexTitleText { get; set; }
         public bool TenantIsUsingCommands { get; set; }
         public List<CategoryListItemViewModel> Categories { get; set; }
     }

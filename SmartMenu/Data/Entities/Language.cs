@@ -25,5 +25,7 @@ namespace SmartMenu.Data.Entities
         public ICollection<MenuLableText> MenuLableTexts { get; set; } = new List<MenuLableText>();
         public ICollection<MenuCommandText> MenuCommandTexts { get; set; } = new List<MenuCommandText>();
         public ICollection<MenuTitle> MenuTitles { get; set; } = new List<MenuTitle>();
+        public ICollection<MenuHeroSubtitleText> MenuHeroSubtitleTexts { get; set; } = new List<MenuHeroSubtitleText>();
+        public ICollection<MenuCategoryIndexTitleText> MenuCategoryIndexTitleTexts { get; set; } = new List<MenuCategoryIndexTitleText>();
     }
 }
