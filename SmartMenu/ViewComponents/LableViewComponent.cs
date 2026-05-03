@@ -18,6 +18,8 @@ namespace SmartMenu.ViewComponents
                     return View("DarkCircle", model);
                 case LableThemeKey.BbqGrill:
                     return View("BbqGrill", model);
+                case LableThemeKey.DonerCanvas:
+                    return View("DonerCanvas", model);
                 case LableThemeKey.RomeTricolore:
                     return View("RomeTricolore", model);
                 case LableThemeKey.Default:

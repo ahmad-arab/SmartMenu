@@ -1,0 +1,62 @@
+@using SmartMenu.Models.Theme.Item
+@model SmartMenu.Models.View.PublicCategoryItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new ItemCardTheme_DonerCanvas()
+        : System.Text.Json.JsonSerializer.Deserialize<ItemCardTheme_DonerCanvas>(Model.ThemeJson) ?? new ItemCardTheme_DonerCanvas();
+
+    var overlay = $"rgba(0, 0, 0, {theme.ImageOverlayOpacity.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+    var priceText = Model.Price.ToString("0.##");
+}
+<article class="dnr-item-card"
+         style="
+            --dnr-grill-opacity:@theme.GrillMarkOpacity.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            --dnr-item-ember:@theme.EmberGlowColor;
+            --dnr-card-bg:@theme.CardBackground;
+         ">
+    <div class="dnr-item-price"
+         style="
+            background:@theme.PriceBadgeBackgroundColor;
+            color:@theme.PriceBadgeFontColor;
+            font-size:@(theme.PriceBadgeFontSize)rem;
+            font-weight:@theme.PriceBadgeFontWeight;
+            @(string.IsNullOrWhiteSpace(theme.PriceBadgeFont) ? "" : $"font-family:{theme.PriceBadgeFont};")
+         ">
+        @priceText
+    </div>
+
+    <span class="dnr-item-paint-drop dnr-item-paint-drop--a" aria-hidden="true"></span>
+    <span class="dnr-item-paint-drop dnr-item-paint-drop--c" aria-hidden="true"></span>
+    <span class="dnr-item-paint-drop dnr-item-paint-drop--d" aria-hidden="true"></span>
+
+    <div class="dnr-item-main">
+        <div class="dnr-item-image-col">
+            <div class="dnr-item-image-circle" style="background:color-mix(in srgb, @theme.CardBackground 88%, #000 12%);">
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="@Model.DefaultTitle" class="dnr-item-img" />
+                }
+                else
+                {
+                    <div class="dnr-item-no-img" style="background:linear-gradient(145deg, #2d2d2d, #111111);"></div>
+                }
+                <span class="dnr-item-overlay" style="background:@overlay;"></span>
+            </div>
+        </div>
+
+        <div class="dnr-item-body" style="background:transparent;">
+            <h5 class="dnr-item-name"
+                style="color:@theme.TitleColor; font-size:@(theme.TitleFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont};")">
+                @Model.DefaultTitle
+            </h5>
+            @if (theme.ShowDescription && !string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p class="dnr-item-desc"
+                   style="color:@theme.DescribtionColor; font-size:@(theme.DescribtionFontSize)rem; @(string.IsNullOrWhiteSpace(theme.DescribtionFont) ? "" : $"font-family:{theme.DescribtionFont};")">
+                    @Model.Description
+                </p>
+            }
+            <div class="dnr-item-ember-line"></div>
+        </div>
+    </div>
+</article>

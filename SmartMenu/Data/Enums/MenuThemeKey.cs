@@ -24,6 +24,11 @@ namespace SmartMenu.Data.Enums
         [MenuThemeDefaults(CategoryCardThemeKey.BbqGrill, ItemCardThemeKey.BbqGrill, LableThemeKey.BbqGrill)]
         BbqGrill,
 
+        [Display(Name = "Doner Canvas")]
+        [OnePageMenu]
+        [MenuThemeDefaults(CategoryCardThemeKey.DonerCanvas, ItemCardThemeKey.DonerCanvas, LableThemeKey.DonerCanvas)]
+        DonerCanvas,
+
         [Display(Name = "Rome Tricolore")]
         [MenuThemeDefaults(CategoryCardThemeKey.RomeTricolore, ItemCardThemeKey.RomeTricolore, LableThemeKey.RomeTricolore)]
         RomeTricolore,
@@ -43,6 +48,9 @@ namespace SmartMenu.Data.Enums
         [Display(Name = "BBQ Grill")]
         BbqGrill,
 
+        [Display(Name = "Doner Canvas")]
+        DonerCanvas,
+
         [Display(Name = "Rome Tricolore")]
         RomeTricolore,
     }
@@ -61,6 +69,9 @@ namespace SmartMenu.Data.Enums
         [Display(Name = "BBQ Grill")]
         BbqGrill,
 
+        [Display(Name = "Doner Canvas")]
+        DonerCanvas,
+
         [Display(Name = "Rome Tricolore")]
         RomeTricolore,
     }
@@ -78,6 +89,9 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "BBQ Grill")]
         BbqGrill,
+
+        [Display(Name = "Doner Canvas")]
+        DonerCanvas,
 
         [Display(Name = "Rome Tricolore")]
         RomeTricolore,

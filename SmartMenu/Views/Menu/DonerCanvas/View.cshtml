@@ -1,0 +1,252 @@
+@using SmartMenu.Models.Theme.Menu
+@model SmartMenu.Models.View.PublicMenuViewModel
+@{
+    Layout = "~/Views/Shared/_MenuLayout_DonerCanvas.cshtml";
+    ViewData["Title"] = $"{Model.MenuDefaultTitle} Menu";
+
+    var theme = string.IsNullOrWhiteSpace(Model.MenuThemeJson)
+        ? new MenuTheme_DonerCanvas()
+        : System.Text.Json.JsonSerializer.Deserialize<MenuTheme_DonerCanvas>(Model.MenuThemeJson) ?? new MenuTheme_DonerCanvas();
+}
+@section LanguageSelector {
+    <form class="dnr-lang-select" method="get" action="/Menu/View">
+        <input type="hidden" name="menuId" value="@Model.MenuId" />
+        <input type="hidden" name="identifier" value="@Model.Identifier" />
+        @if (Model.IsThemePreview)
+        {
+            <input type="hidden" name="previewTheme" value="true" />
+        }
+        <select id="languageSelect" name="lang" onchange="this.form.submit()" class="form-select form-select-sm dnr-control" style="min-width:120px;">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                var selected = lang.Code == Model.SelectedLanguage ? "selected" : "";
+                @Html.Raw($"<option value=\"{lang.Code}\" {selected}>{lang.Name}</option>")
+            }
+        </select>
+    </form>
+}
+@section CommandSelector {
+    <form class="dnr-command-select">
+        <select id="menuCommandSelect" class="form-select form-select-sm dnr-control" style="min-width:220px;">
+            <option value="">Select Command</option>
+            @foreach (var cmd in Model.MenuCommands)
+            {
+                <option value="@cmd.Id"
+                        data-message="@cmd.SystemMessage"
+                        data-text="@cmd.DefaultText"
+                        data-icon="@cmd.Icon"
+                        data-identifier="@Model.Identifier"
+                        data-hascustomermessage="@cmd.HasCustomerMessage.ToString().ToLower()">
+                    @cmd.DefaultText
+                </option>
+            }
+        </select>
+    </form>
+}
+
+<div class="dnr-page">
+    <section class="dnr-hero">
+        <div class="dnr-hero-backdrop" style="background-image:url('@Model.MenuCoverUrl')"></div>
+        <div class="dnr-hero-gradient"></div>
+        <div class="dnr-canvas-grid" aria-hidden="true"></div>
+        <div class="dnr-brush-stroke" aria-hidden="true"></div>
+
+        <div class="container dnr-hero-content">
+            <div class="dnr-hero-head">
+                <div class="dnr-logo-wrap">
+                    <div class="dnr-logo" style="background-image:url('@Model.MenuLogoUrl')"></div>
+                </div>
+                <div class="dnr-title-block">
+                    <h1 class="dnr-title">@Model.MenuDefaultTitle</h1>
+                </div>
+            </div>
+
+            @if (Model.MenuLables != null && Model.MenuLables.Any())
+            {
+                <div class="dnr-labels">
+                    @foreach (var label in Model.MenuLables)
+                    {
+                        @await Component.InvokeAsync("Lable", new {
+                            themKey = Model.LableThemeKey,
+                            model = label,
+                            themeJson = Model.LableThemeJson
+                        })
+                    }
+                </div>
+            }
+
+            <div class="dnr-search-wrap">
+                <span class="dnr-search-icon" aria-hidden="true">//</span>
+                <input id="globalFilter" type="search" class="dnr-search"
+                       placeholder="SEARCH SANDWICHES, PLATES, SIDES..." autocomplete="off" />
+            </div>
+        </div>
+    </section>
+
+    <section class="container dnr-category-stage">
+
+        <div class="dnr-category-strip" id="categoryRibbon">
+            @foreach (var cat in Model.CategoriesWithItems)
+            {
+                var categoryTitle = cat.CategoryTitle ?? string.Empty;
+                <div class="dnr-category-link"
+                     data-title="@categoryTitle.ToLowerInvariant()"
+                     data-category-id="@cat.CategoryId">
+                    @await Component.InvokeAsync("CategoryCard", new {
+                        themKey = Model.CategoryCardThemeKey,
+                        model = new SmartMenu.Models.Category.CategoryListItemViewModel {
+                            Id = cat.CategoryId,
+                            DefaultTitle = categoryTitle,
+                            ImageUrl = cat.CategoryImageUrl ?? string.Empty,
+                            Order = cat.Order
+                        },
+                        themeJson = Model.CategoryCardThemeJson,
+                        linkUrl = $"#cat-{cat.CategoryId}"
+                    })
+                </div>
+            }
+        </div>
+    </section>
+
+    @if (Model.CategoriesWithItems?.Any() == true)
+    {
+        <section class="container dnr-items-section" id="itemSections">
+            @foreach (var cat in Model.CategoriesWithItems)
+            {
+                var normalizedCategoryTitle = (cat.CategoryTitle ?? string.Empty).ToLowerInvariant();
+                <section class="dnr-item-category" data-category="@normalizedCategoryTitle" id="cat-@cat.CategoryId">
+                    <div class="dnr-section-head">
+                        <h3 class="dnr-section-title">@cat.CategoryTitle</h3>
+                        <span class="dnr-section-rule" aria-hidden="true"></span>
+                    </div>
+                    <div class="row g-4 dnr-item-grid">
+                        @foreach (var item in cat.Items)
+                        {
+                            var title = (item.DefaultTitle ?? string.Empty).ToLowerInvariant();
+                            var description = (item.Description ?? string.Empty).ToLowerInvariant();
+                            <div class="col-12 col-md-6 col-xl-4 dnr-item" data-title="@title" data-description="@description">
+                                @await Component.InvokeAsync("ItemCard", new {
+                                    themKey = Model.ItemCardThemeKey,
+                                    model = item,
+                                    themeJson = Model.ItemCardThemeJson
+                                })
+                            </div>
+                        }
+                    </div>
+                </section>
+            }
+        </section>
+    }
+</div>
+
+<script>
+    (function() {
+        var input = document.getElementById('globalFilter');
+        var categoryRibbon = document.getElementById('categoryRibbon');
+        var itemSections = document.getElementById('itemSections');
+
+        function applyFilter() {
+            if (!input) return;
+
+            var q = input.value.trim().toLowerCase();
+
+            if (categoryRibbon) {
+                categoryRibbon.querySelectorAll('.dnr-category-link').forEach(function(el) {
+                    var t = el.getAttribute('data-title') || '';
+                    el.style.display = t.indexOf(q) !== -1 || q.length === 0 ? '' : 'none';
+                });
+            }
+
+            if (itemSections) {
+                itemSections.querySelectorAll('.dnr-item-category').forEach(function(section) {
+                    var catMatch = (section.getAttribute('data-category') || '').indexOf(q) !== -1;
+                    var visibleCount = 0;
+
+                    section.querySelectorAll('.dnr-item').forEach(function(card) {
+                        var title = card.getAttribute('data-title') || '';
+                        var desc = card.getAttribute('data-description') || '';
+                        var visible = q.length === 0 || catMatch || title.indexOf(q) !== -1 || desc.indexOf(q) !== -1;
+                        card.style.display = visible ? '' : 'none';
+                        if (visible) visible += 0, visibleCount += 1;
+                    });
+
+                    section.style.display = visibleCount > 0 ? '' : 'none';
+                });
+            }
+        }
+
+        input?.addEventListener('input', applyFilter);
+
+        if (categoryRibbon) {
+            categoryRibbon.querySelectorAll('.dnr-category-link a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    categoryRibbon.querySelectorAll('.dnr-category-link').forEach(function(other) {
+                        other.classList.remove('active');
+                    });
+                    this.closest('.dnr-category-link')?.classList.add('active');
+                });
+            });
+
+            var firstLink = categoryRibbon.querySelector('.dnr-category-link');
+            if (firstLink) firstLink.classList.add('active');
+        }
+
+        function sendCommand(cmdId, identifier, message, hasCustomerMessage, text) {
+            function post(customerMessage) {
+                const payload = {
+                    menuCommandId: parseInt(cmdId),
+                    identifier: identifier || null,
+                    customerMessage: customerMessage || null,
+                    firedAt: new Date().toISOString(),
+                    timezoneOffsetMinutes: new Date().getTimezoneOffset()
+                };
+
+                fetch('/Menu/SendCommand', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    body: JSON.stringify(payload)
+                }).then(r => r.json()).then(res => {
+                    if (res?.success) Swal.fire('Sent!', 'Command sent successfully.', 'success');
+                    else Swal.fire('Error', res?.message || 'Failed to send.', 'error');
+                }).catch(() => Swal.fire('Error', 'Failed to send.', 'error'));
+            }
+
+            if (window.Swal) {
+                if (hasCustomerMessage) {
+                    Swal.fire({
+                        title: text,
+                        html: `<div><div style="margin-bottom:8px;">${message}</div><textarea id="cmsg" class="form-control" rows="4" placeholder="Enter your message"></textarea></div>`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Send',
+                        cancelButtonText: 'Cancel',
+                        preConfirm: () => document.getElementById('cmsg').value
+                    }).then(res => { if (res.isConfirmed) post(res.value); });
+                } else {
+                    Swal.fire({ title: text, text: message, icon: 'question', showCancelButton: true, confirmButtonText: 'Send' })
+                        .then(res => { if (res.isConfirmed) post(''); });
+                }
+            } else {
+                let cm = '';
+                if (hasCustomerMessage) {
+                    cm = prompt(message + "\n\nEnter your message:");
+                    if (cm === null) return;
+                } else {
+                    if (!confirm(message)) return;
+                }
+                post(cm);
+            }
+        }
+
+        document.getElementById('menuCommandSelect')?.addEventListener('change', function() {
+            const opt = this.selectedOptions[0];
+            if (!opt || !opt.value) return;
+            sendCommand(opt.value, opt.dataset.identifier, opt.dataset.message, opt.dataset.hascustomermessage === 'true', opt.dataset.text);
+            this.value = '';
+        });
+    })();
+</script>
+@Html.AntiForgeryToken()

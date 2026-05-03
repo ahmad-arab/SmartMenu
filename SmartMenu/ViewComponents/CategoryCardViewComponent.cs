@@ -21,6 +21,8 @@ namespace SmartMenu.ViewComponents
                     return View("DarkCircle", model);
                 case CategoryCardThemeKey.BbqGrill:
                     return View("BbqGrill", model);
+                case CategoryCardThemeKey.DonerCanvas:
+                    return View("DonerCanvas", model);
                 case CategoryCardThemeKey.RomeTricolore:
                     return View("RomeTricolore", model);
                 case CategoryCardThemeKey.Default:

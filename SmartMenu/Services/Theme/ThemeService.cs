@@ -22,6 +22,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new MenuTheme_DarkCircle(), getDefaultValues);
                 case MenuThemeKey.BbqGrill:
                     return DeserializeOrDefault(json, new MenuTheme_BbqGrill(), getDefaultValues);
+                case MenuThemeKey.DonerCanvas:
+                    return DeserializeOrDefault(json, new MenuTheme_DonerCanvas(), getDefaultValues);
                 case MenuThemeKey.RomeTricolore:
                     return DeserializeOrDefault(json, new MenuTheme_RomeTricolore(), getDefaultValues);
                 case MenuThemeKey.Default:
@@ -40,6 +42,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new CategoryCardTheme_DarkCircle(), getDefaultValues);
                 case CategoryCardThemeKey.BbqGrill:
                     return DeserializeOrDefault(json, new CategoryCardTheme_BbqGrill(), getDefaultValues);
+                case CategoryCardThemeKey.DonerCanvas:
+                    return DeserializeOrDefault(json, new CategoryCardTheme_DonerCanvas(), getDefaultValues);
                 case CategoryCardThemeKey.RomeTricolore:
                     return DeserializeOrDefault(json, new CategoryCardTheme_RomeTricolore(), getDefaultValues);
                 case CategoryCardThemeKey.Default:
@@ -58,6 +62,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new ItemCardTheme_DarkCircle(), getDefaultValues);
                 case ItemCardThemeKey.BbqGrill:
                     return DeserializeOrDefault(json, new ItemCardTheme_BbqGrill(), getDefaultValues);
+                case ItemCardThemeKey.DonerCanvas:
+                    return DeserializeOrDefault(json, new ItemCardTheme_DonerCanvas(), getDefaultValues);
                 case ItemCardThemeKey.RomeTricolore:
                     return DeserializeOrDefault(json, new ItemCardTheme_RomeTricolore(), getDefaultValues);
                 case ItemCardThemeKey.Default:
@@ -76,6 +82,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new LableTheme_DarkCircle(), getDefaultValues);
                 case LableThemeKey.BbqGrill:
                     return DeserializeOrDefault(json, new LableTheme_BbqGrill(), getDefaultValues);
+                case LableThemeKey.DonerCanvas:
+                    return DeserializeOrDefault(json, new LableTheme_DonerCanvas(), getDefaultValues);
                 case LableThemeKey.RomeTricolore:
                     return DeserializeOrDefault(json, new LableTheme_RomeTricolore(), getDefaultValues);
                 case LableThemeKey.Default:
