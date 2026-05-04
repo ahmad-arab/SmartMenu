@@ -56,7 +56,6 @@
             <p class="rtm-item-description"
                style="color:@theme.DescribtionColor; font-size:@(theme.DescribtionFontSize)rem; @(string.IsNullOrWhiteSpace(theme.DescribtionFont) ? "" : $"font-family:{theme.DescribtionFont};")">@Model.Description</p>
         }
-
         <p class="rtm-item-price"
               style="background:linear-gradient(90deg, rgba(0, 146, 70, 0.52), rgba(244, 245, 240, 0.12), rgba(206, 43, 55, 0.52)), @theme.PriceBadgeBackgroundColor; color:@theme.PriceBadgeFontColor; font-size:@(theme.PriceBadgeFontSize)rem; font-weight:@theme.PriceBadgeFontWeight; @(string.IsNullOrWhiteSpace(theme.PriceBadgeFont) ? "" : $"font-family:{theme.PriceBadgeFont};")">
             @priceText

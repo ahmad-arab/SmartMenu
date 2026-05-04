@@ -99,13 +99,19 @@ html[dir="rtl"] .rtm-item-title {
     padding-bottom: 1.6rem;
 }
 
+.rtm-hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
 .rtm-logo {
     width: 116px;
     height: 116px;
     border-radius: 50%;
     background-size: cover;
     background-position: center;
-    border: 3px solid rgba(255, 255, 255, 0.85);
     box-shadow:
         0 0 0 2px rgba(21, 128, 61, 0.45),
         0 0 0 5px rgba(185, 28, 28, 0.32),
@@ -119,7 +125,7 @@ html[dir="rtl"] .rtm-item-title {
     font-family: "Cormorant Garamond", "Times New Roman", serif;
     font-weight: 700;
     line-height: 1.06;
-    margin: .8rem 0 .4rem;
+    margin: 1rem 0 .8rem;
     font-size: var(--rtm-title-size);
     text-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
 }
@@ -128,7 +134,7 @@ html[dir="rtl"] .rtm-item-title {
 .rtm-category-subtitle {
     color: rgba(255, 255, 255, 0.92);
     max-width: 760px;
-    margin: 0 auto;
+    margin: 0.8rem auto;
     font-size: 1rem;
 }
 
@@ -432,6 +438,9 @@ html[dir="rtl"] .rtm-item-title {
 .rtm-item-card {
     position: relative;
     isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     width: 100%;
     overflow: hidden;
     border-radius: 8px;
@@ -508,8 +517,9 @@ html[dir="rtl"] .rtm-item-title {
     position: relative;
     display: flex;
     flex-direction: column;
+    flex: 1;
     gap: 13px;
-    padding: 28px 30px 30px;
+    padding: 28px 30px 84px;
     z-index: 3;
 }
 
@@ -527,7 +537,7 @@ html[dir="rtl"] .rtm-item-title {
 .rtm-item-title {
     margin: 0;
     max-width: 11ch;
-    line-height: .9;
+    line-height: 1.4;
     font-weight: 700;
     text-wrap: balance;
     color: #fff6e0;
@@ -542,10 +552,10 @@ html[dir="rtl"] .rtm-item-title {
 }
 
 .rtm-item-price {
-    justify-self: end;
-    align-self: flex-end;
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
     margin: 0;
-    margin-top: -16px;
     padding: 9px 14px 10px;
     min-width: 82px;
     text-align: center;
@@ -554,6 +564,11 @@ html[dir="rtl"] .rtm-item-title {
     border-radius: 8px;
     color: #fff8eb;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+html[dir="rtl"] .rtm-item-price {
+    right: auto;
+    left: 30px;
 }
 
 @media (max-width: 575.98px) {
@@ -566,7 +581,7 @@ html[dir="rtl"] .rtm-item-title {
     }
 
     .rtm-item-content {
-        padding: 18px 16px 18px;
+        padding: 18px 16px 60px;
         gap: 9px;
     }
 
@@ -577,13 +592,19 @@ html[dir="rtl"] .rtm-item-title {
 
     .rtm-item-title {
         max-width: 100%;
-        line-height: .95;
+        line-height: 1.4;
     }
 
     .rtm-item-price {
-        margin-top: -4px;
+        right: 16px;
+        bottom: 16px;
         min-width: 64px;
         padding: 7px 10px;
+    }
+
+    html[dir="rtl"] .rtm-item-price {
+        right: auto;
+        left: 16px;
     }
 }
 
