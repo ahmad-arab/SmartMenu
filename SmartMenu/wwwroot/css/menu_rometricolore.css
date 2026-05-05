@@ -271,8 +271,7 @@ html[dir="rtl"] .rtm-item-title {
     isolation: isolate;
     width: 100%;
     display: block;
-    aspect-ratio: 0.78;
-    min-height: 260px;
+    aspect-ratio: 1.5;
     overflow: hidden;
     background: #11100e;
     border: 1px solid rgba(255, 248, 235, 0.22);
