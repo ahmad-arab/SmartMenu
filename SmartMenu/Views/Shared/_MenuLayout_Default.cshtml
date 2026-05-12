@@ -1,7 +1,8 @@
 ﻿@using SmartMenu.Models.Theme.Menu
 @inject SmartMenu.Services.Tenant.ITenantService _tenantService;
 @{
-    var rtl = Model.IsRtl ? "rtl" : "ltr";
+    var isRtl = Model.IsRtl;
+    var rtl = isRtl ? "rtl" : "ltr";
 
     MenuTheme_Default themeObject;
     if (!string.IsNullOrEmpty(Model.MenuThemeJson))
@@ -35,8 +36,23 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    @if (isRtl)
+    {
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    }
     <link href="~/css/menu_default.css" rel="stylesheet" asp-append-version="true" />
     <style>
+        @if (isRtl)
+        {
+            @:html[dir="rtl"] body,
+            @:html[dir="rtl"] body input,
+            @:html[dir="rtl"] body textarea,
+            @:html[dir="rtl"] body select,
+            @:html[dir="rtl"] .select2-container {
+            @:    font-family: 'Noto Sans Arabic', 'Rubik', Arial, sans-serif !important;
+            @:}
+        }
+
         /* Loader overlay styles */
         #pageLoader {
             position: fixed;
@@ -91,6 +107,14 @@
             }
 
         </div>
+        @if (!string.IsNullOrWhiteSpace(Model.MenuLogoUrl))
+        {
+            <div class="place-header__main">
+                <div class="place-header__logo" aria-label="@Model.MenuDefaultTitle logo">
+                    <img src="@Model.MenuLogoUrl" alt="@Model.MenuDefaultTitle logo" />
+                </div>
+            </div>
+        }
     </div>
     <main class="place-content shadow-sm" style="@contentBackgroundColorStyle">
         <div class="wrapper px-2 px-md-4">
