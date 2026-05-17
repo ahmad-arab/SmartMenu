@@ -1,0 +1,218 @@
+@using SmartMenu.Models.Theme.Menu
+@model SmartMenu.Models.View.PublicMenuViewModel
+@{
+    Layout = "~/Views/Shared/_MenuLayout_Organic.cshtml";
+    ViewData["Title"] = $"{Model.MenuDefaultTitle} Menu";
+
+    var heroSubtitle = string.IsNullOrWhiteSpace(Model.HeroSubtitleText)
+        ? "Farm-fresh dishes, bright ingredients, and nourishing choices ready to explore."
+        : Model.HeroSubtitleText;
+
+    var categoryIndexTitle = string.IsNullOrWhiteSpace(Model.CategoryIndexTitleText)
+        ? "Garden Map"
+        : Model.CategoryIndexTitleText;
+}
+@section LanguageSelector {
+    <form class="mx-2" method="get" action="/Menu/View">
+        <input type="hidden" name="menuId" value="@Model.MenuId" />
+        <input type="hidden" name="identifier" value="@Model.Identifier" />
+        @if (Model.IsThemePreview)
+        {
+            <input type="hidden" name="previewTheme" value="true" />
+        }
+        <select name="lang" onchange="this.form.submit()" class="form-select form-select-sm org-control" style="min-width:120px;">
+            @foreach (var lang in Model.AvailableLanguages)
+            {
+                var selected = lang.Code == Model.SelectedLanguage ? "selected" : "";
+                @Html.Raw($"<option value=\"{lang.Code}\" {selected}>{lang.Name}</option>")
+            }
+        </select>
+    </form>
+}
+@section CommandSelector {
+    <form class="mx-2">
+        <select id="menuCommandSelect" class="form-select form-select-sm org-control" style="min-width:220px;">
+            <option value="">Select Command</option>
+            @foreach (var cmd in Model.MenuCommands)
+            {
+                <option value="@cmd.Id"
+                        data-message="@cmd.SystemMessage"
+                        data-text="@cmd.DefaultText"
+                        data-identifier="@Model.Identifier"
+                        data-hascustomermessage="@cmd.HasCustomerMessage.ToString().ToLower()">
+                    @cmd.DefaultText
+                </option>
+            }
+        </select>
+    </form>
+}
+
+<div class="org-page">
+    <section class="org-hero">
+        <div class="org-hero-cover" style="background-image:url('@Model.MenuCoverUrl')"></div>
+        <div class="org-hero-veils"></div>
+        <div class="container org-hero-content">
+            <div class="org-logo" style="background-image:url('@Model.MenuLogoUrl')"></div>
+            <h1 class="org-title">@Model.MenuDefaultTitle</h1>
+            <p class="org-tagline">@heroSubtitle</p>
+
+            @if (Model.MenuLables != null && Model.MenuLables.Any())
+            {
+                <div class="org-labels">
+                    @foreach (var label in Model.MenuLables)
+                    {
+                        @await Component.InvokeAsync("Lable", new {
+                            themKey = Model.LableThemeKey,
+                            model = label,
+                            themeJson = Model.LableThemeJson
+                        })
+                    }
+                </div>
+            }
+
+            <div class="org-search-wrap">
+                <input id="categoryFilter" type="search" class="org-search" placeholder="Search fresh categories..." autocomplete="off" />
+                <span class="org-search-count" id="categoryCount"></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="container-fluid org-content-shell">
+        <div class="row g-3">
+            <aside class="col-12 col-lg-3">
+                <div class="org-rail">
+                    <div class="org-rail-head">
+                        <h2>@categoryIndexTitle</h2>
+                        <span>@Model.Categories.Count categories</span>
+                    </div>
+                    <div class="org-rail-list" id="categoryRail">
+                        @foreach (var cat in Model.Categories)
+                        {
+                            var title = cat.TitlesByLanguage.ContainsKey(Model.SelectedLanguage)
+                                ? cat.TitlesByLanguage[Model.SelectedLanguage]
+                                : cat.TitlesByLanguage.Values.FirstOrDefault();
+                            var categoryUrl = Url.Action("Category", "Menu", new { categoryId = cat.Id, lang = Model.SelectedLanguage, identifier = Model.Identifier, previewTheme = Model.IsThemePreview });
+                            <a href="@categoryUrl" class="org-rail-link" data-title="@title?.ToLowerInvariant()">@title</a>
+                        }
+                    </div>
+                </div>
+            </aside>
+
+            <div class="col-12 col-lg-9">
+                <div class="org-grid" id="categoryGrid">
+                    @foreach (var cat in Model.Categories)
+                    {
+                        var title = cat.TitlesByLanguage.ContainsKey(Model.SelectedLanguage)
+                            ? cat.TitlesByLanguage[Model.SelectedLanguage]
+                            : cat.TitlesByLanguage.Values.FirstOrDefault();
+                        var categoryUrl = Url.Action("Category", "Menu", new { categoryId = cat.Id, lang = Model.SelectedLanguage, identifier = Model.Identifier, previewTheme = Model.IsThemePreview });
+
+                        <div class="org-grid-col" data-title="@title?.ToLowerInvariant()">
+                            @await Component.InvokeAsync("CategoryCard", new {
+                                themKey = Model.CategoryCardThemeKey,
+                                model = cat,
+                                themeJson = Model.CategoryCardThemeJson,
+                                linkUrl = categoryUrl
+                            })
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    (function () {
+        var input = document.getElementById('categoryFilter');
+        var grid = document.getElementById('categoryGrid');
+        var rail = document.getElementById('categoryRail');
+        var count = document.getElementById('categoryCount');
+
+        function applyFilter() {
+            if (!grid || !input) return;
+            var q = input.value.trim().toLowerCase();
+            var visible = 0;
+
+            grid.querySelectorAll('[data-title]').forEach(function (col) {
+                var t = col.getAttribute('data-title') || '';
+                var show = q.length === 0 || t.indexOf(q) !== -1;
+                col.style.display = show ? '' : 'none';
+                if (show) visible += 1;
+            });
+
+            if (rail) {
+                rail.querySelectorAll('[data-title]').forEach(function (link) {
+                    var t = link.getAttribute('data-title') || '';
+                    var show = q.length === 0 || t.indexOf(q) !== -1;
+                    link.style.display = show ? '' : 'none';
+                });
+            }
+
+            if (count) {
+                count.textContent = visible + ' shown';
+            }
+        }
+
+        input?.addEventListener('input', applyFilter);
+        applyFilter();
+
+        function sendCommand(cmdId, identifier, message, hasCustomerMessage, text) {
+            function post(customerMessage) {
+                const payload = {
+                    menuCommandId: parseInt(cmdId),
+                    identifier: identifier || null,
+                    customerMessage: customerMessage || null,
+                    firedAt: new Date().toISOString(),
+                    timezoneOffsetMinutes: new Date().getTimezoneOffset()
+                };
+
+                fetch('/Menu/SendCommand', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    body: JSON.stringify(payload)
+                }).then(r => r.json()).then(res => {
+                    if (res?.success) Swal.fire('Sent!', 'Command sent successfully.', 'success');
+                    else Swal.fire('Error', res?.message || 'Failed to send.', 'error');
+                }).catch(() => Swal.fire('Error', 'Failed to send.', 'error'));
+            }
+
+            if (window.Swal) {
+                if (hasCustomerMessage) {
+                    Swal.fire({
+                        title: text,
+                        html: `<div><div style="margin-bottom:8px;">${message}</div><textarea id="cmsg" class="form-control" rows="4" placeholder="Enter your message"></textarea></div>`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Send',
+                        cancelButtonText: 'Cancel',
+                        preConfirm: () => document.getElementById('cmsg').value
+                    }).then(res => { if (res.isConfirmed) post(res.value); });
+                } else {
+                    Swal.fire({ title: text, text: message, icon: 'question', showCancelButton: true, confirmButtonText: 'Send' })
+                        .then(res => { if (res.isConfirmed) post(''); });
+                }
+            } else {
+                let cm = '';
+                if (hasCustomerMessage) {
+                    cm = prompt(message + "\n\nEnter your message:");
+                    if (cm === null) return;
+                } else {
+                    if (!confirm(message)) return;
+                }
+                post(cm);
+            }
+        }
+
+        document.getElementById('menuCommandSelect')?.addEventListener('change', function () {
+            const opt = this.selectedOptions[0];
+            if (!opt || !opt.value) return;
+            sendCommand(opt.value, opt.dataset.identifier, opt.dataset.message, opt.dataset.hascustomermessage === 'true', opt.dataset.text);
+            this.value = '';
+        });
+    })();
+</script>
+@Html.AntiForgeryToken()

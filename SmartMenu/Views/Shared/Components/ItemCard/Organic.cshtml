@@ -1,0 +1,69 @@
+@using SmartMenu.Models.Theme.Item
+@model SmartMenu.Models.View.PublicCategoryItemViewModel
+@{
+    var theme = string.IsNullOrWhiteSpace(Model.ThemeJson)
+        ? new ItemCardTheme_Organic()
+        : System.Text.Json.JsonSerializer.Deserialize<ItemCardTheme_Organic>(Model.ThemeJson) ?? new ItemCardTheme_Organic();
+
+    string BuildOverlay(string hex, float opacity)
+    {
+        if (string.IsNullOrWhiteSpace(hex))
+        {
+            return $"rgba(0, 0, 0, {opacity.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+        }
+
+        var clean = hex.Trim().TrimStart('#');
+        if (clean.Length == 3)
+        {
+            clean = $"{clean[0]}{clean[0]}{clean[1]}{clean[1]}{clean[2]}{clean[2]}";
+        }
+
+        if (clean.Length == 6
+            && int.TryParse(clean.Substring(0, 2), System.Globalization.NumberStyles.HexNumber, null, out var r)
+            && int.TryParse(clean.Substring(2, 2), System.Globalization.NumberStyles.HexNumber, null, out var g)
+            && int.TryParse(clean.Substring(4, 2), System.Globalization.NumberStyles.HexNumber, null, out var b))
+        {
+            return $"rgba({r}, {g}, {b}, {opacity.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+        }
+
+        return $"rgba(0, 0, 0, {opacity.ToString(System.Globalization.CultureInfo.InvariantCulture)})";
+    }
+
+    var overlay = BuildOverlay(theme.ImageOverlayColor, theme.ImageOverlayOpacity);
+    var itemHeight = Math.Max(180, theme.ImageHeightPx);
+    var priceText = Model.Price.ToString("0.##");
+}
+<article class="org-item-card"
+         style="background:@theme.CardBackground; border:@(theme.BorderWidth)px solid @theme.BorderColor; border-radius:@(theme.BorderRadius)px; --org-item-leaf:@theme.AccentLeafColor; --org-item-fruit:@theme.AccentFruitColor; --org-item-cream:@theme.AccentCreamColor;">
+    <div class="org-item-image-frame" style="height:@(itemHeight)px;">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.DefaultTitle" class="org-item-image" />
+            <span class="org-item-overlay" style="background:@overlay;"></span>
+        }
+        else
+        {
+            <div class="org-item-empty"></div>
+        }
+        <span class="org-item-leaf-pin" aria-hidden="true"></span>
+    </div>
+
+    <section class="org-item-content">
+        <h5 class="org-item-title"
+            style="color:@theme.TitleColor; font-size:@(theme.TitleFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont};")">@Model.DefaultTitle</h5>
+
+        @if (theme.ShowDescription && !string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="org-item-description"
+               style="color:@theme.DescribtionColor; font-size:@(theme.DescribtionFontSize)rem; @(string.IsNullOrWhiteSpace(theme.DescribtionFont) ? "" : $"font-family:{theme.DescribtionFont};")">@Model.Description</p>
+        }
+
+        <div class="org-item-bottom">
+            <span class="org-item-origin" aria-hidden="true">organic pick</span>
+            <p class="org-item-price"
+               style="background:@theme.PriceBadgeBackgroundColor; color:@theme.PriceBadgeFontColor; font-size:@(theme.PriceBadgeFontSize)rem; font-weight:@theme.PriceBadgeFontWeight; @(string.IsNullOrWhiteSpace(theme.PriceBadgeFont) ? "" : $"font-family:{theme.PriceBadgeFont};")">
+                @priceText
+            </p>
+        </div>
+    </section>
+</article>

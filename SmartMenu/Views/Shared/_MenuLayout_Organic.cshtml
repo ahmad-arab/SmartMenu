@@ -1,0 +1,53 @@
+@using SmartMenu.Models.Theme.Menu
+@{
+    var rtl = Model.IsRtl ? "rtl" : "ltr";
+
+    var theme = string.IsNullOrWhiteSpace(Model.MenuThemeJson)
+        ? new MenuTheme_Organic()
+        : System.Text.Json.JsonSerializer.Deserialize<MenuTheme_Organic>(Model.MenuThemeJson) ?? new MenuTheme_Organic();
+
+    var titleSize = theme.TitleFontSize.ToString(System.Globalization.CultureInfo.InvariantCulture);
+}
+<!DOCTYPE html>
+<html lang="@Model.SelectedLanguage" dir="@rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Nunito:wght@400;600;700;800&family=Noto+Kufi+Arabic:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link href="~/css/menu_organic.css" rel="stylesheet" asp-append-version="true" />
+
+    <style>
+        @Html.Raw($":root {{--org-bg:{theme.BodyBackgroundColor};--org-surface:{theme.SurfaceColor};--org-leaf:{theme.LeafInkColor};--org-garden:{theme.GardenTintColor};--org-fruit:{theme.FruitAccentColor};--org-title:{theme.TitleColor};--org-title-size:{titleSize}rem;--org-search-bg:{theme.SearchBackgroundColor};--org-search-placeholder:{theme.SearchPlaceholderColor};--org-section:{theme.SectionTitleColor};--org-soft-border:{theme.SoftBorderColor};--org-font-rtl-body:'Tajawal','Noto Kufi Arabic','Segoe UI',sans-serif;--org-font-rtl-display:'Noto Kufi Arabic','Tajawal','Segoe UI',sans-serif;}}")
+    </style>
+</head>
+<body>
+    <div class="org-doodle-layer" aria-hidden="true"></div>
+
+    <div class="org-topbar">
+        <div class="d-flex justify-content-between align-items-center px-2">
+            @RenderSection("LanguageSelector", required: false)
+            @if (Model.TenantIsUsingCommands)
+            {
+                @RenderSection("CommandSelector", required: false)
+            }
+            else
+            {
+                { IgnoreSection("CommandSelector"); }
+            }
+        </div>
+    </div>
+
+    <main class="org-main">
+        @RenderBody()
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

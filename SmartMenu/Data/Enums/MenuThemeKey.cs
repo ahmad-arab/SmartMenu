@@ -32,6 +32,10 @@ namespace SmartMenu.Data.Enums
         [Display(Name = "Rome Tricolore")]
         [MenuThemeDefaults(CategoryCardThemeKey.RomeTricolore, ItemCardThemeKey.RomeTricolore, LableThemeKey.RomeTricolore)]
         RomeTricolore,
+
+        [Display(Name = "Organic")]
+        [MenuThemeDefaults(CategoryCardThemeKey.Organic, ItemCardThemeKey.Organic, LableThemeKey.Organic)]
+        Organic,
     }
 
     public enum CategoryCardThemeKey
@@ -53,6 +57,9 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "Rome Tricolore")]
         RomeTricolore,
+
+        [Display(Name = "Organic")]
+        Organic,
     }
 
     public enum ItemCardThemeKey
@@ -74,6 +81,9 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "Rome Tricolore")]
         RomeTricolore,
+
+        [Display(Name = "Organic")]
+        Organic,
     }
 
     public enum LableThemeKey
@@ -95,5 +105,8 @@ namespace SmartMenu.Data.Enums
 
         [Display(Name = "Rome Tricolore")]
         RomeTricolore,
+
+        [Display(Name = "Organic")]
+        Organic,
     }
 }

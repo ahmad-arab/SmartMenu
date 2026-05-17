@@ -22,6 +22,8 @@ namespace SmartMenu.ViewComponents
                     return View("DonerCanvas", model);
                 case LableThemeKey.RomeTricolore:
                     return View("RomeTricolore", model);
+                case LableThemeKey.Organic:
+                    return View("Organic", model);
                 case LableThemeKey.Default:
                 default:
                     return View("Default", model);

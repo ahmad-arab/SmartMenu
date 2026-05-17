@@ -26,6 +26,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new MenuTheme_DonerCanvas(), getDefaultValues);
                 case MenuThemeKey.RomeTricolore:
                     return DeserializeOrDefault(json, new MenuTheme_RomeTricolore(), getDefaultValues);
+                case MenuThemeKey.Organic:
+                    return DeserializeOrDefault(json, new MenuTheme_Organic(), getDefaultValues);
                 case MenuThemeKey.Default:
                 default:
                     return DeserializeOrDefault(json, new MenuTheme_Default(), getDefaultValues);
@@ -46,6 +48,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new CategoryCardTheme_DonerCanvas(), getDefaultValues);
                 case CategoryCardThemeKey.RomeTricolore:
                     return DeserializeOrDefault(json, new CategoryCardTheme_RomeTricolore(), getDefaultValues);
+                case CategoryCardThemeKey.Organic:
+                    return DeserializeOrDefault(json, new CategoryCardTheme_Organic(), getDefaultValues);
                 case CategoryCardThemeKey.Default:
                 default:
                     return DeserializeOrDefault(json, new CategoryCardTheme_Default(), getDefaultValues);
@@ -66,6 +70,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new ItemCardTheme_DonerCanvas(), getDefaultValues);
                 case ItemCardThemeKey.RomeTricolore:
                     return DeserializeOrDefault(json, new ItemCardTheme_RomeTricolore(), getDefaultValues);
+                case ItemCardThemeKey.Organic:
+                    return DeserializeOrDefault(json, new ItemCardTheme_Organic(), getDefaultValues);
                 case ItemCardThemeKey.Default:
                 default:
                     return DeserializeOrDefault(json, new ItemCardTheme_Default(), getDefaultValues);
@@ -86,6 +92,8 @@ namespace SmartMenu.Services.Theme
                     return DeserializeOrDefault(json, new LableTheme_DonerCanvas(), getDefaultValues);
                 case LableThemeKey.RomeTricolore:
                     return DeserializeOrDefault(json, new LableTheme_RomeTricolore(), getDefaultValues);
+                case LableThemeKey.Organic:
+                    return DeserializeOrDefault(json, new LableTheme_Organic(), getDefaultValues);
                 case LableThemeKey.Default:
                 default:
                     return DeserializeOrDefault(json, new LableTheme_Default(), getDefaultValues);
