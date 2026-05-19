@@ -52,7 +52,7 @@
         <h5 class="org-item-title"
             style="color:@theme.TitleColor; font-size:@(theme.TitleFontSize)rem; @(string.IsNullOrWhiteSpace(theme.TitleFont) ? "" : $"font-family:{theme.TitleFont};")">@Model.DefaultTitle</h5>
 
-        @if (theme.ShowDescription && !string.IsNullOrWhiteSpace(Model.Description))
+        @if (theme.ShowDescription && !string.IsNullOrWhiteSpace(Model.Description) && Model.Description != "(No text)")
         {
             <p class="org-item-description"
                style="color:@theme.DescribtionColor; font-size:@(theme.DescribtionFontSize)rem; @(string.IsNullOrWhiteSpace(theme.DescribtionFont) ? "" : $"font-family:{theme.DescribtionFont};")">@Model.Description</p>
