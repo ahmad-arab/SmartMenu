@@ -58,4 +58,8 @@
       <input class="form-control form-control-sm" name="SoftBorderColor" value="@Model.SoftBorderColor" type="color" />
     </div>
   </div>
+    <div class="form-check">
+        <input class="form-check-input" id="rtm-show-quick-category-list" type="checkbox" name="ShowQuickCatigoryList" value="true" @(Model.ShowQuickCatigoryList ? "checked" : "") />
+        <label class="form-check-label" for="rtm-show-quick-category-list">Show Quick Category List</label>
+    </div>
 </div>

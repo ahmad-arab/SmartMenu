@@ -14,5 +14,6 @@ namespace SmartMenu.Models.Theme.Menu
         public string SearchPlaceholderColor { get; set; } = "#76a541";
         public string SectionTitleColor { get; set; } = "#000000";
         public string SoftBorderColor { get; set; } = "#e3edb6";
+        public bool ShowQuickCatigoryList { get; set; } = true;
     }
 }
